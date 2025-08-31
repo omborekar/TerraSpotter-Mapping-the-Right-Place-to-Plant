@@ -21,6 +21,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "devDependencies": {"vite": "^4.4.9"},
   "eslintConfig": {
     "extends": [
       "react-app",
