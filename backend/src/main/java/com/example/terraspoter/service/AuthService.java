@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -30,5 +32,28 @@ public class AuthService {
     // Validate login password
     public boolean checkPassword(User user, String rawPassword) {
         return passwordEncoder.matches(rawPassword, user.getPassword());
+    }
+
+    // Generate random password for Google users
+    public String generateRandomPassword() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[16]; // 16 bytes = 128 bits
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    // Save or update Google user
+    public User saveOrUpdateGoogleUser(String fname, String lname, String email) {
+        Optional<User> existingUser = findUserByEmail(email);
+        if (existingUser.isPresent()) {
+            return existingUser.get();
+        } else {
+            User newUser = new User();
+            newUser.setFname(fname);
+            newUser.setLname(lname);
+            newUser.setEmail(email);
+            newUser.setPassword(generateRandomPassword()); // will be hashed in saveUser
+            return saveUser(newUser);
+        }
     }
 }
