@@ -13,10 +13,12 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173") // React frontend
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowCredentials(true);
+                registry.addMapping("/**") // allow all endpoints
+                        .allowedOrigins("http://localhost:5173") // your React frontend
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // include OPTIONS for preflight
+                        .allowedHeaders("*") // allow all headers
+                        .allowCredentials(true) // allow cookies/session
+                        .maxAge(3600); // cache preflight response for 1 hour
             }
         };
     }

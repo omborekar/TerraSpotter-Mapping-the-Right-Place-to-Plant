@@ -1,5 +1,6 @@
 package com.example.terraspoter.controller;
 
+import jakarta.servlet.http.HttpSession;
 import com.example.terraspoter.model.User;
 import com.example.terraspoter.payload.SignupRequest;
 import com.example.terraspoter.payload.LoginRequest;
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.*;
 import java.util.Collections;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -50,9 +51,8 @@ public class AuthController {
         return ResponseEntity.ok("Signup successful");
     }
 
-    // Login endpoint
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpSession session) {
         Optional<User> foundUser = authService.findUserByEmail(request.getEmail());
         if (foundUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials!");
@@ -63,46 +63,58 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials!");
         }
 
+        // Set user in session
+        session.setAttribute("user", user);
+
         return ResponseEntity.ok("Login successful!");
     }
 
+    // ================== SESSION INFO ==================
+    @GetMapping("/session")
+    public ResponseEntity<?> getSession(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No active session");
+        }
+    }
+
+    // ================== LOGOUT ==================
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("Logged out successfully");
+    }
+
+
     // Google login/signup endpoint
     @PostMapping("/google")
-    public ResponseEntity<?> loginWithGoogle(@RequestBody String token) {
+    public ResponseEntity<?> loginWithGoogle(@RequestBody Map<String, String> data) {
         try {
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance())
-                    .setAudience(Collections.singletonList("YOUR_GOOGLE_CLIENT_ID"))
-                    .build();
+            String email = data.get("email");
+            String fname = data.get("fname");
+            String lname = data.get("lname");
 
-            GoogleIdToken idToken = verifier.verify(token);
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
-                String email = payload.getEmail();
-                String fname = (String) payload.get("given_name");
-                String lname = (String) payload.get("family_name");
-
-                Optional<User> userOpt = authService.findUserByEmail(email);
-                User user;
-                if (userOpt.isPresent()) {
-                    user = userOpt.get();
-                } else {
-                    user = new User();
-                    user.setEmail(email);
-                    user.setFname(fname);
-                    user.setLname(lname);
-                    user.setPassword(authService.generateRandomPassword());
-                    authService.saveUser(user);
-                }
-
-                return ResponseEntity.ok(user);
+            Optional<User> userOpt = authService.findUserByEmail(email);
+            User user;
+            if (userOpt.isPresent()) {
+                user = userOpt.get();
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Google token");
+                user = new User();
+                user.setEmail(email);
+                user.setFname(fname);
+                user.setLname(lname);
+                user.setPassword(authService.generateRandomPassword());
+                authService.saveUser(user);
             }
+
+            return ResponseEntity.ok(user);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Google login failed: " + e.getMessage());
         }
     }
+
 }
