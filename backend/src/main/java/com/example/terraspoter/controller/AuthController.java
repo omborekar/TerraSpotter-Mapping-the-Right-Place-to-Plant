@@ -1,34 +1,34 @@
 package com.example.terraspoter.controller;
 
-import jakarta.servlet.http.HttpSession;
 import com.example.terraspoter.model.User;
 import com.example.terraspoter.payload.SignupRequest;
 import com.example.terraspoter.payload.LoginRequest;
 import com.example.terraspoter.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.*;
-import java.util.Collections;
-
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    // Signup endpoint
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    // ================== SIGNUP ==================
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
+
         if (authService.findUserByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("User already exists");
         }
@@ -42,42 +42,53 @@ public class AuthController {
         try {
             newUser.setDob(LocalDate.parse(request.getDob()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid DOB format. Use yyyy-MM-dd");
+            return ResponseEntity.badRequest()
+                    .body("Invalid DOB format. Use yyyy-MM-dd");
         }
 
-        newUser.setPassword(request.getPassword()); // Will be hashed in service
+        newUser.setPassword(request.getPassword());
         authService.saveUser(newUser);
 
         return ResponseEntity.ok("Signup successful");
     }
 
+    // ================== LOGIN ==================
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpSession session) {
-        Optional<User> foundUser = authService.findUserByEmail(request.getEmail());
+    public ResponseEntity<?> login(@RequestBody LoginRequest request,
+                                   HttpSession session) {
+
+        Optional<User> foundUser =
+                authService.findUserByEmail(request.getEmail());
+
         if (foundUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid credentials");
         }
 
         User user = foundUser.get();
+
         if (!authService.checkPassword(user, request.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid credentials");
         }
 
-        // Set user in session
         session.setAttribute("user", user);
 
-        return ResponseEntity.ok("Login successful!");
+        return ResponseEntity.ok(user);
     }
 
-    // ================== SESSION INFO ==================
+    // ================== SESSION ==================
     @GetMapping("/session")
     public ResponseEntity<?> getSession(HttpSession session) {
+
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No active session");
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("No active session");
         }
+
+        return ResponseEntity.ok(user);
     }
 
     // ================== LOGOUT ==================
@@ -87,17 +98,21 @@ public class AuthController {
         return ResponseEntity.ok("Logged out successfully");
     }
 
-
-    // Google login/signup endpoint
+    // ================== GOOGLE LOGIN ==================
     @PostMapping("/google")
-    public ResponseEntity<?> loginWithGoogle(@RequestBody Map<String, String> data) {
+    public ResponseEntity<?> loginWithGoogle(
+            @RequestBody Map<String, String> data) {
+
         try {
             String email = data.get("email");
             String fname = data.get("fname");
             String lname = data.get("lname");
 
-            Optional<User> userOpt = authService.findUserByEmail(email);
+            Optional<User> userOpt =
+                    authService.findUserByEmail(email);
+
             User user;
+
             if (userOpt.isPresent()) {
                 user = userOpt.get();
             } else {
@@ -110,11 +125,10 @@ public class AuthController {
             }
 
             return ResponseEntity.ok(user);
+
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Google login failed: " + e.getMessage());
+                    .body("Google login failed");
         }
     }
-
 }

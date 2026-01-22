@@ -1,95 +1,104 @@
 import React from "react";
-import { motion } from 'framer-motion';
-import { GiLeafSwirl, GiEarthAmerica, GiTreeBranch, GiPlantSeed, GiFlowerPot, GiButterfly, GiPalmTree } from 'react-icons/gi';
+import { motion } from "framer-motion";
 
 const Landing = () => {
-  const floatingVariants = {
-    leafSwirl: { rotate: [0, 360], transition: { duration: 10, repeat: Infinity, ease: 'linear' } },
-    earth: { rotate: [0, 360], transition: { duration: 20, repeat: Infinity, ease: 'linear' } },
-    treeBranch: { y: [0, -10, 0], transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' } },
-    plantSeed: { scale: [1, 1.2, 1], transition: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' } },
-    flowerPot: { rotate: [-5, 5, -5], y: [0, -5, 0], transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' } },
-    butterfly: { x: [-10, 10, -10], y: [10, -10, 10], transition: { duration: 4, repeat: Infinity, ease: 'easeInOut' } },
-    palmTree: { y: [0, -5, 0], transition: { duration: 5, repeat: Infinity, ease: 'easeInOut' } },
-  };
-
   return (
-    <main className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col items-center justify-center relative overflow-hidden p-8 text-center">
-      {/* Floating Elements */}
-      <motion.div
-        className="absolute top-10 left-10 text-green-500 opacity-30 text-6xl"
-        variants={floatingVariants.leafSwirl}
-        animate="leafSwirl"
-      >
-        <GiLeafSwirl />
-      </motion.div>
-      <motion.div
-        className="absolute top-20 right-20 text-green-600 opacity-20 text-8xl"
-        variants={floatingVariants.earth}
-        animate="earth"
-      >
-        <GiEarthAmerica />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-10 left-20 text-green-700 opacity-40 text-7xl"
-        variants={floatingVariants.treeBranch}
-        animate="treeBranch"
-      >
-        <GiTreeBranch />
-      </motion.div>
-      <motion.div
-        className="absolute top-40 left-40 text-green-400 opacity-30 text-5xl"
-        variants={floatingVariants.plantSeed}
-        animate="plantSeed"
-      >
-        <GiPlantSeed />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-20 right-10 text-green-500 opacity-25 text-6xl"
-        variants={floatingVariants.flowerPot}
-        animate="flowerPot"
-      >
-        <GiFlowerPot />
-      </motion.div>
-      <motion.div
-        className="absolute top-60 right-40 text-green-600 opacity-35 text-5xl"
-        variants={floatingVariants.butterfly}
-        animate="butterfly"
-      >
-        <GiButterfly />
-      </motion.div>
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center text-green-700 opacity-20 text-9xl"
-        variants={floatingVariants.palmTree}
-        animate="palmTree"
-      >
-        <GiPalmTree />
-      </motion.div>
+    <main className="min-h-screen bg-white text-gray-900">
+      
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 py-28 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
-      {/* Main Content */}
-      <motion.div
-        className="z-10 max-w-2xl"
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h1 className="text-5xl font-bold text-green-800 mb-4">
-          Welcome to TerraSpotter
-        </h1>
-        <p className="text-xl text-gray-700 mb-6">
-          Join our green community to map and plant trees for a sustainable future. Connect landowners with volunteers, use AI to optimize plantations, and track progress together.
-        </p>
-        <p className="text-lg text-gray-600 mb-8">
-          TerraSpotter empowers schools, NGOs, and individuals to create a collaborative movement for afforestation, starting in Maharashtra and growing globally.
-        </p>
-        <motion.button
-          className="bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition-colors"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Learn More
-        </motion.button>
-      </motion.div>
+          {/* Left Content */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-4">
+              Sustainable Infrastructure Platform
+            </p>
+
+            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
+              TerraSpotter
+            </h1>
+
+            <p className="text-xl text-gray-700 mb-6 max-w-xl">
+              A data-driven platform that connects land, people, and
+              intelligence to enable scalable, transparent afforestation.
+            </p>
+
+            <p className="text-gray-600 mb-10 max-w-xl">
+              We help institutions, NGOs, and communities identify plantation-ready
+              land, recommend suitable tree species, and track impact using maps,
+              AI models, and verified contributions.
+            </p>
+
+            <div className="flex gap-4">
+              <button className="px-7 py-3 rounded-md bg-green-700 text-white font-medium hover:bg-green-800 transition">
+                Get Started
+              </button>
+
+              <button className="px-7 py-3 rounded-md border border-gray-300 font-medium text-gray-800 hover:bg-gray-50 transition">
+                View Platform
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Right Visual Placeholder */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="relative"
+          >
+            <div className="aspect-[4/3] rounded-xl bg-gradient-to-br from-green-100 to-green-200 border shadow-sm flex items-center justify-center">
+              <p className="text-green-800 font-semibold">
+                Interactive Map + AI Insights
+              </p>
+            </div>
+          </motion.div>
+
+        </div>
+      </section>
+
+      {/* Value Proposition */}
+      <section className="border-t bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-3 gap-12">
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">
+              Verified Land Discovery
+            </h3>
+            <p className="text-gray-600">
+              Identify and validate plantation-ready land using geo-tagged
+              submissions and community review.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">
+              AI-based Recommendations
+            </h3>
+            <p className="text-gray-600">
+              Suggest optimal tree species and plantation density based on
+              soil, climate, and location data.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">
+              Transparent Impact Tracking
+            </h3>
+            <p className="text-gray-600">
+              Track plantations over time with maps, data logs, and community
+              verification.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
     </main>
   );
 };

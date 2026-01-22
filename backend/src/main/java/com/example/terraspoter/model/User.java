@@ -4,10 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
+
 
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -19,7 +25,9 @@ public class User {
     private String email;
     private String phoneNo;
     private LocalDate dob;
+    @JsonIgnore
     private String password;
+
 
     // Getters and Setters
     public Long getId() { return id; }

@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -9,13 +10,13 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Fetch session info from backend and update on login/logout
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/auth/session", {
-          withCredentials: true, // send cookies
-        });
+        const res = await axios.get(
+          "http://localhost:8080/api/auth/session",
+          { withCredentials: true }
+        );
         setUser(res.data);
       } catch {
         setUser(null);
@@ -24,14 +25,13 @@ export default function Navbar() {
 
     fetchSession();
 
-    // Listen for custom login/logout events
-    const handleLoginEvent = () => fetchSession();
-    window.addEventListener("login", handleLoginEvent);
-    window.addEventListener("logout", handleLoginEvent);
+    const refresh = () => fetchSession();
+    window.addEventListener("login", refresh);
+    window.addEventListener("logout", refresh);
 
     return () => {
-      window.removeEventListener("login", handleLoginEvent);
-      window.removeEventListener("logout", handleLoginEvent);
+      window.removeEventListener("login", refresh);
+      window.removeEventListener("logout", refresh);
     };
   }, []);
 
@@ -43,7 +43,7 @@ export default function Navbar() {
         { withCredentials: true }
       );
       setUser(null);
-      window.dispatchEvent(new Event("logout")); // Notify Navbar to refresh
+      window.dispatchEvent(new Event("logout"));
       navigate("/login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -51,73 +51,82 @@ export default function Navbar() {
   };
 
   const linkClasses = (path) =>
-    `px-3 py-1 rounded hover:bg-green-700 transition ${
-      location.pathname === path ? "bg-green-800" : ""
-    }`;
+    `px-3 py-2 text-sm font-medium rounded-md transition
+     ${
+       location.pathname === path
+         ? "text-green-700 bg-green-50"
+         : "text-gray-700 hover:text-green-700 hover:bg-green-50"
+     }`;
 
   return (
-    <nav className="bg-green-600 text-white px-6 py-3 flex justify-between items-center relative shadow-md">
-      {/* Logo */}
-      <h1 className="text-xl font-bold">TerraSpotter</h1>
+    <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-      {/* Links */}
-      <div className="flex items-center space-x-3">
-        <Link to="/" className={linkClasses("/")}>
-          Home
-        </Link>
-        <Link to="/about" className={linkClasses("/about")}>
-          About
-        </Link>
-        <Link to="/contact" className={linkClasses("/contact")}>
-          Contact
+        {/* Brand */}
+        <Link to="/" className="text-xl font-bold text-green-800">
+          TerraSpotter
         </Link>
 
-        {!user ? (
-          <>
-            <Link to="/login" className={linkClasses("/login")}>
-              Login
-            </Link>
-            <Link to="/signup" className={linkClasses("/signup")}>
-              Signup
-            </Link>
-          </>
-        ) : (
-          <div
-            className="relative"
-            onMouseEnter={() => setDropdownOpen(true)}
-            onMouseLeave={() => setDropdownOpen(false)}
-          >
-            <button className="flex items-center gap-2 bg-green-700 px-3 py-1 rounded hover:bg-green-800 transition">
-              {user.fname ? `${user.fname} ${user.lname}` : "My Account"}{" "}
-              <span className="text-sm">▼</span>
-            </button>
+        {/* Navigation */}
+        <div className="flex items-center gap-2">
+          <Link to="/" className={linkClasses("/")}>Home</Link>
+          <Link to="/about" className={linkClasses("/about")}>About</Link>
+          <Link to="/contact" className={linkClasses("/contact")}>Contact</Link>
 
-            <AnimatePresence>
-              {dropdownOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg z-10 overflow-hidden"
-                >
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 hover:bg-green-100"
+          {!user ? (
+            <>
+              <Link to="/login" className={linkClasses("/login")}>
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="ml-2 px-4 py-2 text-sm font-medium rounded-md bg-green-700 text-white hover:bg-green-800 transition"
+              >
+                Sign up
+              </Link>
+            </>
+          ) : (
+            <div
+              className="relative ml-3"
+              onMouseEnter={() => setDropdownOpen(true)}
+              onMouseLeave={() => setDropdownOpen(false)}
+            >
+              {/* PROFILE BUTTON */}
+              <button className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-100 transition">
+                <FaUserCircle className="text-2xl text-green-700" />
+                <span className="text-sm font-medium text-gray-700">
+                  {user.fname}
+                </span>
+              </button>
+
+              {/* DROPDOWN */}
+              <AnimatePresence>
+                {dropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden"
                   >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-green-100"
-                  >
-                    Logout
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      My Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

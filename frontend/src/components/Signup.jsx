@@ -1,14 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
-import { GoogleLogin } from "@react-oauth/google";
-import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { motion } from "framer-motion";
+import { GoogleLogin } from "@react-oauth/google";
+import { Card, CardContent } from "./ui/card";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { FcGoogle } from "react-icons/fc";
-import { GiLeafSwirl, GiEarthAmerica, GiTreeBranch, GiPlantSeed, GiFlowerPot, GiButterfly, GiPalmTree } from "react-icons/gi";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -23,21 +21,22 @@ export default function Signup() {
   });
   const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const validate = () => {
     const newErrors = {};
-    if (!form.fname.trim() || form.fname.length < 2) newErrors.fname = "First name must be at least 2 characters";
-    if (!form.lname.trim() || form.lname.length < 2) newErrors.lname = "Last name must be at least 2 characters";
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) newErrors.email = "Invalid email format";
-    const phoneRegex = /^\d{10}$/;
-    if (!phoneRegex.test(form.phoneNo)) newErrors.phoneNo = "Phone number must be 10 digits";
-    const dobRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dobRegex.test(form.dob)) newErrors.dob = "Date of birth must be in YYYY-MM-DD format";
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(form.password)) newErrors.password = "Password must be at least 8 chars, include 1 uppercase and 1 number";
-    if (form.password !== form.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+    if (form.fname.trim().length < 2) newErrors.fname = "First name is too short";
+    if (form.lname.trim().length < 2) newErrors.lname = "Last name is too short";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      newErrors.email = "Invalid email address";
+    if (!/^\d{10}$/.test(form.phoneNo))
+      newErrors.phoneNo = "Phone number must be 10 digits";
+    if (!form.dob) newErrors.dob = "Date of birth is required";
+    if (form.password.length < 8)
+      newErrors.password = "Password must be at least 8 characters";
+    if (form.password !== form.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -48,7 +47,7 @@ export default function Signup() {
     if (!validate()) return;
 
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8080/api/auth/signup",
         {
           fname: form.fname,
@@ -61,116 +60,146 @@ export default function Signup() {
         { withCredentials: true }
       );
 
-      localStorage.setItem("user", JSON.stringify(response.data));
-      alert("Signup successful!");
-      navigate("/dashboard");
+      alert("Signup successful");
+      navigate("/login");
     } catch (err) {
-      alert(err.response ? "Error: " + err.response.data : "Network error");
-    }
-  };
-
-  const handleGoogleSuccess = async (credentialResponse) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/google",
-        { token: credentialResponse.credential },
-        { withCredentials: true }
-      );
-      localStorage.setItem("user", JSON.stringify(response.data));
-      alert("Signup with Google successful!");
-      navigate("/dashboard");
-    } catch (err) {
-      alert(err.response ? "Error: " + err.response.data : "Network error");
+      alert(err.response ? err.response.data : "Signup failed");
     }
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 overflow-hidden">
-      {/* Floating Elements */}
-      <motion.div className="absolute top-10 left-10 text-green-600 opacity-30 text-6xl" animate={{ y: [0, -15, 0], rotate: [0, 15, -15, 0] }} transition={{ duration: 10, repeat: Infinity }}>
-        <GiLeafSwirl />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-5xl bg-white shadow-xl rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
+      >
+        {/* Left Page */}
+        <div className="hidden md:flex flex-col justify-between bg-gradient-to-br from-green-800 to-green-900 text-white p-10">
+          <div>
+            <h2 className="text-3xl font-bold mb-4">Create your account</h2>
+            <p className="text-green-100 leading-relaxed">
+              TerraSpotter brings structure, transparency, and intelligence
+              to community-driven afforestation initiatives.
+            </p>
+          </div>
+
+          <div className="text-sm text-green-200">
+            Join researchers, NGOs, students, and volunteers building
+            verifiable green impact.
+          </div>
+        </div>
+
+        {/* Right Page */}
+        <div className="p-10 flex items-center">
+          <Card className="w-full border-none shadow-none">
+            <CardContent className="p-0">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Sign up
+              </h1>
+              <p className="text-gray-600 mb-6">
+                Create your TerraSpotter account
+              </p>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    name="fname"
+                    placeholder="First name"
+                    value={form.fname}
+                    onChange={handleChange}
+                  />
+                  <Input
+                    name="lname"
+                    placeholder="Last name"
+                    value={form.lname}
+                    onChange={handleChange}
+                  />
+                </div>
+                {(errors.fname || errors.lname) && (
+                  <p className="text-sm text-red-600">
+                    {errors.fname || errors.lname}
+                  </p>
+                )}
+
+                <Input
+                  type="date"
+                  name="dob"
+                  value={form.dob}
+                  onChange={handleChange}
+                />
+                {errors.dob && <p className="text-sm text-red-600">{errors.dob}</p>}
+
+                <Input
+                  name="phoneNo"
+                  placeholder="Mobile number"
+                  value={form.phoneNo}
+                  onChange={handleChange}
+                />
+                {errors.phoneNo && <p className="text-sm text-red-600">{errors.phoneNo}</p>}
+
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Email address"
+                  value={form.email}
+                  onChange={handleChange}
+                />
+                {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+
+                <Input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={handleChange}
+                />
+                {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
+
+                <Input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm password"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                />
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-600">{errors.confirmPassword}</p>
+                )}
+
+                <Button className="w-full bg-green-700 hover:bg-green-800">
+                  Create account
+                </Button>
+              </form>
+
+              <div className="my-6 flex items-center gap-3 text-gray-400 text-sm">
+                <div className="flex-1 h-px bg-gray-200" />
+                or
+                <div className="flex-1 h-px bg-gray-200" />
+              </div>
+
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  try {
+                    await axios.post(
+                      "http://localhost:8080/api/auth/google",
+                      credentialResponse.credential,
+                      { withCredentials: true }
+                    );
+
+                    window.dispatchEvent(new Event("login"));
+                    navigate("/dashboard");
+                  } catch {
+                    alert("Google signup failed");
+                  }
+                }}
+                onError={() => alert("Google login failed")}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </motion.div>
-      <motion.div className="absolute bottom-20 left-1/4 text-blue-400 opacity-30 text-7xl" animate={{ y: [0, 20, 0] }} transition={{ duration: 12, repeat: Infinity }}>
-        <GiEarthAmerica />
-      </motion.div>
-      <motion.div className="absolute top-1/3 right-16 text-green-700 opacity-30 text-5xl" animate={{ y: [0, -10, 0], rotate: [0, -10, 10, 0] }} transition={{ duration: 8, repeat: Infinity }}>
-        <GiTreeBranch />
-      </motion.div>
-      <motion.div className="absolute bottom-10 right-1/3 text-yellow-600 opacity-40 text-4xl" animate={{ y: [0, -12, 0] }} transition={{ duration: 9, repeat: Infinity }}>
-        <GiPlantSeed />
-      </motion.div>
-      <motion.div className="absolute top-20 right-1/4 text-pink-500 opacity-30 text-6xl" animate={{ y: [0, 18, 0], rotate: [0, 10, -10, 0] }} transition={{ duration: 11, repeat: Infinity }}>
-        <GiFlowerPot />
-      </motion.div>
-      <motion.div className="absolute bottom-1/4 left-12 text-purple-500 opacity-40 text-5xl" animate={{ y: [0, -14, 0], rotate: [0, -8, 8, 0] }} transition={{ duration: 10, repeat: Infinity }}>
-        <GiButterfly />
-      </motion.div>
-      <motion.div className="absolute top-1/2 right-1/2 text-teal-600 opacity-20 text-8xl" animate={{ y: [0, 25, 0], rotate: [0, 5, -5, 0] }} transition={{ duration: 14, repeat: Infinity }}>
-        <GiPalmTree />
-      </motion.div>
-
-      {/* Green Signup Card */}
-      <Card className="w-full max-w-md bg-white/90 shadow-xl rounded-2xl z-10">
-        <CardContent className="p-6">
-          <h2 className="text-2xl font-bold text-green-700 text-center mb-4">Join TerraSpotter Family!</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex gap-3">
-              <Input name="fname" placeholder="First Name" value={form.fname} onChange={handleChange} required className="border-green-300 focus:ring-green-500" />
-              <Input name="lname" placeholder="Last Name" value={form.lname} onChange={handleChange} required className="border-green-300 focus:ring-green-500" />
-            </div>
-            {errors.fname && <p className="text-red-500 text-sm">{errors.fname}</p>}
-            {errors.lname && <p className="text-red-500 text-sm">{errors.lname}</p>}
-
-            <Input type="date" name="dob" value={form.dob} onChange={handleChange} required className="border-green-300 focus:ring-green-500" />
-            {errors.dob && <p className="text-red-500 text-sm">{errors.dob}</p>}
-
-            <Input type="tel" name="phoneNo" placeholder="Mobile Number" value={form.phoneNo} onChange={handleChange} required className="border-green-300 focus:ring-green-500" />
-            {errors.phoneNo && <p className="text-red-500 text-sm">{errors.phoneNo}</p>}
-
-            <Input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} required className="border-green-300 focus:ring-green-500" />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-
-            <Input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} required className="border-green-300 focus:ring-green-500" />
-            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
-
-            <Input type="password" name="confirmPassword" placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} required className="border-green-300 focus:ring-green-500" />
-            {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
-
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md">Sign Up</Button>
-          </form>
-
-          <div className="my-4 text-center text-gray-500">or</div>
-
-          <GoogleLogin
-  onSuccess={async (credentialResponse) => {
-    try {
-      // Send only the token string to backend
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/google",
-        credentialResponse.credential, // <-- just the string
-        { withCredentials: true }
-      );
-
-      // Update session and localStorage after login
-      const sessionRes = await axios.get("http://localhost:8080/api/auth/session", {
-        withCredentials: true,
-      });
-      const userData = sessionRes.data;
-      localStorage.setItem("user", JSON.stringify(userData));
-      window.dispatchEvent(new Event("login"));
-
-      alert("Google signup/login successful!");
-      navigate("/dashboard");
-    } catch (err) {
-      console.error("Google signup error:", err);
-      alert(err.response ? "Error: " + err.response.data : "Network error");
-    }
-  }}
-  onError={() => alert("Google login failed")}
-/>
-
-        </CardContent>
-      </Card>
     </div>
   );
 }
