@@ -1,25 +1,27 @@
 package com.example.terraspoter.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebConfig {
+public class WebConfig implements WebMvcConfigurer {
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // allow all endpoints
-                        .allowedOrigins("http://localhost:5173") // your React frontend
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // include OPTIONS for preflight
-                        .allowedHeaders("*") // allow all headers
-                        .allowCredentials(true) // allow cookies/session
-                        .maxAge(3600); // cache preflight response for 1 hour
-            }
-        };
+    /**
+     * Serves files saved to the local "uploads/" directory under the URL
+     * path /uploads/**.
+     *
+     * Without this, Spring has no idea that GET /uploads/abc.jpg should
+     * resolve to the file at uploads/abc.jpg on disk — it just returns 404.
+     *
+     * "file:uploads/" is relative to the working directory (project root
+     * when running with Maven/IDE, or the JAR location in production).
+     * Switch to an absolute path or @Value("${upload.dir}") for production.
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+            .addResourceHandler("/uploads/**")
+            .addResourceLocations("file:uploads/");
     }
 }

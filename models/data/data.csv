@@ -1,0 +1,501 @@
+tree_name,temp_min,temp_max,rainfall_min,rainfall_max,soil,climate_zone,reason_1,reason_2,reason_3
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption
+Neem,20,40,400,1200,sandy,tropical,Highly drought-resistant,Improves soil fertility,Ideal for dry afforestation
+Banyan,15,35,800,2000,clay,tropical,Supports biodiversity,Large canopy shade,Long ecological stability
+Peepal,15,35,600,1500,loamy,tropical,Improves air quality,Fast growing,Supports ecosystem
+Mango,20,38,750,2500,loamy,tropical,Fruit-bearing,Tropical suitable,Economic value
+Teak,22,40,1200,3000,loamy,tropical,Timber tree,Needs rainfall,Long-term plantation
+Arjun,20,35,800,2000,loamy,tropical,Soil conservation,Riverbank friendly,Eco restoration
+Jamun,20,35,900,2000,clay,tropical,Fruit producing,Water rich growth,Biodiversity support
+Gulmohar,18,35,500,1500,loamy,tropical,Ornamental,Warm climate,Fast growth
+Coconut,25,35,1500,3000,sandy,tropical,High humidity,Coastal suitable,Economic value
+Bamboo,20,35,1000,3000,clay,tropical,Fast growing,Soil stabilizer,High carbon absorption
+Pine,5,25,600,2000,sandy,temperate,Cold climate,Mountain suited,Timber use
+Oak,5,25,800,2000,loamy,temperate,Wildlife support,Cool climate,Hardwood
+Maple,0,25,600,1500,loamy,temperate,Temperate growth,Shade tree,Aesthetic
+Cedar,5,25,700,2000,loamy,temperate,Cool regions,Pest resistant,Timber
+Birch,0,20,500,1500,sandy,temperate,Cold tolerant,Fast hardwood,Soil improving
+Willow,10,30,1000,2500,clay,temperate,Water areas,Erosion control,Fast growth
+Mahogany,20,35,1500,3000,loamy,tropical,High value wood,Tropical,Durable
+Sal,20,35,1000,2500,loamy,tropical,Indian native,Hardwood,Forest support
+Acacia,20,40,200,800,sandy,tropical,Drought resistant,Nitrogen fixing,Arid regions
+Eucalyptus,15,35,500,1500,loamy,tropical,Fast growing,Afforestation use,Water absorption

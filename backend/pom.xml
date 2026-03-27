@@ -38,10 +38,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-client</artifactId>
-        </dependency>
 
         <!-- PostgreSQL -->
         <dependency>
@@ -51,23 +47,10 @@
             <scope>runtime</scope>
         </dependency>
 
-
-
-        <!-- Google API / OAuth -->
+        <!-- Required for @JdbcTypeCode(SqlTypes.JSON) with Hibernate 6 -->
         <dependency>
-            <groupId>com.google.api-client</groupId>
-            <artifactId>google-api-client</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.oauth-client</groupId>
-            <artifactId>google-oauth-client</artifactId>
-            <version>1.34.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.http-client</groupId>
-            <artifactId>google-http-client-jackson2</artifactId>
-            <version>1.43.0</version>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate6</artifactId>
         </dependency>
 
         <!-- Lombok -->
@@ -87,13 +70,13 @@
 
     <build>
         <plugins>
-            <!-- Maven Compiler Plugin -->
+            <!-- Maven Compiler Plugin — must match java.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <release>17</release>
+                    <release>21</release>
                 </configuration>
             </plugin>
 

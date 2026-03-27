@@ -2,12 +2,15 @@ package com.example.terraspoter.controller;
 
 import com.example.terraspoter.model.User;
 import com.example.terraspoter.repository.UserRepository;
+
 import jakarta.servlet.http.HttpSession;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,14 +30,19 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(HttpSession session) {
 
-        User user = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
 
-        if (user == null) {
+        if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("User not authenticated");
         }
 
-        return ResponseEntity.ok(user);
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        return userOpt
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User not found"));
     }
 
     // ================= UPDATE PROFILE =================
@@ -44,15 +52,14 @@ public class UserController {
             @RequestBody Map<String, String> updates
     ) {
 
-        User sessionUser = (User) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
 
-        if (sessionUser == null) {
+        if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("User not authenticated");
         }
 
-        // Fetch fresh copy from DB
-        User user = userRepository.findByEmail(sessionUser.getEmail())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (updates.containsKey("fname"))
@@ -65,9 +72,6 @@ public class UserController {
             user.setPhoneNo(updates.get("phoneNo"));
 
         User updatedUser = userRepository.save(user);
-
-        // Update session also
-        session.setAttribute("user", updatedUser);
 
         return ResponseEntity.ok(updatedUser);
     }

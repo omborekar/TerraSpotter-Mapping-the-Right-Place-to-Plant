@@ -33,46 +33,62 @@ public class AuthController {
             return ResponseEntity.badRequest().body("User already exists");
         }
 
-        User newUser = new User();
-        newUser.setFname(request.getFname());
-        newUser.setLname(request.getLname());
-        newUser.setEmail(request.getEmail());
-        newUser.setPhoneNo(request.getPhoneNo());
+        User user = new User();
+        user.setFname(request.getFname());
+        user.setLname(request.getLname());
+        user.setEmail(request.getEmail());
+        user.setPhoneNo(request.getPhoneNo());
 
         try {
-            newUser.setDob(LocalDate.parse(request.getDob()));
+            user.setDob(LocalDate.parse(request.getDob()));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body("Invalid DOB format. Use yyyy-MM-dd");
+                    .body("Invalid DOB format (yyyy-MM-dd)");
         }
 
-        newUser.setPassword(request.getPassword());
-        authService.saveUser(newUser);
+        // password will be hashed in service
+        user.setPassword(request.getPassword());
+
+        authService.saveUser(user);
 
         return ResponseEntity.ok("Signup successful");
     }
 
-    // ================== LOGIN ==================
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request,
                                    HttpSession session) {
 
-        Optional<User> foundUser =
+        Optional<User> userOpt =
                 authService.findUserByEmail(request.getEmail());
 
-        if (foundUser.isEmpty()) {
+        if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid credentials");
         }
 
-        User user = foundUser.get();
+        User user = userOpt.get(); // ✅ FIX
 
-        if (!authService.checkPassword(user, request.getPassword())) {
+        boolean match = authService.checkPassword(
+                request.getPassword(),
+                user.getPassword()
+        );
+
+        System.out.println("PASSWORD MATCH: " + match);
+
+        if (!match) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid credentials");
         }
 
-        session.setAttribute("user", user);
+        // ✅ SET SESSION ONLY AFTER SUCCESS
+        session.setMaxInactiveInterval(30 * 60);
+        session.setAttribute("userId", user.getId());
+
+        // 🔥 DEBUG
+        System.out.println("SESSION ID AFTER SET: " + session.getId());
+        System.out.println("SESSION USER SET: " + session.getAttribute("userId"));
+
+        user.setPassword(null);
 
         return ResponseEntity.ok(user);
     }
@@ -81,16 +97,27 @@ public class AuthController {
     @GetMapping("/session")
     public ResponseEntity<?> getSession(HttpSession session) {
 
-        User user = (User) session.getAttribute("user");
+        System.out.println("SESSION OBJECT: " + session);
+        System.out.println("SESSION ID: " + session.getId());
+        System.out.println("SESSION userId: " + session.getAttribute("userId"));
 
-        if (user == null) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("No active session");
         }
 
-        return ResponseEntity.ok(user);
-    }
+        Optional<User> userOpt = authService.findUserById(userId);
 
+        return userOpt
+                .<ResponseEntity<?>>map(user -> {
+                    user.setPassword(null);
+                    return ResponseEntity.ok(user);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User not found"));
+    }
     // ================== LOGOUT ==================
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpSession session) {
@@ -101,12 +128,11 @@ public class AuthController {
     // ================== GOOGLE LOGIN ==================
     @PostMapping("/google")
     public ResponseEntity<?> loginWithGoogle(
-            @RequestBody Map<String, String> data) {
+            @RequestBody Map<String, String> data,
+            HttpSession session) {
 
         try {
             String email = data.get("email");
-            String fname = data.get("fname");
-            String lname = data.get("lname");
 
             Optional<User> userOpt =
                     authService.findUserByEmail(email);
@@ -118,11 +144,16 @@ public class AuthController {
             } else {
                 user = new User();
                 user.setEmail(email);
-                user.setFname(fname);
-                user.setLname(lname);
+                user.setFname(data.get("fname"));
+                user.setLname(data.get("lname"));
                 user.setPassword(authService.generateRandomPassword());
                 authService.saveUser(user);
             }
+
+            // 🔥 IMPORTANT: set session here too
+            session.setAttribute("userId", user.getId());
+
+            user.setPassword(null);
 
             return ResponseEntity.ok(user);
 
