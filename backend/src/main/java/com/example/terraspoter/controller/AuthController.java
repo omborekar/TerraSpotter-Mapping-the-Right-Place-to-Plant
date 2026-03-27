@@ -22,7 +22,10 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
-
+    @GetMapping("/")
+    public String home() {
+        return "TerraSpotter Backend Running 🚀";
+    }
     // ================== SIGNUP ==================
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
