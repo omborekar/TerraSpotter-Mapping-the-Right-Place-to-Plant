@@ -35,7 +35,7 @@ public class LandService {
 
     private static final Logger logger = Logger.getLogger(LandService.class.getName());
 
-    @Value("${ml.api.url:http://localhost:5000}")
+    @Value("${ML_API_URL}")
     private String mlApiBaseUrl;
 
     @Value("${ml.api.timeout:10}")

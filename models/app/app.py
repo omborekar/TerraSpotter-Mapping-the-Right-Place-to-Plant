@@ -12,10 +12,10 @@ from flask import Flask, request, jsonify
 # -----------------------------
 # Load model + dataset
 # -----------------------------
-model = joblib.load("../model/tree_model.pkl")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Load dataset with reasons
-data = pd.read_csv("../data/data.csv")
+model = joblib.load(os.path.join(BASE_DIR, "model", "tree_model.pkl"))
+data = pd.read_csv(os.path.join(BASE_DIR, "data", "data.csv"))
 
 app = Flask(__name__)
 
@@ -98,4 +98,4 @@ def predict():
 # Run server
 # -----------------------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000)
