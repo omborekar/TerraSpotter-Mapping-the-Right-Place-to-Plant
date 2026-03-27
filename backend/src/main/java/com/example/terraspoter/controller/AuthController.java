@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -24,6 +25,21 @@ public class AuthController {
     }
     @GetMapping("/")
     public String home() {
+
+        // ML warmup call (background me)
+        new Thread(() -> {
+            try {
+                String warmUrl = mlApiBaseUrl + "/predict"
+                        + "?temp=25&rainfall=500&soil=clay&climate=tropical";
+
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getForObject(warmUrl, String.class);
+
+            } catch (Exception e) {
+                System.out.println("ML warmup failed: " + e.getMessage());
+            }
+        }).start();
+
         return "TerraSpotter Backend Running 🚀";
     }
     // ================== SIGNUP ==================
