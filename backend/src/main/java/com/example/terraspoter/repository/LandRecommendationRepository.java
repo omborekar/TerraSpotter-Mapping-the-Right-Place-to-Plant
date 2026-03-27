@@ -4,6 +4,7 @@ package com.example.terraspoter.repository;
 import com.example.terraspoter.model.LandRecommendation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository

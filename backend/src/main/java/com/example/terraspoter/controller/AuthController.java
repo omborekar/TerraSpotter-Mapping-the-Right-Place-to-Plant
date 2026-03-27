@@ -1,12 +1,10 @@
 package com.example.terraspoter.controller;
 
 import com.example.terraspoter.model.User;
-import com.example.terraspoter.payload.SignupRequest;
 import com.example.terraspoter.payload.LoginRequest;
+import com.example.terraspoter.payload.SignupRequest;
 import com.example.terraspoter.service.AuthService;
-
 import jakarta.servlet.http.HttpSession;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

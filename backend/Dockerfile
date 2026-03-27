@@ -1,11 +1,9 @@
-FROM openjdk:17-jdk-slim
+FROM maven:3.9.9-eclipse-temurin-21
 
 WORKDIR /app
 
 COPY . .
 
-RUN apt-get update && apt-get install -y maven
+RUN mvn clean package -DskipTests
 
-RUN mvn clean install
-
-CMD ["sh", "-c", "java -jar target/*.jar"]
+CMD ["java", "-jar", "target/*.jar"]

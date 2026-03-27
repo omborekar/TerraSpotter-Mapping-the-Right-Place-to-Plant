@@ -1,9 +1,11 @@
 package com.example.terraspoter.controller;
 
-import com.example.terraspoter.model.*;
+import com.example.terraspoter.model.Land;
+import com.example.terraspoter.model.LandImage;
+import com.example.terraspoter.model.LandRecommendation;
+import com.example.terraspoter.model.LandReview;
 import com.example.terraspoter.repository.LandRecommendationRepository;
 import com.example.terraspoter.service.LandService;
-
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
