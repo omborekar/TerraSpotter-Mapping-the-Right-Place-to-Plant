@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);

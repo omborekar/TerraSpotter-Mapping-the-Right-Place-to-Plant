@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Navbar() {
   const [user, setUser] = useState(null);

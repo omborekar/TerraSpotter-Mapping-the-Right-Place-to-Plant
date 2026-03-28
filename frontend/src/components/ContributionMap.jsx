@@ -1,6 +1,7 @@
 import React from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 // Fix default icon issue
 delete L.Icon.Default.prototype._getIconUrl;

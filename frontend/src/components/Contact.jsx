@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const faqs = [
   { q: "How do I submit a land parcel?", a: "Log in, click 'Submit Land' in the navbar, draw the boundary on the map, fill in the ownership and land details, upload at least 3 photos, and submit." },

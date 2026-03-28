@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 /* ─────────────────────────────────────────────────────────────────
    PlantationForm  –  modal shown before marking land "Under Plantation"

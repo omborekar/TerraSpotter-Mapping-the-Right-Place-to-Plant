@@ -6,6 +6,7 @@ import { EditControl } from "react-leaflet-draw";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 /* ─── tiny helpers ─────────────────────────────────────────────────────── */
 const Field = ({ label, required, error, children }) => (

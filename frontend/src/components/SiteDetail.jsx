@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 import PlantationForm          from "./PlantationForm";
 import CompletePlantationModal from "./CompletePlantationModal";

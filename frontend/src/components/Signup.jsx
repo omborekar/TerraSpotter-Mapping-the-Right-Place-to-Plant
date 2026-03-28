@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Signup() {
   const navigate = useNavigate();

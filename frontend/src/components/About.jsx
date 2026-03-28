@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const stats = [
   { value: "2,400+", label: "Hectares Mapped" },

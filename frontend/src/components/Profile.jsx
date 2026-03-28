@@ -4,6 +4,7 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip,
   CartesianGrid, ResponsiveContainer, AreaChart, Area,
 } from "recharts";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 /* ── tiny helpers ──────────────────────────────────────────────── */
 const Card = ({ children, className = "" }) => (
