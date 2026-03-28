@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -48,7 +50,7 @@ const ImageStrip = ({ landId, onOpenGallery }) => {
   const [imgLoading, setImgLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/lands/${landId}/images`, { credentials: "include" })
+    fetch(`${BASE_URL}/api/lands/${landId}/images`, { credentials: "include" })
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setImages(data); })
       .catch(() => {})
@@ -171,7 +173,7 @@ const Browse = () => {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    fetch("/api/lands", { credentials: "include" })
+    fetch(`${BASE_URL}/api/lands`, { credentials: "include" })
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setLands(data); })
       .catch(() => {})

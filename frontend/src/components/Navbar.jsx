@@ -14,7 +14,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const res = await axios.get("/api/auth/session", { withCredentials: true });
+        const res = await axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true });
         setUser(res.data);
       } catch {
         setUser(null);
@@ -47,7 +47,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/auth/logout", {}, { withCredentials: true });
+      await axios.post(`${BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
       setUser(null);
       setDropdownOpen(false);
       window.dispatchEvent(new Event("logout"));

@@ -101,7 +101,7 @@ function WriteReview({ landId, onPosted }) {
     if (form.rating === 0) { setError("Please select a star rating."); return; }
     setError(""); setSubmitting(true);
     try {
-      const res = await fetch(`/api/lands/${landId}/reviews`, {
+      const res = await fetch(`${BASE_URL}/api/lands/${landId}/reviews`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -210,10 +210,10 @@ export default function SiteDetail() {
   useEffect(() => {
     if (!id) return;
     Promise.all([
-      fetch(`/api/lands/${id}`,                { credentials: "include" }).then(r => r.json()),
-      fetch(`/api/lands/${id}/images`,          { credentials: "include" }).then(r => r.json()).catch(() => []),
-      fetch(`/api/lands/${id}/recommendations`, { credentials: "include" }).then(r => r.json()).catch(() => []),
-      fetch(`/api/lands/${id}/reviews`,         { credentials: "include" }).then(r => r.json()).catch(() => []),
+      fetch(`${BASE_URL}/api/lands/${id}`,                { credentials: "include" }).then(r => r.json()),
+      fetch(`${BASE_URL}/api/lands/${id}/images`,          { credentials: "include" }).then(r => r.json()).catch(() => []),
+      fetch(`${BASE_URL}/api/lands/${id}/recommendations`, { credentials: "include" }).then(r => r.json()).catch(() => []),
+      fetch(`${BASE_URL}/api/lands/${id}/reviews`,         { credentials: "include" }).then(r => r.json()).catch(() => []),
     ]).then(([l, imgs, rec, rv]) => {
       setLand(l);
       setImages(Array.isArray(imgs) ? imgs : []);
@@ -229,7 +229,7 @@ export default function SiteDetail() {
     if (refreshStatus === "loading") return;
     setRefreshStatus("loading"); setRefreshError("");
     try {
-      const res = await fetch(`/api/lands/${id}/recommendations/refresh`, {
+      const res = await fetch(`${BASE_URL}/api/lands/${id}/recommendations/refresh`, {
         method: "POST", credentials: "include",
       });
       if (!res.ok) {
@@ -237,7 +237,7 @@ export default function SiteDetail() {
         try { const b = await res.json(); msg = b.message || b.error || msg; } catch {}
         throw new Error(msg);
       }
-      const updated = await fetch(`/api/lands/${id}/recommendations`, { credentials: "include" }).then(r => r.json()).catch(() => []);
+      const updated = await fetch(`${BASE_URL}/api/lands/${id}/recommendations`, { credentials: "include" }).then(r => r.json()).catch(() => []);
       setRecs(Array.isArray(updated) ? updated : []);
       setRefreshStatus("success");
       successTimerRef.current = setTimeout(() => setRefreshStatus("idle"), 3000);

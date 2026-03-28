@@ -29,7 +29,7 @@ export default function PlantationForm({ land, onClose, onSuccess }) {
     setError("");
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/lands${land.id}/plantation-start`, {
+      const res = await fetch(`${BASE_URL}/api/lands${land.id}/plantation-start`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

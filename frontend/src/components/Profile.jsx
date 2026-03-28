@@ -43,7 +43,7 @@ const Profile = () => {
 
   /* fetch profile */
   useEffect(() => {
-    fetch("/api/users/profile", { credentials: "include" })
+    fetch(`${BASE_URL}/api/users/profile`, { credentials: "include" })
       .then(r => r.json())
       .then(data => {
         setProfile(data);
@@ -55,7 +55,7 @@ const Profile = () => {
 
   /* fetch user's lands */
   useEffect(() => {
-    fetch("/api/lands/my", { credentials: "include" })
+    fetch(`${BASE_URL}/api/lands/my`, { credentials: "include" })
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setLands(data); })
       .catch(() => {});
@@ -63,7 +63,7 @@ const Profile = () => {
 
   /* fetch stats */
   useEffect(() => {
-    fetch(`/api/stats?filter=${filter}`, { credentials: "include" })
+    fetch(`${BASE_URL}/api/stats?filter=${filter}`, { credentials: "include" })
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setStats(data); })
       .catch(() => setStats([]));
@@ -72,7 +72,7 @@ const Profile = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await fetch("/api/users/profile", {
+      await fetch(`${BASE_URL}/api/users/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

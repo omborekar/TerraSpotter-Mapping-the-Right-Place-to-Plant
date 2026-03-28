@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children }) => {
     const maxAttempts = 3;
 
     const checkAuth = () => {
-      fetch("/api/auth/session", { credentials: "include" })
+      fetch(`${BASE_URL}/api/auth/session`, { credentials: "include" })
         .then((res) => {
           if (res.ok) {
             setIsAuth(true);

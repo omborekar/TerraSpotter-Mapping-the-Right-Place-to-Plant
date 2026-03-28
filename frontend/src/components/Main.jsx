@@ -68,7 +68,7 @@ const Main = () => {
 
   /* session */
   useEffect(() => {
-    axios.get("/api/auth/session", { withCredentials: true })
+    axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true })
       .then(r => setUser(r.data))
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
@@ -158,11 +158,11 @@ const Main = () => {
         owner,
         land,
       };
-      const res = await axios.post("/api/lands", payload, { withCredentials: true });
+      const res = await axios.post(`${BASE_URL}/api/lands`, payload, { withCredentials: true });
       const landId = res.data.id;
       const formData = new FormData();
       files.forEach(f => formData.append("files", f));
-      await axios.post(`/api/lands/${landId}/images`, formData, {
+      await axios.post(`${BASE_URL}/api/lands/${landId}/images`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });

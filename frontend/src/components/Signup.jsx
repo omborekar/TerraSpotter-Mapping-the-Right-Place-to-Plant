@@ -34,7 +34,7 @@ export default function Signup() {
     if (!validate()) return;
     setLoading(true);
     try {
-      await axios.post("/api/auth/signup", {
+      await axios.post(`${BASE_URL}/api/auth/signup`, {
         fname: form.fname, lname: form.lname, email: form.email,
         phoneNo: form.phoneNo, dob: form.dob, password: form.password,
       }, { withCredentials: true });

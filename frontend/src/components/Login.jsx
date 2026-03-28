@@ -27,7 +27,7 @@ export default function Login() {
     if (!validate()) return;
     setLoading(true);
     try {
-      await axios.post("/api/auth/login", form, { withCredentials: true });
+      await axios.post(`${BASE_URL}/api/auth/login`, form, { withCredentials: true });
       window.dispatchEvent(new Event("login"));
       navigate("/Main");
     } catch {

@@ -77,7 +77,7 @@ function WriteReview({ landId, onPosted }) {
     if (form.rating === 0) { setError("Please select a star rating."); return; }
     setError(""); setSubmitting(true);
     try {
-      const res = await fetch(`/api/lands/${landId}/reviews`, {   // ← fixed URL
+      const res = await fetch(`${BASE_URL}/api/lands/${landId}/reviews`, {   // ← fixed URL
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -164,8 +164,8 @@ export default function ReviewsPage() {
   useEffect(() => {
     if (!id) return;
     Promise.all([
-      fetch(`/api/lands/${id}`, { credentials: "include" }).then(r => r.json()),
-      fetch(`/api/lands/${id}/reviews`, { credentials: "include" }).then(r => r.json()).catch(() => []),
+      fetch(`${BASE_URL}/api/lands/${id}`, { credentials: "include" }).then(r => r.json()),
+      fetch(`${BASE_URL}/api/lands/${id}/reviews`, { credentials: "include" }).then(r => r.json()).catch(() => []),
     ]).then(([l, rv]) => {
       setLand(l);
       setReviews(Array.isArray(rv) ? rv : []);

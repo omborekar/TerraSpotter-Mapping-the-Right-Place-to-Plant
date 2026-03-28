@@ -51,7 +51,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
       fd.append("notes",         form.notes);
       photos.forEach(p => fd.append("images", p.file));
 
-      const res = await fetch(`/api/lands/${land.id}/plantation-complete`, {
+      const res = await fetch(`${BASE_URL}/api/lands/${land.id}/plantation-complete`, {
         method: "POST",
         credentials: "include",
         body: fd,
