@@ -13,7 +13,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # -----------------------------
 # Load model + dataset
 # -----------------------------
-model_path = os.path.join(BASE_DIR, "tree_model.pkl")
+model_path = os.path.join(BASE_DIR, "model", "tree_model.pkl")
 data_path = os.path.join(BASE_DIR, "data", "data.csv")
 
 model = joblib.load(model_path)

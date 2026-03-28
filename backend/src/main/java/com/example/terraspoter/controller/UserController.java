@@ -13,7 +13,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(
-        origins = "https://terraspotter.onrender.com",
+        origins = "http://localhost:5173",
         allowCredentials = "true"
 )
 public class UserController {
