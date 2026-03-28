@@ -12,7 +12,6 @@ import SiteDetail from "./components/SiteDetail";
 import ReviewsPage from "./components/Reviewspage";
 import About from "./components/About";
 import Contact from "./components/Contact";
-import CompletePlantationModal from "./components/CompletePlantationModal"; // ✅ fixed path
 
 import "./App.css";
 
