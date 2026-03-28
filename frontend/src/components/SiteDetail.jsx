@@ -6,8 +6,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-import PlantationForm          from "./PlantationForm";
-import CompletePlantationModal from "./CompletePlantationModal";
+import PlantationForm          from "./PlantationForm.jsx";
+import CompletePlantationModal from "./CompletePlantationModal.jsx";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
