@@ -7,7 +7,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 
 # Load dataset
-df = pd.read_csv("../data/tree_dataset_realistic_500.csv")
+df = pd.read_csv("../data/data.csv")
 
 # Feature engineering
 df["temp_avg"] = (df["temp_min"] + df["temp_max"]) / 2

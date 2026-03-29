@@ -183,12 +183,9 @@ const Main = () => {
     </div>
   );
 
-  // Pure Tailwind CSS + CSS Animations Version (No Framer-Motion needed!)
-// Copy this directly into your if (submitted) return statement
-
-if (submitted) return (
-  <div 
-    className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fadeIn"
+  if (submitted) return (
+  <div
+    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     onClick={() => {
       setSubmitted(false);
       setStep(1);
@@ -197,148 +194,31 @@ if (submitted) return (
       setFiles([]);
     }}
   >
-    <style>{`
-      @keyframes slideInScale {
-        from {
-          transform: scale(0.5) translateY(50px);
-          opacity: 0;
-        }
-        to {
-          transform: scale(1) translateY(0);
-          opacity: 1;
-        }
-      }
-      
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
-      @keyframes slideProgress {
-        from { width: 0%; }
-        to { width: 100%; }
-      }
-      
-      @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-      }
-      
-      @keyframes bounce-icon {
-        0%, 100% { transform: translateY(0) scale(1); }
-        50% { transform: translateY(-8px) scale(1.05); }
-      }
-      
-      @keyframes confetti-fall {
-        to {
-          transform: translateY(300px) rotate(720deg);
-          opacity: 0;
-        }
-      }
-      
-      .animate-modal { animation: slideInScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-      .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-      .animate-fadeInUp { animation: fadeInUp 0.4s ease-out; }
-      .animate-progress { animation: slideProgress 3s ease-in-out forwards; animation-delay: 0.6s; }
-      .animate-icon-bounce { animation: bounce-icon 2s ease-in-out infinite; }
-      .animate-confetti { animation: confetti-fall 2.5s ease-out forwards; }
-      
-      .icon-ring-1 { animation: fadeInUp 0.8s ease-out 0.2s both; }
-      .icon-ring-2 { animation: fadeInUp 0.8s ease-out 0.3s both; }
-      .icon-ring-3 { animation: fadeInUp 0.8s ease-out 0.4s both; }
-      
-      .detail-1 { animation: fadeInUp 0.4s ease-out 0.5s both; }
-      .detail-2 { animation: fadeInUp 0.4s ease-out 0.6s both; }
-      .detail-3 { animation: fadeInUp 0.4s ease-out 0.7s both; }
-      
-      .btn-close { animation: fadeInUp 0.4s ease-out 0.8s both; }
-      .btn-submit { animation: fadeInUp 0.4s ease-out 0.85s both; }
-      
-      .group:hover .group-hover\:scale-105 { transform: scale(1.05); }
-    `}</style>
-
     <div
-      className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-modal"
+      className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Background Decorations */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-400/10 to-transparent rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-green-400/5 to-transparent rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 pointer-events-none" />
-
-      {/* Close Button */}
-      <button
-        onClick={() => {
-          setSubmitted(false);
-          setStep(1);
-          setPolygonCoords(null);
-          setAreaSqm(null);
-          setFiles([]);
-        }}
-        className="absolute top-5 right-5 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-all hover:scale-110 active:scale-95 z-10"
-      >
-        ✕
-      </button>
-
-      {/* Icon Section */}
-      <div className="relative pt-12 pb-8 px-8">
-        <div className="flex justify-center">
-          <div className="relative w-32 h-32">
-            {/* Rings */}
-            <div className="absolute inset-0 border-2 border-green-400/30 rounded-full icon-ring-1" />
-            <div className="absolute inset-0 border-2 border-green-400/20 rounded-full icon-ring-2" style={{ width: '160%', height: '160%', left: '-30%', top: '-30%' }} />
-
-            {/* Main Icon Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center shadow-lg icon-ring-3">
-              <div className="text-5xl animate-icon-bounce">🌱</div>
-            </div>
-          </div>
+      
+      {/* Icon */}
+      <div className="flex-shrink-0">
+        <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-2xl text-white shadow-md">
+          🌱
         </div>
       </div>
 
       {/* Content */}
-      <div className="relative px-8 pb-8 text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
-          Land Submitted! 🎉
+      <div className="flex-1 text-center sm:text-left">
+        
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+          Land Submitted
         </h2>
 
-        <p className="text-gray-600 text-base leading-relaxed mb-6 animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
-          Your land has been recorded and will be reviewed shortly. Tree species recommendations are being generated.
+        <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+          Thanks for your contribution. Every small step helps in building a greener and more sustainable future 🌿
         </p>
 
-        {/* Progress Bar */}
-        <div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden mb-6">
-          <div className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full animate-progress" />
-        </div>
-
-        {/* Success Details */}
-        <div className="space-y-3 p-5 bg-gradient-to-br from-green-50 to-green-50/50 border border-green-200 rounded-2xl mb-8">
-          <div className="flex items-center gap-3 text-sm text-gray-700 detail-1">
-            <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span>
-            <span>Land data recorded successfully</span>
-          </div>
-          <div className="flex items-center gap-3 text-sm text-gray-700 detail-2">
-            <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span>
-            <span>Review process initiated</span>
-          </div>
-          <div className="flex items-center gap-3 text-sm text-gray-700 detail-3">
-            <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span>
-            <span>Tree species recommendations generating</span>
-          </div>
-        </div>
-
         {/* Buttons */}
-        <div className="flex gap-3 flex-col sm:flex-row">
+        <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={() => {
               setSubmitted(false);
@@ -347,7 +227,7 @@ if (submitted) return (
               setAreaSqm(null);
               setFiles([]);
             }}
-            className="btn-close flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all duration-200 hover:scale-102 active:scale-95"
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition"
           >
             Close
           </button>
@@ -360,31 +240,13 @@ if (submitted) return (
               setAreaSqm(null);
               setFiles([]);
             }}
-            className="btn-submit flex-1 px-4 py-3 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 hover:scale-102 active:scale-95"
+            className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition"
           >
-            <span>+</span>
-            Submit Another Land
+            + Add Another
           </button>
         </div>
-      </div>
 
-      {/* Confetti */}
-      {[...Array(12)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-2.5 h-2.5 rounded-full pointer-events-none animate-confetti"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: '50%',
-            backgroundColor: [
-              '#4CAF50', '#8BC34A', '#FFC107',
-              '#FF9800', '#2196F3', '#9C27B0'
-            ][Math.floor(Math.random() * 6)],
-            animationDelay: `${Math.random() * 0.2}s`,
-            transform: `translateX(${(Math.random() - 0.5) * 200}px) rotate(${Math.random() * 720}deg)`,
-          }}
-        />
-      ))}
+      </div>
     </div>
   </div>
 );

@@ -1,9 +1,3 @@
-import joblib
-import pandas as pd
-import numpy as np
-
-model = joblib.load("tree_model.pkl")
-
 def recommend_trees(temp, rainfall, soil, climate, top_k=5):
 
     input_df = pd.DataFrame([{
@@ -16,7 +10,18 @@ def recommend_trees(temp, rainfall, soil, climate, top_k=5):
     probs = model.predict_proba(input_df)[0]
     classes = model.classes_
 
+    # 👉 add slight randomness (very small)
+    noise = np.random.uniform(0, 0.03, size=probs.shape)
+    probs = probs + noise
+
+    # normalize (optional but good)
+    probs = probs / probs.sum()
+
+    # get top indices
     top_indices = np.argsort(probs)[::-1][:top_k]
+
+    # shuffle slightly (only top results)
+    np.random.shuffle(top_indices)
 
     results = []
     for i in top_indices:
@@ -26,7 +31,3 @@ def recommend_trees(temp, rainfall, soil, climate, top_k=5):
         })
 
     return results
-
-
-if __name__ == "__main__":
-    print(recommend_trees(30, 900, "loamy", "tropical"))
