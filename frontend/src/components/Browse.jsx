@@ -80,7 +80,7 @@ const ImageStrip = ({ landId, onOpenGallery }) => {
           style={{ zIndex: shown.length - i, marginLeft: i === 0 ? 0 : -10 }}>
           {/* ✅ FIX: src="/uploads/filename" — served by WebConfig.addResourceHandlers */}
           <img
-            src={`/uploads/${img.imageUrl}`}
+            src={img.imageUrl}
             alt={`land-${i}`}
             onError={e => { e.target.src = "https://via.placeholder.com/120x90/e8f5ee/0d3320?text=🌿"; }}
           />
@@ -556,7 +556,7 @@ const Browse = () => {
               )}
               {/* ✅ FIX: src="/uploads/filename" resolved by Spring WebConfig */}
               <motion.img key={galleryIdx}
-                src={`/uploads/${gallery[galleryIdx]?.imageUrl}`}
+                src={gallery[galleryIdx]?.imageUrl}
                 initial={{ opacity:0, scale:0.96 }} animate={{ opacity:1, scale:1 }}
                 transition={{ duration:0.18 }}
                 onError={e => { e.target.src="https://via.placeholder.com/800x600/e8f5ee/0d3320?text=🌿"; }} />
@@ -569,7 +569,7 @@ const Browse = () => {
               {gallery.map((img, i) => (
                 <div key={img.id} className={`br-gallery-thumb ${i===galleryIdx?"active":""}`}
                   onClick={() => setGalleryIdx(i)}>
-                  <img src={`/uploads/${img.imageUrl}`}
+                  <img src={img.imageUrl}
                     onError={e => { e.target.src="https://via.placeholder.com/52x52/e8f5ee/0d3320?text=🌿"; }} />
                 </div>
               ))}

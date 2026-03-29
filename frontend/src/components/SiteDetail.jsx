@@ -581,7 +581,7 @@ export default function SiteDetail() {
               <div key={img.id}
                 className={`sd-gallery-cell${i === 1 ? " col2-top" : i === 2 ? " col2-bot" : ""}`}
                 onClick={() => setGalleryIdx(i)}>
-                <img src={`/uploads/${img.imageUrl}`} alt=""
+                <img src={img.imageUrl} alt=""
                   onError={e => { e.target.src = "https://via.placeholder.com/600x400/e8f5ee/0d3320?text=🌿"; }} />
                 {i === 2 && images.length > 3 && (
                   <div className="sd-gallery-more">+{images.length - 3}</div>
@@ -866,7 +866,7 @@ export default function SiteDetail() {
                 <button className="sd-lb-nav prev" onClick={() => setGalleryIdx(i => i - 1)}>‹</button>
               )}
               <motion.img key={galleryIdx}
-                src={`/uploads/${images[galleryIdx]?.imageUrl}`}
+                src={images[galleryIdx]?.imageUrl}
                 initial={{ opacity: 0, scale: .96 }} animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: .18 }}
                 onError={e => { e.target.src = "https://via.placeholder.com/800x600/e8f5ee/0d3320?text=🌿"; }} />
@@ -879,7 +879,7 @@ export default function SiteDetail() {
               {images.map((img, i) => (
                 <div key={img.id} className={`sd-lb-thumb ${i === galleryIdx ? "on" : ""}`}
                   onClick={() => setGalleryIdx(i)}>
-                  <img src={`/uploads/${img.imageUrl}`}
+                  <img src={img.imageUrl}
                     onError={e => { e.target.src = "https://via.placeholder.com/50/e8f5ee/0d3320?text=🌿"; }} />
                 </div>
               ))}

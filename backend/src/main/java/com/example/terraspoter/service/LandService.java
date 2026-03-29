@@ -17,15 +17,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
@@ -53,21 +49,22 @@ public class LandService {
     @Autowired private LandReviewRepository                reviewRepository;
     @Autowired private UserRepository                      userRepository;
     @Autowired private ObjectMapper                        objectMapper;
+    @Autowired private CloudinaryService                   cloudinaryService;   // ← NEW
 
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(8))
             .build();
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  EXISTING — unchanged
+    //  LAND CRUD
     // ─────────────────────────────────────────────────────────────────────────
+
+    public List<Land> getAllLands() { return landRepository.findAll(); }
+
     public List<Land> getLandsByUser(Long userId) {
         return landRepository.findByCreatedBy(userId);
     }
-    public List<Land> getAllLands() { return landRepository.findAll(); }
 
-    // updated: now attaches plantationDetail + completionDetail
-    // ── GET LAND BY ID — pull remaining capacity from latest completion ────────
     public Land getLandById(Long id) {
         Land land = landRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Land not found: " + id));
@@ -84,7 +81,7 @@ public class LandService {
                     land.setPlantationDetail(dto);
                 });
 
-        // attach latest completion — also drives remainingCapacity + history counts
+        // attach latest completion details
         completionRepository
                 .findTopByLandIdOrderByCreatedAtDesc(id)
                 .ifPresent(pc -> {
@@ -93,65 +90,20 @@ public class LandService {
                     dto.setMoreCapacity(pc.getMoreCapacity());
                     dto.setNotes(pc.getNotes());
                     land.setCompletionDetail(dto);
-
-                    // remaining capacity = moreCapacity from most recent completion
                     land.setRemainingCapacity(pc.getMoreCapacity());
                 });
 
-        // total trees planted + total rounds — aggregate across ALL completions for this land
+        // aggregate all completions for this land
         List<PlantationCompletion> allCompletions =
                 completionRepository.findByLandIdOrderByCreatedAtDesc(id);
 
-        int totalTrees  = allCompletions.stream()
+        int totalTrees = allCompletions.stream()
                 .mapToInt(c -> c.getTreesPlanted() != null ? c.getTreesPlanted() : 0)
                 .sum();
         land.setTotalTreesPlanted(totalTrees);
         land.setTotalRounds(allCompletions.size());
 
         return land;
-    }
-
-    // ── COMPLETE PLANTATION — reset to Vacant, no DB columns needed on land ───
-    public Land completePlantation(Long landId,
-                                   Integer treesPlanted,
-                                   Integer moreCapacity,
-                                   String notes,
-                                   List<MultipartFile> images,
-                                   Long userId) throws IOException {
-
-        Land land = landRepository.findById(landId)
-                .orElseThrow(() -> new RuntimeException("Land not found: " + landId));
-
-        if (!userId.equals(land.getPlantationUserId()))
-            throw new RuntimeException("Not authorised to complete this plantation");
-
-        // save completion record — this IS the source of truth for capacity history
-        PlantationCompletion pc = new PlantationCompletion();
-        pc.setLandId(landId);
-        pc.setUserId(userId);
-        pc.setTreesPlanted(treesPlanted);
-        pc.setMoreCapacity(moreCapacity);   // ← reported remaining capacity
-        pc.setNotes(notes);
-        PlantationCompletion saved = completionRepository.save(pc);
-
-        // save proof images
-        if (images != null && !images.isEmpty()) {
-            for (MultipartFile file : images) {
-                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                Path path = Paths.get("uploads/completions/" + fileName);
-                Files.createDirectories(path.getParent());
-                Files.write(path, file.getBytes());
-                PlantationCompletionImage img = new PlantationCompletionImage();
-                img.setCompletionId(saved.getId());
-                img.setImageUrl("completions/" + fileName);
-                completionImageRepository.save(img);
-            }
-        }
-
-        // reset land so next round can start — NO new columns needed
-        land.setLandStatus("Vacant");
-        land.setPlantationUserId(null);   // unlock so anyone can claim next round
-        return landRepository.save(land);
     }
 
     public Land saveLand(Map<String, Object> payload, Long userId) {
@@ -161,59 +113,22 @@ public class LandService {
         return saved;
     }
 
-    @Transactional
-    public List<LandRecommendation> refreshRecommendations(Long landId) throws IOException {
-        Land land = getLandById(landId);
-        logger.info("Refreshing recommendations for land #" + landId);
+    // ─────────────────────────────────────────────────────────────────────────
+    //  IMAGES — Cloudinary
+    // ─────────────────────────────────────────────────────────────────────────
 
-        recommendationRepository.deleteByLandId(landId);
-
-        MlInputParams params = resolveMlParamsFromApis(land);
-        logger.info(String.format(
-                "Resolved params for land #%d → temp=%.1f°C  rainfall=%.0fmm  soil=%s  climate=%s",
-                landId, params.temp, params.rainfall, params.soil, params.climate));
-
-        String url = buildMlUrl(params);
-        logger.info("Calling ML API: " + url);
-
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .timeout(Duration.ofSeconds(mlApiTimeoutSeconds))
-                .GET().build();
-
-        HttpResponse<String> resp;
-        try {
-            resp = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IOException("ML API request interrupted", e);
-        }
-
-        if (resp.statusCode() != 200)
-            throw new IOException("ML API returned HTTP " + resp.statusCode() + ": " + resp.body());
-
-        List<LandRecommendation> fresh = parseAndBuildRecommendations(landId, resp.body());
-        if (fresh.isEmpty()) {
-            logger.warning("ML returned empty — using fallback for land #" + landId);
-            saveFallbackRecommendations(landId);
-        } else {
-            recommendationRepository.saveAll(fresh);
-            logger.info("Persisted " + fresh.size() + " recommendations for land #" + landId);
-        }
-
-        return recommendationRepository.findByLandId(landId);
-    }
-
+    /**
+     * Upload land photos to Cloudinary under terraspotter/lands/
+     * imageUrl stored in DB is now the full https:// Cloudinary URL.
+     */
     public void saveImages(Long landId, List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path path = Paths.get("uploads/" + fileName);
-            Files.createDirectories(path.getParent());
-            Files.write(path, file.getBytes());
+            String imageUrl = cloudinaryService.uploadImage(file, "terraspotter/lands");
             LandImage img = new LandImage();
             img.setLandId(landId);
-            img.setImageUrl(fileName);
+            img.setImageUrl(imageUrl);
             landImageRepository.save(img);
+            logger.info("Land #" + landId + " image uploaded → " + imageUrl);
         }
     }
 
@@ -222,7 +137,7 @@ public class LandService {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  NEW — plantation start
+    //  PLANTATION START
     // ─────────────────────────────────────────────────────────────────────────
 
     public Land startPlantation(Long landId,
@@ -252,13 +167,56 @@ public class LandService {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  NEW — plantation complete
+    //  PLANTATION COMPLETE — Cloudinary for proof images
     // ─────────────────────────────────────────────────────────────────────────
 
+    /**
+     * Saves completion record, uploads proof photos to Cloudinary
+     * under terraspotter/completions/, then resets land to Vacant
+     * so the next plantation round can begin.
+     */
+    public Land completePlantation(Long landId,
+                                   Integer treesPlanted,
+                                   Integer moreCapacity,
+                                   String notes,
+                                   List<MultipartFile> images,
+                                   Long userId) throws IOException {
 
+        Land land = landRepository.findById(landId)
+                .orElseThrow(() -> new RuntimeException("Land not found: " + landId));
+
+        if (!userId.equals(land.getPlantationUserId()))
+            throw new RuntimeException("Not authorised to complete this plantation");
+
+        // save completion record
+        PlantationCompletion pc = new PlantationCompletion();
+        pc.setLandId(landId);
+        pc.setUserId(userId);
+        pc.setTreesPlanted(treesPlanted);
+        pc.setMoreCapacity(moreCapacity);
+        pc.setNotes(notes);
+        PlantationCompletion saved = completionRepository.save(pc);
+
+        // upload proof images to Cloudinary under terraspotter/completions/
+        if (images != null && !images.isEmpty()) {
+            for (MultipartFile file : images) {
+                String imageUrl = cloudinaryService.uploadImage(file, "terraspotter/completions");
+                PlantationCompletionImage img = new PlantationCompletionImage();
+                img.setCompletionId(saved.getId());
+                img.setImageUrl(imageUrl);
+                completionImageRepository.save(img);
+                logger.info("Completion #" + saved.getId() + " proof image → " + imageUrl);
+            }
+        }
+
+        // reset land for next round
+        land.setLandStatus("Vacant");
+        land.setPlantationUserId(null);
+        return landRepository.save(land);
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  NEW — reviews
+    //  REVIEWS
     // ─────────────────────────────────────────────────────────────────────────
 
     public List<LandReview> getReviews(Long landId) {
@@ -296,7 +254,51 @@ public class LandService {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  EXISTING — Open-Meteo + ML pipeline (all unchanged)
+    //  RECOMMENDATIONS
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @Transactional
+    public List<LandRecommendation> refreshRecommendations(Long landId) throws IOException {
+        Land land = getLandById(landId);
+        logger.info("Refreshing recommendations for land #" + landId);
+
+        recommendationRepository.deleteByLandId(landId);
+
+        MlInputParams params = resolveMlParamsFromApis(land);
+        logger.info(String.format(
+                "Resolved params for land #%d → temp=%.1f°C  rainfall=%.0fmm  soil=%s  climate=%s",
+                landId, params.temp, params.rainfall, params.soil, params.climate));
+
+        HttpRequest req = HttpRequest.newBuilder()
+                .uri(URI.create(buildMlUrl(params)))
+                .timeout(Duration.ofSeconds(mlApiTimeoutSeconds))
+                .GET().build();
+
+        HttpResponse<String> resp;
+        try {
+            resp = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("ML API request interrupted", e);
+        }
+
+        if (resp.statusCode() != 200)
+            throw new IOException("ML API returned HTTP " + resp.statusCode() + ": " + resp.body());
+
+        List<LandRecommendation> fresh = parseAndBuildRecommendations(landId, resp.body());
+        if (fresh.isEmpty()) {
+            logger.warning("ML returned empty — using fallback for land #" + landId);
+            saveFallbackRecommendations(landId);
+        } else {
+            recommendationRepository.saveAll(fresh);
+            logger.info("Persisted " + fresh.size() + " recommendations for land #" + landId);
+        }
+
+        return recommendationRepository.findByLandId(landId);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  OPEN-METEO + ML PIPELINE — unchanged
     // ─────────────────────────────────────────────────────────────────────────
 
     private MlInputParams resolveMlParamsFromApis(Land land) {
@@ -367,7 +369,6 @@ public class LandService {
         if (fromStatus != null) return fromStatus;
         String fromNotes = extractSoilKeyword(land.getNotes());
         if (fromNotes != null) return fromNotes;
-
         String url = String.format(
                 "%s?latitude=%.4f&longitude=%.4f" +
                         "&hourly=soil_moisture_0_to_7cm" +
@@ -394,8 +395,8 @@ public class LandService {
     private String extractSoilKeyword(String text) {
         if (text == null || text.isBlank()) return null;
         String t = text.toLowerCase();
-        if (t.contains("sand"))                                  return "sandy";
-        if (t.contains("clay") || t.contains("black cotton"))   return "clay";
+        if (t.contains("sand"))                                    return "sandy";
+        if (t.contains("clay") || t.contains("black cotton"))     return "clay";
         if (t.contains("loam") || t.contains("silt")
                 || t.contains("alluvial") || t.contains("red soil")) return "loamy";
         return null;
