@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/plantations")
 @CrossOrigin(
-        originPatterns = "*",
+        origins = "https://terraspotterfrontend-qtmta2ofv-omborekar1406-9636s-projects.vercel.app",
         allowCredentials = "true"
 )
 public class PlantationController {
