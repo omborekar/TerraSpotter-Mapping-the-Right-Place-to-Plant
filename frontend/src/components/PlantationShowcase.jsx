@@ -796,7 +796,7 @@ function PlantationCard({ plantation, index, onClick }) {
     >
       <div className="ps-card-images">
         <img
-          src={plantation.images?.[0] || "/api/placeholder/400/250"}
+          src={plantation.images?.[0] || "https://placehold.co/400x250?text=No+Image"}
           alt={plantation.title}
           className="ps-card-image"
         />
