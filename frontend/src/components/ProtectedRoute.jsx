@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import LoadingSpinner from "./ui/LoadingSpinner";
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const ProtectedRoute = ({ children }) => {
@@ -38,12 +40,9 @@ const ProtectedRoute = ({ children }) => {
     checkAuth();
   }, []);
 
+  // 🌱 ENHANCED LOADING UI (no logic change)
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Checking authentication...</p>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return isAuth ? children : <Navigate to="/login" replace />;
