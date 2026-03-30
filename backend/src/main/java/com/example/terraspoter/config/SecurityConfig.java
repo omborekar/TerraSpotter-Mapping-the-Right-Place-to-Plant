@@ -27,7 +27,7 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "https://*.vercel.app"
         ));
-        config.setAllowedOrigins(List.of("https://terraspotterfrontend-qtmta2ofv-omborekar1406-9636s-projects.vercel.app"));
+//        config.setAllowedOrigins(List.of("https://terraspotterfrontend-qtmta2ofv-omborekar1406-9636s-projects.vercel.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

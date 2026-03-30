@@ -202,7 +202,9 @@ public class LandService {
             for (MultipartFile file : images) {
                 String imageUrl = cloudinaryService.uploadImage(file, "terraspotter/completions");
                 PlantationCompletionImage img = new PlantationCompletionImage();
-                img.setCompletionId(saved.getId());
+//                img.setCompletionId(saved.getId());
+                //errorBackup
+                img.setCompletionId(saved);
                 img.setImageUrl(imageUrl);
                 completionImageRepository.save(img);
                 logger.info("Completion #" + saved.getId() + " proof image → " + imageUrl);

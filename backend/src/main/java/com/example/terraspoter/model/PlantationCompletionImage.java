@@ -1,4 +1,3 @@
-// com/example/terraspoter/model/PlantationCompletionImage.java
 package com.example.terraspoter.model;
 
 import jakarta.persistence.*;
@@ -17,11 +16,14 @@ public class PlantationCompletionImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long completionId;
+    // ✅ RELATION instead of plain Long
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "completion_id", nullable = false)
+    private PlantationCompletion completionId;
 
-    @Column(nullable = false)
+    @Column(name = "image_url", nullable = false, columnDefinition = "TEXT")
     private String imageUrl;
 
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }

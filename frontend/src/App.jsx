@@ -12,6 +12,7 @@ import SiteDetail from "./components/SiteDetail";
 import ReviewsPage from "./components/Reviewspage";
 import About from "./components/About";
 import Contact from "./components/Contact";
+import PlantationShowcase from "./components/PlantationShowcase";
 
 import "./App.css";
 
@@ -53,6 +54,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/plantationShowcase"
+          element={
+            <ProtectedRoute>
+              <PlantationShowcase />
             </ProtectedRoute>
           }
         />
