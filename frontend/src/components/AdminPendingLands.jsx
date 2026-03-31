@@ -2,28 +2,33 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import LoadingSpinner from "./ui/LoadingSpinner";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const AdminPendingLands = ({ currentUser }) => {
 
   const [lands, setLands] = useState([]);
-    console.log("currentUser:", currentUser);
-  // 🔐 Role check
-if (!currentUser?.role) {
-  return <LoadingSpinner text="Loading..." />;
-}
 
-if (currentUser.role !== "ADMIN") {
-  return (
-    <div className="text-center mt-10 text-red-500">
-      Access Denied 🚫
-    </div>
-  );
-}
-    console.log("currentUser:", currentUser);
+  console.log("currentUser:", currentUser);
 
-  // 📥 fetch pending lands
+  // 🔐 ROLE CHECK
+  if (!currentUser?.role) {
+    return <LoadingSpinner text="Loading..." />;
+  }
+
+  if (currentUser.role !== "ADMIN") {
+    return (
+      <div className="text-center mt-10 text-red-500">
+        Access Denied 🚫
+      </div>
+    );
+  }
+
+  // 📥 FETCH LANDS
   const fetchLands = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/lands/pending");
+      const res = await axios.get(`${BASE_URL}/lands/pending`, {
+        withCredentials: true
+      });
       setLands(res.data);
     } catch (err) {
       console.error(err);
@@ -31,16 +36,19 @@ if (currentUser.role !== "ADMIN") {
   };
 
   useEffect(() => {
-    fetchLands();
-  }, []);
+    if (currentUser?.role === "ADMIN") {
+      fetchLands();
+    }
+  }, [currentUser]);
 
-  // ✅ vote handler
+  // ✅ VOTE
   const handleVote = async (landId, vote) => {
     try {
       await axios.post(
-        `http://localhost:8080/lands/${landId}/verify`,
+        `${BASE_URL}/lands/${landId}/verify`,
         null,
         {
+          withCredentials: true,
           params: {
             vote: vote,
             userId: currentUser.id
@@ -48,7 +56,7 @@ if (currentUser.role !== "ADMIN") {
         }
       );
 
-      fetchLands(); // refresh
+      fetchLands();
     } catch (err) {
       console.error(err);
       alert("Error voting");
@@ -66,14 +74,9 @@ if (currentUser.role !== "ADMIN") {
       ) : (
         <div className="grid gap-4">
           {lands.map((land) => (
-            <div
-              key={land.id}
-              className="border p-4 rounded shadow"
-            >
-              <h2 className="text-lg font-semibold">
-                {land.title}
-              </h2>
+            <div key={land.id} className="border p-4 rounded shadow">
 
+              <h2 className="text-lg font-semibold">{land.title}</h2>
               <p>📍 {land.location}</p>
               <p>🌱 Area: {land.areaSqm} sqm</p>
 

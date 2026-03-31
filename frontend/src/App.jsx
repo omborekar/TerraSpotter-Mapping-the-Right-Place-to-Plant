@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react"; // ✅ added
-import axios from "axios"; // ✅ added
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -19,29 +19,45 @@ import PlantationShowcase from "./components/PlantationShowcase";
 import AdminPendingLands from "./components/AdminPendingLands";
 
 import "./App.css";
+const res = await axios.get(`${BASE_URL}/api/auth/session`, {
+  withCredentials: true
+});
 
- // adjust if needed
+console.log("SESSION RESPONSE 👉", res.data); // 🔥 THIS
+setUser(res.data);
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function App() {
 
-  // ✅ moved inside component
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ fetch session
+  // 🔥 FETCH SESSION
   useEffect(() => {
     const fetchSession = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/api/auth/session`, {
           withCredentials: true
         });
-        setUser(res.data);
-      } catch {
+
+        console.log("SESSION:", res.data);
+        setUser(res.data); // 👈 if needed change to res.data.user
+
+      } catch (err) {
+        console.error("Session error:", err);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchSession(); // 🔥 important
+    fetchSession();
   }, []);
+
+  if (loading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+  
 
   return (
     <Router>
@@ -55,45 +71,29 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/* PUBLIC LAND ROUTES */}
+        {/* LAND */}
         <Route path="/lands/:id" element={<SiteDetail />} />
         <Route path="/lands/:id/reviews" element={<ReviewsPage />} />
 
         {/* PROTECTED */}
         <Route
           path="/main"
-          element={
-            <ProtectedRoute>
-              <Main />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Main /></ProtectedRoute>}
         />
 
         <Route
           path="/browse"
-          element={
-            <ProtectedRoute>
-              <Browse />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Browse /></ProtectedRoute>}
         />
 
         <Route
           path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Profile /></ProtectedRoute>}
         />
 
         <Route
           path="/plantationShowcase"
-          element={
-            <ProtectedRoute>
-              <PlantationShowcase />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><PlantationShowcase /></ProtectedRoute>}
         />
 
         {/* ADMIN */}
