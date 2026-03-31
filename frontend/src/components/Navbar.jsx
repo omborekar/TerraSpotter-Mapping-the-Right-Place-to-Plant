@@ -400,6 +400,15 @@ export default function Navbar() {
                           <Link to="/browse" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
                             <span className="nb-dd-badge">🗺️</span> Browse Lands
                           </Link>
+                          <Link to="/PlantationShowcase" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
+                            <span className="nb-dd-badge">🗺️</span> History
+                          </Link>
+                          <Link to="/contact" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
+                            <span className="nb-dd-badge">🗺️</span> Contact
+                          </Link>
+                          <Link to="/about" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
+                            <span className="nb-dd-badge">🗺️</span> About Us
+                          </Link>
                         </div>
 
                         <div className="nb-dd-sep" />
