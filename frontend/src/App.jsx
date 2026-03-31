@@ -1,4 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./components/Login";
@@ -14,13 +17,49 @@ import About from "./components/About";
 import Contact from "./components/Contact";
 import PlantationShowcase from "./components/PlantationShowcase";
 import AdminPendingLands from "./components/AdminPendingLands";
-const [user, setUser] = useState(null);
+
 import "./App.css";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 function App() {
+
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // 🔥 FETCH USER FROM COOKIE SESSION
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/auth/session`, {
+          withCredentials: true
+        });
+
+        console.log("APP USER 👉", res.data);
+        setUser(res.data);
+
+      } catch (err) {
+        console.error("Session error:", err);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSession();
+  }, []);
+
+  // ⏳ Prevent early render
+  if (loading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+
   return (
     <Router>
-      <Navbar />
+
+      {/* 🔥 PASS USER */}
+      <Navbar user={user} />
+
       <Routes>
 
         {/* PUBLIC */}
@@ -35,25 +74,10 @@ function App() {
         <Route path="/lands/:id/reviews" element={<ReviewsPage />} />
 
         {/* PROTECTED */}
-        <Route
-          path="/main"
-          element={<ProtectedRoute><Main /></ProtectedRoute>}
-        />
-
-        <Route
-          path="/browse"
-          element={<ProtectedRoute><Browse /></ProtectedRoute>}
-        />
-
-        <Route
-          path="/profile"
-          element={<ProtectedRoute><Profile /></ProtectedRoute>}
-        />
-
-        <Route
-          path="/plantationShowcase"
-          element={<ProtectedRoute><PlantationShowcase /></ProtectedRoute>}
-        />
+        <Route path="/main" element={<ProtectedRoute><Main /></ProtectedRoute>} />
+        <Route path="/browse" element={<ProtectedRoute><Browse /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/plantationShowcase" element={<ProtectedRoute><PlantationShowcase /></ProtectedRoute>} />
 
         {/* ADMIN */}
         <Route
