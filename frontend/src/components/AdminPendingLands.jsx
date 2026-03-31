@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import LoadingSpinner from "./ui/LoadingSpinner";
-
+import React, { useEffect, useState } from "react";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const AdminPendingLands = () => {
