@@ -13,14 +13,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "fname")
     private String fname;
+
+    @Column(name = "lname")
     private String lname;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "phone_no") // 🔥 FIXED
     private String phoneNo;
+
+    @Column(name = "dob")
     private LocalDate dob;
+
+    @Column(name = "role") // 🔥 IMPORTANT FIX
     private String role;
 
     @JsonIgnore
+    @Column(name = "password")
     private String password;
 
     // Getters and Setters
