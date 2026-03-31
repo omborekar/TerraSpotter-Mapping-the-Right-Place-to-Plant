@@ -178,9 +178,10 @@ public class LandController {
                     .body(Map.of("error", "Not logged in"));
         return ResponseEntity.ok(landService.getLandsByUser(userId));
     }
-
+    @Autowired
+    private LandRepository landRepository;
     @GetMapping("/pending")
     public List<Land> getPendingLands() {
-        return LandRepository.findByStatus("PENDING");
+        return landRepository.findByStatus("PENDING"); // ✅ correct
     }
 }
