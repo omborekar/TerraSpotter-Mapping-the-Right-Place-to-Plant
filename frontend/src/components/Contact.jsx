@@ -14,9 +14,9 @@ const faqs = [
 ];
 
 const contacts = [
-  { icon: "✉", label: "Email us",  value: "hello@terraspotter.in",    href: "mailto:hello@terraspotter.in" },
-  { icon: "☎", label: "Call us",   value: "+91 99215 26128",           href: "tel:+919921526128" },
-  { icon: "⌖", label: "Based in",  value: "Latur, Maharashtra, India", href: null },
+  { icon: "✉", label: "Email us",  value: "terraspotter@gmail.com",    href: "mailto:terraspotter@gmail.com" },
+  { icon: "☎", label: "Call us",   value: "+91 87672 92374",           href: "tel:+91 87672 92374" },
+  { icon: "⌖", label: "Based in",  value: "Pune, Maharashtra, India", href: null },
 ];
 
 const containerVariants = {
@@ -65,9 +65,9 @@ export default function Contact() {
   // Map DB fields → display tiles. Only show tiles where data exists.
 const statTiles = dbStats ? [
   dbStats.users    != null ? { label: "Registered Users",   value: dbStats.users,    suffix: "+" } : null,
-  dbStats.hectares != null ? { label: "Hectares Mapped",    value: dbStats.hectares, suffix: "+" } : null,
+  // dbStats.hectares != null ? { label: "Hectares Mapped",    value: dbStats.hectares, suffix: "+" } : null,
   dbStats.trees    != null ? { label: "Trees Planted",      value: dbStats.trees,    suffix: "+" } : null,
-  dbStats.verified != null ? { label: "Verified Sites",     value: dbStats.verified, suffix: "+" } : null,
+  // dbStats.verified != null ? { label: "Verified Sites",     value: dbStats.verified, suffix: "+" } : null,
 ].filter(Boolean) : [];
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
@@ -287,7 +287,7 @@ const statTiles = dbStats ? [
           </div>
 
           <motion.div className="ct-stats-panel" variants={itemVariants}>
-            <div className="ct-stats-panel-label">Our community — live from the database</div>
+            <div className="ct-stats-panel-label">Our community — live from Everywhere</div>
 
             {/* Loading skeleton */}
             {!dbStats && !statsError && (
