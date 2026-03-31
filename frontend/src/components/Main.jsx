@@ -7,7 +7,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 const BASE_URL = import.meta.env.VITE_API_URL;
-
+import LoadingSpinner from "./ui/LoadingSpinner";
 /* ─── tiny helpers ─────────────────────────────────────────────────────── */
 const Field = ({ label, required, error, children }) => (
   <div className="ts-field">
@@ -177,10 +177,7 @@ const Main = () => {
   };
 
   if (loading) return (
-    <div className="ts-loader">
-      <div className="ts-loader-ring" />
-      <p>Loading workspace…</p>
-    </div>
+   <LoadingSpinner text="Loading workspace..." />
   );
 
   if (submitted) return (

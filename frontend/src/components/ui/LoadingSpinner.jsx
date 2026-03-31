@@ -1,4 +1,4 @@
-const LoadingSpinner = () => {
+const LoadingSpinner = ({ text = "Loading..." }) => {
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-br from-green-50 to-green-100">
       
@@ -7,9 +7,9 @@ const LoadingSpinner = () => {
         {/* 🌿 Spinner Circle */}
         <div className="w-16 h-16 border-4 border-green-300 border-t-green-700 rounded-full animate-spin"></div>
 
-        {/* 🌱 Text */}
+        {/* 🌱 Dynamic Text */}
         <p className="text-green-800 text-lg font-semibold tracking-wide">
-          Checking session...
+          {text}
         </p>
 
       </div>

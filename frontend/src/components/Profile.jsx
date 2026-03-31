@@ -4,6 +4,7 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip,
   CartesianGrid, ResponsiveContainer, AreaChart, Area,
 } from "recharts";
+import LoadingSpinner from "./ui/LoadingSpinner";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 /* ── tiny helpers ──────────────────────────────────────────────── */
@@ -114,10 +115,7 @@ const Profile = () => {
   const approvedLands = lands.filter(l => l.status === "APPROVED").length;
 
   if (pageLoading) return (
-    <div className="pf-loader">
-      <div className="pf-loader-ring" />
-      <p>Loading profile…</p>
-    </div>
+    <LoadingSpinner text="Loading profile..." />
   );
 
   if (!profile) return (

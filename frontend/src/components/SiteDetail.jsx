@@ -259,7 +259,7 @@ export default function SiteDetail() {
     ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1)
     : 0;
 
-  if (loading) return <div className="sd-splash"><div className="sd-spinner" /></div>;
+  if (loading) return <LoadingSpinner text="Loading site details..." />;
   if (!land)   return (
     <div className="sd-splash">
       <p style={{ color: "var(--danger)" }}>Land not found.</p>

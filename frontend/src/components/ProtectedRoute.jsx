@@ -42,7 +42,7 @@ const ProtectedRoute = ({ children }) => {
 
   // 🌱 ENHANCED LOADING UI (no logic change)
   if (loading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner text="Loading Workplace..." />;
   }
 
   return isAuth ? children : <Navigate to="/login" replace />;
