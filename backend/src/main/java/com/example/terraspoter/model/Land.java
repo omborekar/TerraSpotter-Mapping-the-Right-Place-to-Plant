@@ -19,7 +19,8 @@ public class Land {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private Boolean verified;
+    private String district;
     private String title;
     private String description;
 

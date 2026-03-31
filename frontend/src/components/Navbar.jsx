@@ -401,13 +401,13 @@ export default function Navbar() {
                             <span className="nb-dd-badge">🗺️</span> Browse Lands
                           </Link>
                           <Link to="/PlantationShowcase" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
-                            <span className="nb-dd-badge">🗺️</span> History
+                            <span className="nb-dd-badge">📚</span> History
                           </Link>
                           <Link to="/contact" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
-                            <span className="nb-dd-badge">🗺️</span> Contact
+                            <span className="nb-dd-badge">📞</span> Contact
                           </Link>
                           <Link to="/about" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
-                            <span className="nb-dd-badge">🗺️</span> About Us
+                            <span className="nb-dd-badge">ℹ️</span> About Us
                           </Link>
                         </div>
 

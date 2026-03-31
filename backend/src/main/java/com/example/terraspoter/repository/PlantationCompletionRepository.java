@@ -2,6 +2,7 @@ package com.example.terraspoter.repository;
 
 import com.example.terraspoter.model.PlantationCompletion;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface PlantationCompletionRepository
 
     // ADD THIS — for aggregate totals:
     List<PlantationCompletion> findByLandIdOrderByCreatedAtDesc(Long landId);
+    @Query("SELECT COALESCE(SUM(p.treesPlanted), 0) FROM PlantationCompletion p")
+    Long totalTreesPlanted();
 }
