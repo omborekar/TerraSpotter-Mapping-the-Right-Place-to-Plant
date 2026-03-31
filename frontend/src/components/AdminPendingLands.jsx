@@ -31,41 +31,42 @@ const AdminPendingLands = () => {
     fetchSession();
   }, []);
 
-  // ⏳ LOADING
-  if (loading) {
-    return <LoadingSpinner text="Loading..." />;
-  }
-
-  // 🔐 ROLE CHECK
-  if (!user?.role) {
-    return <div className="text-center mt-10">No session ❌</div>;
-  }
-
-  if (user.role !== "ADMIN") {
-    return (
-      <div className="text-center mt-10 text-red-500">
-        Access Denied 🚫
-      </div>
-    );
-  }
-
   // 📥 FETCH LANDS
-  const fetchLands = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/lands/pending`, {
-        withCredentials: true
-      });
-      setLands(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+const fetchLands = async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/lands/pending`, {
+      withCredentials: true
+    });
+    setLands(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  useEffect(() => {
-    if (user?.role === "ADMIN") {
-      fetchLands();
-    }
-  }, [user]);
+// ✅ MOVE THIS UP (before returns)
+useEffect(() => {
+  if (user?.role === "ADMIN") {
+    fetchLands();
+  }
+}, [user]);
+
+// ⏳ LOADING
+if (loading) {
+  return <LoadingSpinner text="Loading..." />;
+}
+
+// 🔐 ROLE CHECK
+if (!user?.role) {
+  return <div className="text-center mt-10">No session ❌</div>;
+}
+
+if (user.role !== "ADMIN") {
+  return (
+    <div className="text-center mt-10 text-red-500">
+      Access Denied 🚫
+    </div>
+  );
+}
 
   // ✅ VOTE
   const handleVote = async (landId, vote) => {
