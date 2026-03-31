@@ -13,6 +13,7 @@ import ReviewsPage from "./components/Reviewspage";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import PlantationShowcase from "./components/PlantationShowcase";
+import AdminPendingLands from "./components/AdminPendingLands";
 
 import "./App.css";
 
