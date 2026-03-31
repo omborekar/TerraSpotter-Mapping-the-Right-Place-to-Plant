@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import LoadingSpinner from "./ui/LoadingSpinner";
 
 const AdminPendingLands = ({ currentUser }) => {
 
   const [lands, setLands] = useState([]);
 
   // 🔐 Role check
-  if (currentUser.role !== "ADMIN") {
-    return <div className="text-center mt-10 text-red-500">
+if (!currentUser?.role) {
+  return <LoadingSpinner text="Loading..." />;
+}
+
+if (currentUser.role !== "ADMIN") {
+  return (
+    <div className="text-center mt-10 text-red-500">
       Access Denied 🚫
-    </div>;
-  }
+    </div>
+  );
+}
 
   // 📥 fetch pending lands
   const fetchLands = async () => {
