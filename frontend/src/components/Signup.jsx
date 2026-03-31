@@ -10,21 +10,34 @@ export default function Signup() {
     fname: "", lname: "", email: "",
     phoneNo: "", dob: "", password: "", confirmPassword: "",
   });
-  const [errors, setErrors]   = useState({});
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [showPw, setShowPw]   = useState(false);
-  const [showCp, setShowCp]   = useState(false);
+  const [showPw, setShowPw] = useState(false);
+  const [showCp, setShowCp] = useState(false);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const today = new Date();
+  const dob = new Date(form.dob);
 
+  let age = today.getFullYear() - dob.getFullYear();
+
+  // adjust if birthday not yet occurred this year
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
   const validate = () => {
     const e = {};
-    if (form.fname.trim().length < 2)  e.fname = "At least 2 characters";
-    if (form.lname.trim().length < 2)  e.lname = "At least 2 characters";
+    if (form.fname.trim().length < 2) e.fname = "At least 2 characters";
+    if (form.lname.trim().length < 2) e.lname = "At least 2 characters";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Invalid email address";
     if (!/^\d{10}$/.test(form.phoneNo)) e.phoneNo = "Must be exactly 10 digits";
-    if (!form.dob) e.dob = "Date of birth is required";
-    if (form.password.length < 8)      e.password = "At least 8 characters";
+    if (!form.dob) {
+      e.dob = "Date of birth is required";
+    } else if (age < 14) {
+      e.dob = "You must be at least 14 years old";
+    }
+    if (form.password.length < 8) e.password = "At least 8 characters";
     if (form.password !== form.confirmPassword) e.confirmPassword = "Passwords don't match";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -52,7 +65,7 @@ export default function Signup() {
     const p = form.password;
     if (!p) return 0;
     let s = 0;
-    if (p.length >= 8)  s++;
+    if (p.length >= 8) s++;
     if (/[A-Z]/.test(p)) s++;
     if (/[0-9]/.test(p)) s++;
     if (/[^A-Za-z0-9]/.test(p)) s++;
@@ -232,8 +245,8 @@ export default function Signup() {
 
         {/* ── LEFT ── */}
         <motion.aside className="su-left"
-          initial={{ opacity:0, x:-20 }} animate={{ opacity:1, x:0 }}
-          transition={{ duration:.55 }}>
+          initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: .55 }}>
           <div className="su-left-inner">
             <div className="su-logo">
               <span className="su-logo-pip" /> TerraSpotter
@@ -285,8 +298,8 @@ export default function Signup() {
 
         {/* ── RIGHT ── */}
         <motion.div className="su-right"
-          initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
-          transition={{ duration:.45, delay:.08 }}>
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: .45, delay: .08 }}>
           <div className="su-form-wrap">
 
             <h1 className="su-form-title">Create account</h1>
@@ -301,14 +314,14 @@ export default function Signup() {
               <div className="su-grid-2">
                 <div className="su-field">
                   <label className="su-label">First Name</label>
-                  <input className={`su-input${errors.fname?" e":""}`}
+                  <input className={`su-input${errors.fname ? " e" : ""}`}
                     name="fname" placeholder="Arjun"
                     value={form.fname} onChange={handleChange} autoComplete="given-name" />
                   {errors.fname && <span className="su-err">{errors.fname}</span>}
                 </div>
                 <div className="su-field">
                   <label className="su-label">Last Name</label>
-                  <input className={`su-input${errors.lname?" e":""}`}
+                  <input className={`su-input${errors.lname ? " e" : ""}`}
                     name="lname" placeholder="Desai"
                     value={form.lname} onChange={handleChange} autoComplete="family-name" />
                   {errors.lname && <span className="su-err">{errors.lname}</span>}
@@ -318,14 +331,14 @@ export default function Signup() {
               <div className="su-grid-2">
                 <div className="su-field">
                   <label className="su-label">Date of Birth</label>
-                  <input className={`su-input${errors.dob?" e":""}`}
+                  <input className={`su-input${errors.dob ? " e" : ""}`}
                     type="date" name="dob"
                     value={form.dob} onChange={handleChange} />
                   {errors.dob && <span className="su-err">{errors.dob}</span>}
                 </div>
                 <div className="su-field">
                   <label className="su-label">Mobile Number</label>
-                  <input className={`su-input${errors.phoneNo?" e":""}`}
+                  <input className={`su-input${errors.phoneNo ? " e" : ""}`}
                     name="phoneNo" placeholder="9876543210" maxLength={10}
                     value={form.phoneNo} onChange={handleChange} autoComplete="tel" />
                   {errors.phoneNo && <span className="su-err">{errors.phoneNo}</span>}
@@ -336,7 +349,7 @@ export default function Signup() {
 
               <div className="su-field">
                 <label className="su-label">Email Address</label>
-                <input className={`su-input${errors.email?" e":""}`}
+                <input className={`su-input${errors.email ? " e" : ""}`}
                   type="email" name="email" placeholder="you@example.com"
                   value={form.email} onChange={handleChange} autoComplete="email" />
                 {errors.email && <span className="su-err">{errors.email}</span>}
@@ -345,22 +358,22 @@ export default function Signup() {
               <div className="su-field">
                 <label className="su-label">Password</label>
                 <div className="su-input-wrap">
-                  <input className={`su-input pw${errors.password?" e":""}`}
-                    type={showPw?"text":"password"} name="password"
+                  <input className={`su-input pw${errors.password ? " e" : ""}`}
+                    type={showPw ? "text" : "password"} name="password"
                     placeholder="Min. 8 characters"
                     value={form.password} onChange={handleChange} autoComplete="new-password" />
                   <button type="button" className="su-pw-eye"
-                    onClick={()=>setShowPw(v=>!v)} tabIndex={-1}>
-                    {showPw?"🙈":"👁"}
+                    onClick={() => setShowPw(v => !v)} tabIndex={-1}>
+                    {showPw ? "🙈" : "👁"}
                   </button>
                 </div>
                 {form.password && (
                   <div className="su-strength">
                     <div className="su-strength-bar">
                       <div className="su-strength-fill"
-                        style={{ width:`${strength*25}%`, background:strengthColor }} />
+                        style={{ width: `${strength * 25}%`, background: strengthColor }} />
                     </div>
-                    <span className="su-strength-label" style={{ color:strengthColor }}>
+                    <span className="su-strength-label" style={{ color: strengthColor }}>
                       {strengthLabel}
                     </span>
                   </div>
@@ -371,13 +384,13 @@ export default function Signup() {
               <div className="su-field">
                 <label className="su-label">Confirm Password</label>
                 <div className="su-input-wrap">
-                  <input className={`su-input pw${errors.confirmPassword?" e":""}`}
-                    type={showCp?"text":"password"} name="confirmPassword"
+                  <input className={`su-input pw${errors.confirmPassword ? " e" : ""}`}
+                    type={showCp ? "text" : "password"} name="confirmPassword"
                     placeholder="Re-enter password"
                     value={form.confirmPassword} onChange={handleChange} autoComplete="new-password" />
                   <button type="button" className="su-pw-eye"
-                    onClick={()=>setShowCp(v=>!v)} tabIndex={-1}>
-                    {showCp?"🙈":"👁"}
+                    onClick={() => setShowCp(v => !v)} tabIndex={-1}>
+                    {showCp ? "🙈" : "👁"}
                   </button>
                 </div>
                 {errors.confirmPassword && <span className="su-err">{errors.confirmPassword}</span>}
@@ -385,7 +398,7 @@ export default function Signup() {
 
               <button type="submit" className="su-submit" disabled={loading}>
                 {loading
-                  ? <><div className="su-spinner"/>Creating account…</>
+                  ? <><div className="su-spinner" />Creating account…</>
                   : "Create account →"}
               </button>
             </form>

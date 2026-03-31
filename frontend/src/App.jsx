@@ -65,6 +65,10 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/pending"
+          element={<ProtectedRoute><AdminPendingLands currentUser={user} /></ProtectedRoute>}
+        />
       </Routes>
     </Router>
   );

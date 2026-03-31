@@ -344,6 +344,9 @@ export default function Navbar() {
                   <Link to="/PlantationShowcase " className={`nb-link${isActive("/PlantationShowcase ") ? " active" : ""}`}>History</Link>
                   <Link to="/about" className={`nb-link${isActive("/about") ? " active" : ""}`}>About</Link>
                   <Link to="/contact" className={`nb-link${isActive("/contact") ? " active" : ""}`}>Contact</Link>
+                  {user.role === "ADMIN" && (
+                    <Link to="/admin/pending">Admin Panel</Link>
+                  )}
                 </>
               )}
             </nav>
@@ -394,6 +397,11 @@ export default function Navbar() {
                           <Link to="/profile" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
                             <span className="nb-dd-badge">👤</span> My Profile
                           </Link>
+                          {user.role === "ADMIN" && (
+                            <Link to="/admin/pending" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
+                              <span className="nb-dd-badge">⚙️</span> Admin Panel
+                            </Link>
+                          )}
                           <Link to="/Main" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
                             <span className="nb-dd-badge">🌱</span> Submit Land
                           </Link>
@@ -401,7 +409,7 @@ export default function Navbar() {
                             <span className="nb-dd-badge">🗺️</span> Browse Lands
                           </Link>
                           <Link to="/PlantationShowcase" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
-                            <span className="nb-dd-badge">📚</span> History
+                            <span className="nb-dd-badge">📚</span> Historya
                           </Link>
                           <Link to="/contact" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
                             <span className="nb-dd-badge">📞</span> Contact
@@ -409,6 +417,7 @@ export default function Navbar() {
                           <Link to="/about" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
                             <span className="nb-dd-badge">ℹ️</span> About Us
                           </Link>
+                          
                         </div>
 
                         <div className="nb-dd-sep" />

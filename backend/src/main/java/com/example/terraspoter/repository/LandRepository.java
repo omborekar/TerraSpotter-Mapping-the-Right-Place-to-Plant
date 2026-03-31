@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface LandRepository extends JpaRepository<Land, Long> {
-
+    List<Land> findByStatus(String status);
     // 🔍 Get all lands by user
     List<Land> findByCreatedBy(Long userId);
     long countByStatus(String status);

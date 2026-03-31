@@ -6,6 +6,7 @@ import com.example.terraspoter.model.LandRecommendation;
 import com.example.terraspoter.model.LandReview;
 import com.example.terraspoter.repository.LandRecommendationRepository;
 import com.example.terraspoter.service.LandService;
+import com.example.terraspoter.repository.LandRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -176,5 +177,10 @@ public class LandController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Not logged in"));
         return ResponseEntity.ok(landService.getLandsByUser(userId));
+    }
+
+    @GetMapping("/pending")
+    public List<Land> getPendingLands() {
+        return LandRepository.findByStatus("PENDING");
     }
 }
