@@ -20,7 +20,7 @@ import AdminPendingLands from "./components/AdminPendingLands";
 
 import "./App.css";
 
-const BASE_URL = "http://localhost:8080"; // adjust if needed
+ // adjust if needed
 
 function App() {
 
