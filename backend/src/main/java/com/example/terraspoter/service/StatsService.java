@@ -24,10 +24,10 @@ public class StatsService {
     }
 
     public Map<String, Object> getStats() {
-        long totalLands = landRepository.count();
+        long totalLands = landRepository.countLand();
         long approved   = landRepository.countByStatus("APPROVED");
         long trees      = plantationRepository.totalTreesPlanted();
-        long users      = userRepository.count();
+        long users      = userRepository.userCount();
 
         // area_sqm exists — sum approved land area in hectares (1 hectare = 10,000 sqm)
         Double totalSqm    = landRepository.sumAreaSqmByStatus("APPROVED");
