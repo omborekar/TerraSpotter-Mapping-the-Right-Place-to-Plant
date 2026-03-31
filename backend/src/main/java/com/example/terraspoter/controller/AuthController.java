@@ -116,9 +116,9 @@ public class AuthController {
     @GetMapping("/session")
     public ResponseEntity<?> getSession(HttpSession session) {
 
-        System.out.println("SESSION OBJECT: " + session);
-        System.out.println("SESSION ID: " + session.getId());
-        System.out.println("SESSION userId: " + session.getAttribute("userId"));
+//        System.out.println("SESSION OBJECT: " + session);
+//        System.out.println("SESSION ID: " + session.getId());
+//        System.out.println("SESSION userId: " + session.getAttribute("userId"));
 
         Long userId = (Long) session.getAttribute("userId");
 
