@@ -1,5 +1,4 @@
 package com.example.terraspoter.service;
-
 import com.example.terraspoter.repository.LandRepository;
 import com.example.terraspoter.repository.PlantationCompletionRepository;
 import org.springframework.stereotype.Service;
@@ -22,15 +21,17 @@ public class StatsService {
     public Map<String, Object> getStats() {
 
         long totalLands = landRepository.count();
-        long verified = landRepository.countByVerifiedTrue();
-        long districts = landRepository.countDistinctDistricts();
+
+        // ✅ using status instead of verified
+        long approved = landRepository.countByStatus("APPROVED");
+
         long trees = plantationRepository.totalTreesPlanted();
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("lands", totalLands);
-        stats.put("verified", verified);
-        stats.put("districts", districts);
+        stats.put("verified", approved); // frontend same name
         stats.put("trees", trees);
+        stats.put("districts", "-"); // ❌ not in DB
 
         return stats;
     }
