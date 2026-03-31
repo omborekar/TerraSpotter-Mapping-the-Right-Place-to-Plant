@@ -19,9 +19,7 @@ import "./App.css";
 function App() {
   return (
     <Router>
-      <ProtectedRoute>
-        <Navbar />
-      </ProtectedRoute>
+      <Navbar />
       <Routes>
         {/* PUBLIC */}
         <Route path="/" element={<Landing />} />
