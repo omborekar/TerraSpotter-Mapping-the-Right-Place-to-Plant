@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT COUNT(DISTINCT(u.email)) FROM users u")
+    @Query("SELECT COUNT(DISTINCT(u.email)) FROM User u")
     long userCount();
 }

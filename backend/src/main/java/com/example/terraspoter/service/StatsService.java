@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class StatsService {
@@ -24,23 +25,24 @@ public class StatsService {
     }
 
     public Map<String, Object> getStats() {
+
         long totalLands = landRepository.countLand();
         long approved   = landRepository.countByStatus("APPROVED");
         long trees      = plantationRepository.totalTreesPlanted();
         long users      = userRepository.userCount();
 
-        // area_sqm exists — sum approved land area in hectares (1 hectare = 10,000 sqm)
-        Double totalSqm    = landRepository.sumAreaSqmByStatus("APPROVED");
-        long hectaresMapped = totalSqm != null ? Math.round(totalSqm / 10_000.0) : 0;
+        double totalSqm = Optional.ofNullable(
+                landRepository.sumAreaSqmByStatus("APPROVED")
+        ).orElse(0.0);
+
+        long hectaresMapped = Math.round(totalSqm / 10_000.0);
 
         Map<String, Object> stats = new HashMap<>();
-        stats.put("users",    users);
-        stats.put("lands",    totalLands);
+        stats.put("users", users);
+        stats.put("lands", totalLands);
         stats.put("verified", approved);
-        stats.put("trees",    trees);
-        stats.put("hectares", hectaresMapped); // real area from area_sqm column
-        // districts omitted — not in your schema
-
+        stats.put("trees", trees);
+        stats.put("hectares", hectaresMapped);
 
         return stats;
     }

@@ -15,10 +15,10 @@ public interface LandRepository extends JpaRepository<Land, Long> {
     List<Land> findByCreatedBy(Long userId);
     long countByStatus(String status);
 
-    @Query("SELECT SUM(l.area_Sqm) FROM land_details l WHERE l.status = :status")
+    @Query("SELECT SUM(l.areaSqm) FROM Land l WHERE l.status = :status")
     Double sumAreaSqmByStatus(@Param("status") String status);
 
-    @Query("SELECT COUNT(DISTINCT(ll.id)) FROM land_details ll")
+    @Query("SELECT COUNT(l) FROM Land l")
     long countLand();
 
 }
