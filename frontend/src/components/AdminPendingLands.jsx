@@ -5,7 +5,7 @@ import LoadingSpinner from "./ui/LoadingSpinner";
 const AdminPendingLands = ({ currentUser }) => {
 
   const [lands, setLands] = useState([]);
-
+    console.log("currentUser:", currentUser);
   // 🔐 Role check
 if (!currentUser?.role) {
   return <LoadingSpinner text="Loading..." />;
@@ -18,6 +18,7 @@ if (currentUser.role !== "ADMIN") {
     </div>
   );
 }
+    console.log("currentUser:", currentUser);
 
   // 📥 fetch pending lands
   const fetchLands = async () => {
