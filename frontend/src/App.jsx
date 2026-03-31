@@ -19,14 +19,14 @@ import PlantationShowcase from "./components/PlantationShowcase";
 import AdminPendingLands from "./components/AdminPendingLands";
 
 import "./App.css";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
 const res = await axios.get(`${BASE_URL}/api/auth/session`, {
   withCredentials: true
 });
 
 console.log("SESSION RESPONSE 👉", res.data); // 🔥 THIS
 setUser(res.data);
-const BASE_URL = import.meta.env.VITE_API_URL;
-
 function App() {
 
   const [user, setUser] = useState(null);
