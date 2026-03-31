@@ -1,7 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
-
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./components/Login";
@@ -17,43 +14,10 @@ import About from "./components/About";
 import Contact from "./components/Contact";
 import PlantationShowcase from "./components/PlantationShowcase";
 import AdminPendingLands from "./components/AdminPendingLands";
-
+const [user, setUser] = useState(null);
 import "./App.css";
 
-const BASE_URL = import.meta.env.VITE_API_URL;
-
 function App() {
-
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // 🔥 FETCH SESSION
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/auth/session`, {
-          withCredentials: true
-        });
-
-        console.log("SESSION:", res.data);
-        setUser(res.data); // 👈 if needed change to res.data.user
-
-      } catch (err) {
-        console.error("Session error:", err);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSession();
-  }, []);
-
-  if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
-  }
-  
-
   return (
     <Router>
       <Navbar />

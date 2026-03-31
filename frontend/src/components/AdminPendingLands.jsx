@@ -4,18 +4,45 @@ import LoadingSpinner from "./ui/LoadingSpinner";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-const AdminPendingLands = ({ currentUser }) => {
+const AdminPendingLands = () => {
 
   const [lands, setLands] = useState([]);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  console.log("currentUser:", currentUser);
+  // 🔥 FETCH USER FROM COOKIE
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/auth/session`, {
+          withCredentials: true
+        });
 
-  // 🔐 ROLE CHECK
-  if (!currentUser?.role) {
+        console.log("SESSION USER 👉", res.data);
+        setUser(res.data);
+
+      } catch (err) {
+        console.error("Session error:", err);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSession();
+  }, []);
+
+  // ⏳ LOADING
+  if (loading) {
     return <LoadingSpinner text="Loading..." />;
   }
 
-  if (currentUser.role !== "ADMIN") {
+  // 🔐 ROLE CHECK
+  if (!user?.role) {
+    return <div className="text-center mt-10">No session ❌</div>;
+  }
+
+  if (user.role !== "ADMIN") {
     return (
       <div className="text-center mt-10 text-red-500">
         Access Denied 🚫
@@ -36,10 +63,10 @@ const AdminPendingLands = ({ currentUser }) => {
   };
 
   useEffect(() => {
-    if (currentUser?.role === "ADMIN") {
+    if (user?.role === "ADMIN") {
       fetchLands();
     }
-  }, [currentUser]);
+  }, [user]);
 
   // ✅ VOTE
   const handleVote = async (landId, vote) => {
@@ -51,7 +78,7 @@ const AdminPendingLands = ({ currentUser }) => {
           withCredentials: true,
           params: {
             vote: vote,
-            userId: currentUser.id
+            userId: user.id
           }
         }
       );

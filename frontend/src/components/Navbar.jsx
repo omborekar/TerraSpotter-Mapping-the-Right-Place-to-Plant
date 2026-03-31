@@ -345,7 +345,7 @@ export default function Navbar() {
                   <Link to="/about" className={`nb-link${isActive("/about") ? " active" : ""}`}>About</Link>
                   <Link to="/contact" className={`nb-link${isActive("/contact") ? " active" : ""}`}>Contact</Link>
                   {user.role === "ADMIN" && (
-                    <Link to="/admin/pending">Admin Panel</Link>
+                    <Link to="/admin/pending" className={`nb-link${isActive("/admin/pending") ? " active" : ""}`}>Admin Panel</Link>
                   )}
                 </>
               )}
