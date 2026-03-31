@@ -1,4 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react"; // ✅ added
+import axios from "axios"; // ✅ added
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./components/Login";
@@ -17,11 +20,34 @@ import AdminPendingLands from "./components/AdminPendingLands";
 
 import "./App.css";
 
+const BASE_URL = "http://localhost:8080"; // adjust if needed
+
 function App() {
+
+  // ✅ moved inside component
+  const [user, setUser] = useState(null);
+
+  // ✅ fetch session
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/auth/session`, {
+          withCredentials: true
+        });
+        setUser(res.data);
+      } catch {
+        setUser(null);
+      }
+    };
+
+    fetchSession(); // 🔥 important
+  }, []);
+
   return (
     <Router>
       <Navbar />
       <Routes>
+
         {/* PUBLIC */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -42,6 +68,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/browse"
           element={
@@ -50,6 +77,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/profile"
           element={
@@ -58,6 +86,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/plantationShowcase"
           element={
@@ -66,10 +95,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* ADMIN */}
         <Route
           path="/admin/pending"
-          element={<ProtectedRoute><AdminPendingLands currentUser={user} /></ProtectedRoute>}
+          element={
+            <ProtectedRoute>
+              <AdminPendingLands currentUser={user} />
+            </ProtectedRoute>
+          }
         />
+
       </Routes>
     </Router>
   );
