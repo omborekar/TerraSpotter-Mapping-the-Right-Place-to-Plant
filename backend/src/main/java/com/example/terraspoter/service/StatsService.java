@@ -41,6 +41,7 @@ public class StatsService {
         stats.put("hectares", hectaresMapped); // real area from area_sqm column
         // districts omitted — not in your schema
 
+
         return stats;
     }
 }

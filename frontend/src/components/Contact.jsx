@@ -65,11 +65,11 @@ export default function Contact() {
   // Map DB fields → display tiles. Only show tiles where data exists.
 const statTiles = dbStats ? [
   dbStats.users    != null ? { label: "Registered Users",   value: dbStats.users,    suffix: "+" } : null,
-  // dbStats.hectares != null ? { label: "Hectares Mapped",    value: dbStats.hectares, suffix: "+" } : null,
+  dbStats.hectares != null ? { label: "Hectares Mapped",    value: dbStats.hectares, suffix: "+" } : null,
   dbStats.trees    != null ? { label: "Trees Planted",      value: dbStats.trees,    suffix: "+" } : null,
-  // dbStats.verified != null ? { label: "Verified Sites",     value: dbStats.verified, suffix: "+" } : null,
+  dbStats.verified != null ? { label: "Verified Sites",     value: dbStats.verified, suffix: "+" } : null,
 ].filter(Boolean) : [];
-
+  console.log("DB Stats:", dbStats, " | Tiles:", statTiles);
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubmit = async () => {
