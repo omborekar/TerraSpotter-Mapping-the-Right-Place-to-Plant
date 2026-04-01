@@ -56,15 +56,23 @@ export default function AdminPendingLands() {
   const handleVote = async (landId, vote) => {
     setVoting(v => ({ ...v, [landId]: vote }));
     try {
-      // ✅ FIX: LandVerificationController is mapped to /lands (no /api prefix)
       await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, {
         withCredentials: true,
         params: { vote, userId: user.id },
       });
-      await fetchLands();
+      // ✅ 1-vote system: immediately update status in local state so land
+      // disappears from PENDING filter without waiting for a full refetch
+      setLands(prev =>
+        prev.map(l =>
+          l.id === landId
+            ? { ...l, status: vote === "APPROVE" ? "APPROVED" : "REJECTED" }
+            : l
+        )
+      );
     } catch (err) {
       console.error(err);
       alert("Error processing vote. Please try again.");
+      await fetchLands(); // resync on error
     } finally {
       setVoting(v => ({ ...v, [landId]: null }));
     }

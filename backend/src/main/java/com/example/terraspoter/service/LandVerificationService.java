@@ -1,10 +1,8 @@
 package com.example.terraspoter.service;
 
-import com.example.terraspoter.model.LandVerification;
 import com.example.terraspoter.model.Land;
-import com.example.terraspoter.repository.LandVerificationRepository;
+import com.example.terraspoter.model.LandStatus;
 import com.example.terraspoter.repository.LandRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,37 +10,37 @@ import org.springframework.stereotype.Service;
 public class LandVerificationService {
 
     @Autowired
-    private LandVerificationRepository repo;
-
-    @Autowired
     private LandRepository landRepository;
 
+    /**
+     * Single-vote approval system.
+     * One APPROVE vote → status becomes APPROVED immediately.
+     * One REJECT vote  → status becomes REJECTED immediately.
+     * Either way the land is removed from the PENDING queue.
+     */
     public String verifyLand(Long landId, Long userId, String vote) {
 
-        if (repo.existsByLandIdAndUserId(landId, userId)) {
-            return "Already voted";
+        Land land = landRepository.findById(landId)
+                .orElseThrow(() -> new RuntimeException("Land not found: " + landId));
+
+        // Only act on PENDING lands
+        if (!"PENDING".equalsIgnoreCase(land.getStatus())) {
+            return "Land is already " + land.getStatus() + " — no action taken.";
         }
 
-        LandVerification v = new LandVerification();
-        v.setLandId(landId);
-        v.setUserId(userId);
-        v.setVote(vote);
+        switch (vote.toUpperCase()) {
+            case "APPROVE":
+                land.setStatus("APPROVED");
+                landRepository.save(land);
+                return "Land approved successfully.";
 
-        repo.save(v);
+            case "REJECT":
+                land.setStatus("REJECTED");
+                landRepository.save(land);
+                return "Land rejected successfully.";
 
-        long approve = repo.countByLandIdAndVote(landId, "APPROVE");
-        long reject  = repo.countByLandIdAndVote(landId, "REJECT");
-
-        Land land = landRepository.findById(landId).orElseThrow();
-
-        if (approve >= 3) {
-            land.setStatus("APPROVED");
-        } else if (reject >= 3) {
-            land.setStatus("REJECTED");
+            default:
+                throw new IllegalArgumentException("Invalid vote value: " + vote + ". Use APPROVE or REJECT.");
         }
-
-        landRepository.save(land);
-
-        return "Vote submitted";
     }
 }
