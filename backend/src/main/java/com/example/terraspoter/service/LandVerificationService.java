@@ -1,7 +1,6 @@
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.model.Land;
-import com.example.terraspoter.model.LandStatus;
 import com.example.terraspoter.repository.LandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
