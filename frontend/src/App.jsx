@@ -19,6 +19,7 @@ import PlantationShowcase from "./components/PlantationShowcase";
 import AdminPendingLands from "./components/AdminPendingLands";
 
 import "./App.css";
+import LoadingSpinner from "./components/ui/LoadingSpinner";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -51,7 +52,9 @@ function App() {
 
   // ⏳ Prevent early render
   if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
+    return <LoadingSpinner text="Loading...">
+      
+    </LoadingSpinner>
   }
 
   return (
