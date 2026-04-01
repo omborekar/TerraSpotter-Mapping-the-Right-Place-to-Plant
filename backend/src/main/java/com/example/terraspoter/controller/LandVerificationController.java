@@ -14,7 +14,7 @@ public class LandVerificationController {
     @Autowired
     private LandVerificationService service;
 
-    @PostMapping("/{id}/verify")
+    @PostMapping("/{id:\\d+}/verify")
     public ResponseEntity<?> verifyLand(
             @PathVariable Long id,
             @RequestParam String vote,

@@ -32,7 +32,7 @@ public class LandController {
     }
 
     // ── 2. Get single land ─────────────────────────────────────────────────
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<Land> getLand(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(landService.getLandById(id));
@@ -58,7 +58,7 @@ public class LandController {
     }
 
     // ── 4. Upload images ───────────────────────────────────────────────────
-    @PostMapping("/{id}/images")
+    @PostMapping("/{id:\\d+}/images")
     public ResponseEntity<?> uploadImages(@PathVariable Long id,
                                           @RequestParam("files") List<MultipartFile> files) {
         try {
@@ -71,20 +71,20 @@ public class LandController {
     }
 
     // ── 5. Get images ──────────────────────────────────────────────────────
-    @GetMapping("/{id}/images")
+    @GetMapping("/{id:\\d+}/images")
     public List<LandImage> getImages(@PathVariable Long id) {
         return landService.getImagesByLandId(id);
     }
 
     // ── 6. Get recommendations ─────────────────────────────────────────────
-    @GetMapping("/{id}/recommendations")
+    @GetMapping("/{id:\\d+}/recommendations")
     public ResponseEntity<List<LandRecommendation>> getRecommendations(
             @PathVariable Long id) {
         return ResponseEntity.ok(recommendationRepository.findByLandId(id));
     }
 
     // ── 7. Refresh recommendations ─────────────────────────────────────────
-    @PostMapping("/{id}/recommendations/refresh")
+    @PostMapping("/{id:\\d+}/recommendations/refresh")
     public ResponseEntity<?> refreshRecommendations(@PathVariable Long id) {
         try {
             List<LandRecommendation> fresh = landService.refreshRecommendations(id);
@@ -105,7 +105,7 @@ public class LandController {
     }
 
     // ── 8. Start plantation ────────────────────────────────────────────────
-    @PostMapping("/{id}/plantation-start")
+    @PostMapping("/{id:\\d+}/plantation-start")
     public ResponseEntity<?> startPlantation(@PathVariable Long id,
                                              @RequestBody Map<String, Object> payload,
                                              HttpSession session) {
@@ -122,7 +122,7 @@ public class LandController {
     }
 
     // ── 9. Complete plantation ─────────────────────────────────────────────
-    @PostMapping("/{id}/plantation-complete")
+    @PostMapping("/{id:\\d+}/plantation-complete")
     public ResponseEntity<?> completePlantation(
             @PathVariable Long id,
             @RequestParam("treesPlanted")                         Integer treesPlanted,
@@ -149,13 +149,13 @@ public class LandController {
     }
 
     // ── 10. Get reviews ────────────────────────────────────────────────────
-    @GetMapping("/{id}/reviews")
+    @GetMapping("/{id:\\d+}/reviews")
     public ResponseEntity<List<LandReview>> getReviews(@PathVariable Long id) {
         return ResponseEntity.ok(landService.getReviews(id));
     }
 
     // ── 11. Post review ────────────────────────────────────────────────────
-    @PostMapping("/{id}/reviews")
+    @PostMapping("/{id:\\d+}/reviews")
     public ResponseEntity<?> addReview(@PathVariable Long id,
                                        @RequestBody Map<String, Object> payload,
                                        HttpSession session) {

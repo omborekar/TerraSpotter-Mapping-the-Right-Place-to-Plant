@@ -26,7 +26,7 @@ public class PlantationController {
     }
 
     // ⭐ ADD REVIEW (FOR MODAL)
-    @PostMapping("/{id}/review")
+    @PostMapping("/{id:\\d+}/review")
     public String addReview(
             @PathVariable Long id,
             @RequestParam Integer rating,
