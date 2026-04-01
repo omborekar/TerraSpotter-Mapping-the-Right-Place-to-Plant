@@ -34,7 +34,7 @@ const AdminPendingLands = () => {
   // 📥 FETCH LANDS
 const fetchLands = async () => {
   try {
-    const res = await axios.get(`${BASE_URL}/lands/pending`, {
+    const res = await axios.get(`${BASE_URL}/api/lands/pending`, {
       withCredentials: true
     });
     setLands(res.data);
