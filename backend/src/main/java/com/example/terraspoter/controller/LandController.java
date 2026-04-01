@@ -180,8 +180,11 @@ public class LandController {
     }
     @Autowired
     private LandRepository landRepository;
-    @GetMapping("/lands/pending")
+    @GetMapping("/pending")
     public List<Land> getPendingLands() {
-        return landRepository.findByStatus("PENDING"); // ✅ correct
+        System.out.println("API HIT 🔥");
+        List<Land> lands = landRepository.findByStatus("PENDING");
+        System.out.println("RESULT SIZE 👉 " + lands.size());
+        return lands;
     }
 }

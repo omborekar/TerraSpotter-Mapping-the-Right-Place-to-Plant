@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/lands/**").permitAll()
+                        .requestMatchers("/api/lands/pending").permitAll()
 
 
                         .anyRequest().permitAll()
