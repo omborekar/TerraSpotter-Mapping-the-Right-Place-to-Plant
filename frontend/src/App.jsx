@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import AdminLandDetail from "./components/AdminLandDetail";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Navbar from "./components/Navbar";
@@ -53,7 +53,7 @@ function App() {
   // ⏳ Prevent early render
   if (loading) {
     return <LoadingSpinner text="Loading...">
-      
+
     </LoadingSpinner>
   }
 
@@ -88,6 +88,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminPendingLands currentUser={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lands/:id/verify"
+          element={
+            <ProtectedRoute>
+              <AdminLandDetail currentUser={user} />
             </ProtectedRoute>
           }
         />
