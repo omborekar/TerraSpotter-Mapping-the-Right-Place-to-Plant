@@ -56,8 +56,8 @@ export default function AdminPendingLands() {
   const handleVote = async (landId, vote) => {
     setVoting(v => ({ ...v, [landId]: vote }));
     try {
-      // ✅ FIX: correct API path — was `${BASE_URL}/lands/...` (missing /api/)
-      await axios.post(`${BASE_URL}/api/lands/${landId}/verify`, null, {
+      // ✅ FIX: LandVerificationController is mapped to /lands (no /api prefix)
+      await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, {
         withCredentials: true,
         params: { vote, userId: user.id },
       });
