@@ -25,12 +25,12 @@ const cardVariants = {
 };
 
 export default function AdminPendingLands() {
-  const [lands, setLands]       = useState([]);
-  const [user, setUser]         = useState(null);
-  const [loading, setLoading]   = useState(true);
-  const [voting, setVoting]     = useState({}); // landId -> "APPROVE"|"REJECT"|null
-  const [selectedId, setSelectedId] = useState(null); // open detail view
-  const [filter, setFilter]     = useState("ALL");
+  const [lands, setLands]           = useState([]);
+  const [user, setUser]             = useState(null);
+  const [loading, setLoading]       = useState(true);
+  const [voting, setVoting]         = useState({}); // landId -> "APPROVE"|"REJECT"|null
+  const [selectedId, setSelectedId] = useState(null);
+  const [filter, setFilter]         = useState("ALL");
 
   // fetch session
   useEffect(() => {
@@ -56,14 +56,15 @@ export default function AdminPendingLands() {
   const handleVote = async (landId, vote) => {
     setVoting(v => ({ ...v, [landId]: vote }));
     try {
-      await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, {
+      // ✅ FIX: correct API path — was `${BASE_URL}/lands/...` (missing /api/)
+      await axios.post(`${BASE_URL}/api/lands/${landId}/verify`, null, {
         withCredentials: true,
         params: { vote, userId: user.id },
       });
       await fetchLands();
     } catch (err) {
       console.error(err);
-      alert("Error voting");
+      alert("Error processing vote. Please try again.");
     } finally {
       setVoting(v => ({ ...v, [landId]: null }));
     }
@@ -84,12 +85,12 @@ export default function AdminPendingLands() {
     </div>
   );
 
-  // if detail view is open
+  // open detail view
   if (selectedId) return (
     <AdminLandDetail
       landId={selectedId}
       user={user}
-      onBack={() => setSelectedId(null)}
+      onBack={() => { setSelectedId(null); fetchLands(); }} // ✅ refresh list when coming back
       onVote={handleVote}
       voting={voting}
     />
@@ -97,8 +98,8 @@ export default function AdminPendingLands() {
 
   const filtered = filter === "ALL" ? lands : lands.filter(l => l.status === filter);
   const counts = {
-    ALL: lands.length,
-    PENDING: lands.filter(l => l.status === "PENDING").length,
+    ALL:      lands.length,
+    PENDING:  lands.filter(l => l.status === "PENDING").length,
     APPROVED: lands.filter(l => l.status === "APPROVED").length,
     REJECTED: lands.filter(l => l.status === "REJECTED").length,
   };
@@ -122,7 +123,6 @@ export default function AdminPendingLands() {
 
         /* header */
         .adm-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 36px; gap: 20px; flex-wrap: wrap; }
-        .adm-title-block {}
         .adm-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--leaf); margin-bottom: 6px; }
         .adm-title { font-family: 'Syne', sans-serif; font-size: clamp(26px, 4vw, 38px); font-weight: 800; color: var(--forest); line-height: 1.1; }
 
@@ -132,7 +132,7 @@ export default function AdminPendingLands() {
           display: inline-flex; align-items: center; gap: 7px;
           padding: 8px 16px; border-radius: 100px; font-size: 13px; font-weight: 600;
           border: 1.5px solid var(--line); background: var(--white); color: var(--body);
-          cursor: pointer; transition: all 0.2s;
+          cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
         }
         .adm-filter-btn:hover { border-color: var(--sprout); color: var(--forest); }
         .adm-filter-btn.active { background: var(--forest); color: white; border-color: var(--forest); }
@@ -197,7 +197,7 @@ export default function AdminPendingLands() {
           display: inline-flex; align-items: center; gap: 6px;
           padding: 8px 18px; background: var(--pale); border: 1px solid var(--line);
           border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--forest);
-          cursor: pointer; transition: all 0.2s; text-decoration: none;
+          cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
         }
         .adm-view-btn:hover { background: var(--mint); border-color: var(--sprout); }
 
@@ -223,7 +223,12 @@ export default function AdminPendingLands() {
         .adm-btn-reject:hover:not(:disabled) { background: #fee2e2; }
         .adm-btn-reject:disabled { opacity: 0.55; cursor: not-allowed; }
 
-        .adm-submitter { font-size: 12px; color: var(--muted); }
+        /* ✅ submitter name styling */
+        .adm-submitter { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+        .adm-submitter-avatar { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, var(--mid), var(--sprout)); color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+
+        .adm-img-loading { width: 100%; height: 100%; background: linear-gradient(90deg, var(--pale) 25%, #dff0e8 50%, var(--pale) 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+        @keyframes shimmer { to { background-position: -200% 0; } }
 
         @media (max-width: 768px) {
           .adm-page { padding: 24px 16px 60px; }
@@ -284,17 +289,33 @@ export default function AdminPendingLands() {
             animate="visible"
           >
             {filtered.map(land => {
-              const badge = statusBadge(land.status);
+              const badge    = statusBadge(land.status);
               const isVoting = voting[land.id];
+
+              // ✅ FIX: images come from the dedicated /images endpoint via AdminLandDetail
+              // For the list card thumbnail, use whatever the API returns on the land object
               const thumbUrl = land.images?.[0]?.imageUrl || land.imageUrls?.[0] || null;
               const imgCount = land.images?.length || land.imageUrls?.length || 0;
+
+              // ✅ FIX: show submitter name not raw ID
+              const submitterDisplay = land.createdByName || land.submittedByName
+                || (land.createdBy ? `User #${land.createdBy}` : null)
+                || (land.submittedBy ? `User #${land.submittedBy}` : null);
+
+              const submitterInitial = (land.createdByName || land.submittedByName || "?")?.[0]?.toUpperCase();
 
               return (
                 <motion.div key={land.id} className="adm-card" variants={cardVariants}>
                   {/* Image */}
                   <div className="adm-card-img">
                     {thumbUrl
-                      ? <img src={thumbUrl} alt={land.title} />
+                      ? (
+                        <img
+                          src={thumbUrl}
+                          alt={land.title}
+                          onError={e => { e.target.src = "https://via.placeholder.com/220x220/edf7f2/0b2e1a?text=🌿"; }}
+                        />
+                      )
                       : <div className="adm-img-placeholder">🌍</div>
                     }
                     {imgCount > 1 && <span className="adm-img-count">+{imgCount - 1} photos</span>}
@@ -351,11 +372,11 @@ export default function AdminPendingLands() {
                     )}
 
                     <div className="adm-tags">
-                      {land.soilType      && <span className="adm-tag">🪨 {land.soilType}</span>}
-                      {land.ownershipType && <span className="adm-tag">🏷 {land.ownershipType}</span>}
+                      {land.soilType       && <span className="adm-tag">🪨 {land.soilType}</span>}
+                      {land.ownershipType  && <span className="adm-tag">🏷 {land.ownershipType}</span>}
                       {land.fencing !== undefined && <span className="adm-tag">{land.fencing ? "🔒 Fenced" : "⛓ No Fence"}</span>}
-                      {land.accessRoad    && <span className="adm-tag">🛤 {land.accessRoad}</span>}
-                      {land.landStatus    && <span className="adm-tag">📊 {land.landStatus}</span>}
+                      {land.accessRoad     && <span className="adm-tag">🛤 {land.accessRoad}</span>}
+                      {land.landStatus     && <span className="adm-tag">📊 {land.landStatus}</span>}
                     </div>
 
                     <div className="adm-card-footer">
@@ -363,8 +384,12 @@ export default function AdminPendingLands() {
                         <button className="adm-view-btn" onClick={() => setSelectedId(land.id)}>
                           🔍 View Full Details
                         </button>
-                        {land.submittedBy && (
-                          <span className="adm-submitter">Submitted by #{land.submittedBy}</span>
+                        {/* ✅ FIX: show submitter name with avatar initial */}
+                        {submitterDisplay && (
+                          <span className="adm-submitter">
+                            <span className="adm-submitter-avatar">{submitterInitial}</span>
+                            {submitterDisplay}
+                          </span>
                         )}
                       </div>
 
@@ -375,14 +400,14 @@ export default function AdminPendingLands() {
                             onClick={() => handleVote(land.id, "APPROVE")}
                             disabled={!!isVoting}
                           >
-                            {isVoting === "APPROVE" ? "Approving…" : "✅ Approve"}
+                            {isVoting === "APPROVE" ? "⏳ Approving…" : "✅ Approve"}
                           </button>
                           <button
                             className="adm-btn-reject"
                             onClick={() => handleVote(land.id, "REJECT")}
                             disabled={!!isVoting}
                           >
-                            {isVoting === "REJECT" ? "Rejecting…" : "❌ Reject"}
+                            {isVoting === "REJECT" ? "⏳ Rejecting…" : "❌ Reject"}
                           </button>
                         </div>
                       )}
@@ -397,3 +422,13 @@ export default function AdminPendingLands() {
     </>
   );
 }
+
+const styles = {
+  guard: {
+    display: "flex", flexDirection: "column", alignItems: "center",
+    justifyContent: "center", minHeight: "60vh", gap: 12,
+    fontFamily: "'DM Sans', sans-serif", color: "#3d5244",
+    fontSize: 15,
+  },
+  guardIcon: { fontSize: 42 },
+};

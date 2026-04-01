@@ -36,38 +36,47 @@ function Section({ title, children }) {
 }
 
 export default function AdminLandDetail({ landId, user, onBack, onVote, voting: externalVoting }) {
-  const [land, setLand]         = useState(null);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
-  const [activeImg, setActiveImg] = useState(0);
-  const [voting, setVoting]     = useState({});
+  const [land, setLand]               = useState(null);
+  const [images, setImages]           = useState([]);   // ✅ separate images state like SiteDetail
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState(null);
+  const [activeImg, setActiveImg]     = useState(0);
+  const [voting, setVoting]           = useState({});
   const [recommendations, setRecommendations] = useState([]);
-  const [reviews, setReviews]   = useState([]);
+  const [reviews, setReviews]         = useState([]);
 
   useEffect(() => {
     setLoading(true);
     Promise.all([
+      // ✅ FIX: fetch land details
       axios.get(`${BASE_URL}/api/lands/${landId}`, { withCredentials: true }),
+      // ✅ FIX: fetch images from dedicated endpoint (same as SiteDetail & Browse)
+      axios.get(`${BASE_URL}/api/lands/${landId}/images`, { withCredentials: true }).catch(() => ({ data: [] })),
+      // ✅ fetch recommendations
       axios.get(`${BASE_URL}/api/lands/${landId}/recommendations`, { withCredentials: true }).catch(() => ({ data: [] })),
+      // ✅ fetch reviews
       axios.get(`${BASE_URL}/api/lands/${landId}/reviews`, { withCredentials: true }).catch(() => ({ data: [] })),
     ])
-      .then(([landRes, recRes, revRes]) => {
+      .then(([landRes, imgRes, recRes, revRes]) => {
         setLand(landRes.data);
-        setRecommendations(recRes.data || []);
-        setReviews(revRes.data || []);
+        // ✅ FIX: use dedicated images endpoint response (array of {id, imageUrl})
+        setImages(Array.isArray(imgRes.data) ? imgRes.data : []);
+        setRecommendations(Array.isArray(recRes.data) ? recRes.data : []);
+        setReviews(Array.isArray(revRes.data) ? revRes.data : []);
       })
-      .catch(e => setError("Failed to load land details."))
+      .catch(() => setError("Failed to load land details."))
       .finally(() => setLoading(false));
   }, [landId]);
 
   const handleVote = async (vote) => {
     setVoting(v => ({ ...v, [landId]: vote }));
     try {
-      await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, {
+      // ✅ FIX: correct API path — was missing /api/ prefix
+      await axios.post(`${BASE_URL}/api/lands/${landId}/verify`, null, {
         withCredentials: true,
         params: { vote, userId: user.id },
       });
-      // refresh land
+      // refresh land after vote
       const res = await axios.get(`${BASE_URL}/api/lands/${landId}`, { withCredentials: true });
       setLand(res.data);
       if (onVote) onVote(landId, vote);
@@ -93,9 +102,10 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
     </div>
   );
 
-  const images = land.images?.map(i => i.imageUrl) || land.imageUrls || [];
-  const badge  = statusBadge(land.status);
-  const isVoting = voting[landId] || externalVoting?.[landId];
+  // ✅ FIX: use dedicated images array (same shape as SiteDetail: [{id, imageUrl}])
+  const imageUrls = images.map(i => i.imageUrl);
+  const badge     = statusBadge(land.status);
+  const isVoting  = voting[landId] || externalVoting?.[landId];
 
   return (
     <>
@@ -122,12 +132,16 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
 
         .det-review-card { background: white; border: 1px solid #dceee4; border-radius: 12px; padding: 20px; }
         .det-review-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .det-review-user { font-size: 13px; font-weight: 600; color: #0b2e1a; }
+        .det-review-user { font-size: 13px; font-weight: 600; color: #0b2e1a; display: flex; align-items: center; gap: 8px; }
+        .det-review-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #1f5c35, #3db06e); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
         .det-review-rating { font-size: 13px; color: #d97706; font-weight: 700; }
         .det-review-body { font-size: 13.5px; color: #3d5244; line-height: 1.65; }
+        .det-review-meta { font-size: 11px; color: #7a9485; margin-bottom: 8px; }
 
         .map-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #edf7f2; border: 1px solid #dceee4; border-radius: 8px; color: #1f5c35; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
         .map-link:hover { background: #d4f0e0; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
       <div style={styles.page}>
@@ -168,34 +182,39 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
           {/* LEFT — images + details */}
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
-            {/* Gallery */}
-            {images.length > 0 ? (
+            {/* ✅ FIX: Gallery using images from dedicated endpoint */}
+            {imageUrls.length > 0 ? (
               <div style={styles.galleryCard}>
                 <div style={styles.mainImgWrap}>
                   <AnimatePresence mode="wait">
                     <motion.img
                       key={activeImg}
-                      src={images[activeImg]}
+                      src={imageUrls[activeImg]}
                       alt={`Land image ${activeImg + 1}`}
                       style={styles.mainImg}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.25 }}
+                      onError={e => { e.target.src = "https://via.placeholder.com/600x380/e8f5ee/0d3320?text=🌿"; }}
                     />
                   </AnimatePresence>
-                  <span style={styles.imgCounter}>{activeImg + 1} / {images.length}</span>
+                  <span style={styles.imgCounter}>{activeImg + 1} / {imageUrls.length}</span>
                 </div>
-                {images.length > 1 && (
+                {imageUrls.length > 1 && (
                   <div style={styles.thumbRow}>
-                    {images.map((url, i) => (
+                    {imageUrls.map((url, i) => (
                       <div
                         key={i}
                         className={`det-thumb${activeImg === i ? " active" : ""}`}
                         onClick={() => setActiveImg(i)}
                         style={{ flex: 1, minWidth: 60, maxWidth: 90 }}
                       >
-                        <img src={url} alt={`thumb-${i}`} />
+                        <img
+                          src={url}
+                          alt={`thumb-${i}`}
+                          onError={e => { e.target.src = "https://via.placeholder.com/90x60/e8f5ee/0d3320?text=🌿"; }}
+                        />
                       </div>
                     ))}
                   </div>
@@ -229,7 +248,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
                   {recommendations.map((r, i) => (
                     <div key={i} className="det-rec-card">
                       <div className="det-rec-name">{r.plantName}</div>
-                      {r.suitabilityScore && (
+                      {r.suitabilityScore != null && (
                         <div className="det-rec-score">
                           Suitability: {(r.suitabilityScore * 100).toFixed(0)}%
                         </div>
@@ -241,18 +260,42 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
               </Section>
             )}
 
-            {/* Community Reviews */}
+            {/* ✅ FIX: Community Reviews — show userName instead of userId */}
             {reviews.length > 0 && (
               <Section title={`💬 Community Reviews (${reviews.length})`}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {reviews.map((r, i) => (
                     <div key={i} className="det-review-card">
                       <div className="det-review-head">
-                        <span className="det-review-user">User #{r.userId}</span>
-                        <span className="det-review-rating">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</span>
+                        {/* ✅ FIX: show userName (same field SiteDetail uses) with avatar initial */}
+                        <span className="det-review-user">
+                          <span className="det-review-avatar">
+                            {(r.userName || r.name || "?")?.[0]?.toUpperCase()}
+                          </span>
+                          {r.userName || r.name || `User #${r.userId}`}
+                        </span>
+                        <span className="det-review-rating">
+                          {"★".repeat(r.rating || 0)}{"☆".repeat(5 - (r.rating || 0))}
+                        </span>
                       </div>
-                      {r.feasibilityNote && <p style={{ fontSize: 12, color: "#7a9485", marginBottom: 6 }}>Feasibility: {r.feasibilityNote} · Permission: {r.permissionNote}</p>}
-                      {r.body && <p className="det-review-body">{r.body}</p>}
+                      {/* ✅ show feasibility + permission as tags */}
+                      {(r.feasibilityNote || r.permissionNote) && (
+                        <p className="det-review-meta">
+                          {r.feasibilityNote && `✅ ${r.feasibilityNote}`}
+                          {r.feasibilityNote && r.permissionNote && " · "}
+                          {r.permissionNote && `🔐 ${r.permissionNote}`}
+                        </p>
+                      )}
+                      {r.createdAt && (
+                        <p className="det-review-meta">
+                          {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                        </p>
+                      )}
+                      {r.body && (
+                        <p className="det-review-body" style={{ borderLeft: "3px solid #3db06e", paddingLeft: 10, fontStyle: "italic" }}>
+                          "{r.body}"
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -263,7 +306,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
           {/* RIGHT — sidebar */}
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-            {/* Action card */}
+            {/* ✅ FIX: Action card — approve/reject with corrected API path */}
             {land.status === "PENDING" && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
@@ -275,20 +318,51 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
                 <p style={styles.actionSub}>Review all details before approving or rejecting this submission.</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}>
                   <button
-                    style={styles.btnApprove}
+                    style={{
+                      ...styles.btnApprove,
+                      opacity: isVoting ? 0.6 : 1,
+                      cursor: isVoting ? "not-allowed" : "pointer",
+                    }}
                     onClick={() => handleVote("APPROVE")}
                     disabled={!!isVoting}
                   >
-                    {isVoting === "APPROVE" ? "Approving…" : "✅ Approve Submission"}
+                    {isVoting === "APPROVE" ? "⏳ Approving…" : "✅ Approve Submission"}
                   </button>
                   <button
-                    style={styles.btnReject}
+                    style={{
+                      ...styles.btnReject,
+                      opacity: isVoting ? 0.6 : 1,
+                      cursor: isVoting ? "not-allowed" : "pointer",
+                    }}
                     onClick={() => handleVote("REJECT")}
                     disabled={!!isVoting}
                   >
-                    {isVoting === "REJECT" ? "Rejecting…" : "❌ Reject Submission"}
+                    {isVoting === "REJECT" ? "⏳ Rejecting…" : "❌ Reject Submission"}
                   </button>
                 </div>
+              </motion.div>
+            )}
+
+            {/* Already decided banner */}
+            {land.status !== "PENDING" && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                  background: land.status === "APPROVED"
+                    ? "linear-gradient(135deg, #166534, #15803d)"
+                    : "linear-gradient(135deg, #7f1d1d, #b91c1c)",
+                  borderRadius: 16,
+                  padding: "22px 24px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+                }}
+              >
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 800, color: "white", marginBottom: 4 }}>
+                  {land.status === "APPROVED" ? "✅ Approved" : "❌ Rejected"}
+                </div>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                  This submission has already been {land.status.toLowerCase()}.
+                </p>
               </motion.div>
             )}
 
@@ -297,34 +371,34 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
               <div style={styles.sideCardTitle}>Ownership Details</div>
               <InfoRow icon="👤" label="Owner Name"      value={land.ownerName} />
               <InfoRow icon="📞" label="Phone"           value={land.ownerPhone} />
-              <InfoRow icon="🏷" label="Ownership Type" value={land.ownershipType} />
-              <InfoRow icon="✅" label="Permission"     value={land.permissionStatus} />
+              <InfoRow icon="🏷" label="Ownership Type"  value={land.ownershipType} />
+              <InfoRow icon="✅" label="Permission"      value={land.permissionStatus} />
             </div>
 
             {/* Land Info */}
             <div style={styles.sideCard}>
               <div style={styles.sideCardTitle}>Land Information</div>
-              <InfoRow icon="📐" label="Area"          value={land.areaSqm ? `${land.areaSqm.toLocaleString()} sqm (${(land.areaSqm/10000).toFixed(3)} ha)` : null} />
-              <InfoRow icon="🪨" label="Soil Type"     value={land.soilType} />
-              <InfoRow icon="📊" label="Land Status"   value={land.landStatus} />
-              <InfoRow icon="🔒" label="Fencing"       value={land.fencing !== undefined ? (land.fencing ? "Yes" : "No") : null} />
-              <InfoRow icon="🛤" label="Access Road"   value={land.accessRoad} />
-              <InfoRow icon="📍" label="Landmark"      value={land.nearbyLandmark} />
+              <InfoRow icon="📐" label="Area"         value={land.areaSqm ? `${land.areaSqm.toLocaleString()} sqm (${(land.areaSqm / 10000).toFixed(3)} ha)` : null} />
+              <InfoRow icon="🪨" label="Soil Type"    value={land.soilType} />
+              <InfoRow icon="📊" label="Land Status"  value={land.landStatus} />
+              <InfoRow icon="🔒" label="Fencing"      value={land.fencing !== undefined ? (land.fencing ? "Yes" : "No") : null} />
+              <InfoRow icon="🛤" label="Access Road"  value={land.accessRoad} />
+              <InfoRow icon="📍" label="Landmark"     value={land.nearbyLandmark} />
             </div>
 
             {/* Water */}
             <div style={styles.sideCard}>
               <div style={styles.sideCardTitle}>Water Availability</div>
-              <InfoRow icon="💧" label="Available"  value={land.waterAvailable} />
-              <InfoRow icon="🔁" label="Frequency"  value={land.waterFrequency} />
+              <InfoRow icon="💧" label="Available"   value={land.waterAvailable} />
+              <InfoRow icon="🔁" label="Frequency"   value={land.waterFrequency} />
             </div>
 
             {/* Location */}
             {(land.centroidLat || land.centroidLng) && (
               <div style={styles.sideCard}>
                 <div style={styles.sideCardTitle}>Location</div>
-                <InfoRow icon="🌐" label="Latitude"  value={land.centroidLat?.toFixed(6)} />
-                <InfoRow icon="🌐" label="Longitude" value={land.centroidLng?.toFixed(6)} />
+                <InfoRow icon="🌐" label="Latitude"   value={land.centroidLat?.toFixed(6)} />
+                <InfoRow icon="🌐" label="Longitude"  value={land.centroidLng?.toFixed(6)} />
                 <div style={{ marginTop: 14 }}>
                   <a
                     href={`https://maps.google.com/?q=${land.centroidLat},${land.centroidLng}`}
@@ -338,12 +412,23 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
               </div>
             )}
 
-            {/* Submission meta */}
+            {/* ✅ FIX: Submission info — show submitter name not raw ID */}
             <div style={styles.sideCard}>
               <div style={styles.sideCardTitle}>Submission Info</div>
               <InfoRow icon="🆔" label="Land ID"       value={land.id} />
-              <InfoRow icon="👤" label="Submitted by"  value={land.createdBy ? `User #${land.createdBy}` : null} />
-              <InfoRow icon="📅" label="Submitted on"  value={land.createdAt ? new Date(land.createdAt).toLocaleString("en-IN") : null} />
+              {/* ✅ use createdByName if backend sends it, fall back to createdBy id */}
+              <InfoRow
+                icon="👤"
+                label="Submitted by"
+                value={land.createdByName || land.submittedByName || (land.createdBy ? `User #${land.createdBy}` : null)}
+              />
+              <InfoRow
+                icon="📅"
+                label="Submitted on"
+                value={land.createdAt ? new Date(land.createdAt).toLocaleString("en-IN") : null}
+              />
+              {/* show photo count from the dedicated images endpoint */}
+              <InfoRow icon="🖼" label="Photos uploaded" value={images.length > 0 ? `${images.length} photo${images.length > 1 ? "s" : ""}` : "None"} />
             </div>
 
           </div>
@@ -461,7 +546,7 @@ const styles = {
     width: "100%", padding: "13px", background: "#3db06e", color: "white",
     border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700,
     cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
-    transition: "background 0.2s", opacity: 1,
+    transition: "background 0.2s",
   },
   btnReject: {
     width: "100%", padding: "13px", background: "rgba(255,255,255,0.08)", color: "#fca5a5",
