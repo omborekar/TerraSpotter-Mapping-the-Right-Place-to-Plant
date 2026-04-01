@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,20 +42,54 @@ public class LandController {
         }
     }
 
-    // ── 3. Save land ───────────────────────────────────────────────────────
-    @PostMapping
-    public ResponseEntity<?> saveLand(@RequestBody Map<String, Object> payload,
-                                      HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Not logged in"));
-        try {
-            return ResponseEntity.ok(landService.saveLand(payload, userId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public Land saveLand(Map<String, Object> payload, Long userId) {
+
+        Land land = new Land();
+
+        // BASIC
+        land.setTitle((String) payload.get("title"));
+        land.setDescription((String) payload.get("description"));
+        land.setPolygonCoords((String) payload.get("polygonCoords"));
+
+        land.setAreaSqm(Double.valueOf(payload.get("areaSqm").toString()));
+
+        Map<String, Object> centroid = (Map<String, Object>) payload.get("centroid");
+        land.setCentroidLat(Double.valueOf(centroid.get("lat").toString()));
+        land.setCentroidLng(Double.valueOf(centroid.get("lng").toString()));
+
+        // OWNER
+        Map<String, Object> owner = payload.get("owner") instanceof Map
+                ? (Map<String, Object>) payload.get("owner")
+                : new HashMap<>();
+
+        land.setOwnerName((String) owner.get("name"));
+        land.setOwnerPhone((String) owner.get("phone"));
+        land.setOwnershipType((String) owner.get("ownershipType"));
+        land.setPermissionStatus((String) owner.get("permission"));
+
+        // LAND
+        Map<String, Object> landData = payload.get("land") instanceof Map
+                ? (Map<String, Object>) payload.get("land")
+                : new HashMap<>();
+
+        land.setLandStatus((String) landData.get("status"));
+        land.setAccessRoad((String) landData.get("accessRoad"));
+        land.setWaterAvailable((String) landData.get("waterAvailable"));
+        land.setWaterFrequency((String) landData.get("waterFrequency"));
+        land.setSoilType((String) landData.get("soilType"));
+        land.setNearbyLandmark((String) landData.get("nearbyLandmark"));
+        land.setNotes((String) landData.get("notes"));
+
+        // 🔥 FIX fencing
+        String fencingStr = (String) landData.get("fencing");
+        land.setFencing("Yes".equalsIgnoreCase(fencingStr));
+
+        // SYSTEM FIELDS
+        land.setCreatedBy(userId);
+        land.setStatus("PENDING");
+        land.setVerified(false);
+
+        return landRepository.save(land);
     }
 
     // ── 4. Upload images ───────────────────────────────────────────────────
