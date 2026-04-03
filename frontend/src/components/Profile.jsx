@@ -36,7 +36,6 @@ const StatPill = ({ label, value, accent }) => (
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [lands, setLands] = useState([]);
-  const [stats, setStats] = useState([]);
   const [filter, setFilter] = useState("monthly");
   const [editOpen, setEditOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -64,12 +63,38 @@ const Profile = () => {
   }, []);
 
   /* fetch stats */
-  useEffect(() => {
-    fetch(`${BASE_URL}/api/stats?filter=${filter}`, { credentials: "include" })
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setStats(data); })
-      .catch(() => setStats([]));
-  }, [filter]);
+const stats = React.useMemo(() => {
+  const map = {};
+
+  lands.forEach(l => {
+    if (!l.createdAt) return;
+
+    const d = new Date(l.createdAt);
+
+    let key;
+    if (filter === "monthly") {
+      key = d.getDate(); // day-wise
+    } else {
+      key = d.getMonth(); // month-wise
+    }
+
+    if (!map[key]) {
+      map[key] = { reported: 0, planted: 0 };
+    }
+
+    map[key].reported += 1;
+
+    if (l.status === "APPROVED") {
+      map[key].planted += 1;
+    }
+  });
+
+  return Object.keys(map).map(k => ({
+    label: filter === "monthly" ? `Day ${k}` : `M${Number(k)+1}`,
+    reported: map[k].reported,
+    planted: map[k].planted,
+  }));
+}, [lands, filter]);
 
   const handleSave = async () => {
     setSaving(true);
