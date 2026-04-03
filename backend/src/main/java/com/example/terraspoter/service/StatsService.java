@@ -2,8 +2,9 @@ package com.example.terraspoter.service;
 
 import com.example.terraspoter.repository.LandRepository;
 import com.example.terraspoter.repository.UserRepository;
-import org.springframework.stereotype.Service;
+import com.example.terraspoter.repository.PlantationCompletionRepository;
 
+import org.springframework.stereotype.Service;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,11 +13,13 @@ public class StatsService {
 
     private final LandRepository landRepository;
     private final UserRepository userRepository;
+    private final PlantationCompletionRepository plantationCompletionRepository;
 
     public StatsService(LandRepository landRepository,
-                        UserRepository userRepository) {
+                        UserRepository userRepository,PlantationCompletionRepository plantationCompletionRepository) {
         this.landRepository = landRepository;
         this.userRepository = userRepository;
+        this.plantationCompletionRepository=plantationCompletionRepository;
     }
 
     /**
@@ -33,7 +36,7 @@ public class StatsService {
 
         stats.put("totalLands",    landRepository.count());
         stats.put("approvedLands", landRepository.countByStatus("APPROVED"));
-        stats.put("treesPlanted",  landRepository.sumTreesPlanted());
+        stats.put("treesPlanted",  plantationCompletionRepository.totalTreesPlanted());
         stats.put("volunteers",    userRepository.count());
 
         return stats;
