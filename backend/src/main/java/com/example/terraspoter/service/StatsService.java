@@ -1,48 +1,40 @@
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.repository.LandRepository;
-import com.example.terraspoter.repository.PlantationCompletionRepository;
 import com.example.terraspoter.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class StatsService {
 
     private final LandRepository landRepository;
-    private final PlantationCompletionRepository plantationRepository;
     private final UserRepository userRepository;
 
     public StatsService(LandRepository landRepository,
-                        PlantationCompletionRepository plantationRepository,
                         UserRepository userRepository) {
-        this.landRepository       = landRepository;
-        this.plantationRepository = plantationRepository;
-        this.userRepository       = userRepository;
+        this.landRepository = landRepository;
+        this.userRepository = userRepository;
     }
 
+    /**
+     * Returns live platform statistics for the login page hero panel.
+     *
+     * Keys returned:
+     *   totalLands    — total number of submitted land parcels
+     *   approvedLands — lands with status = "APPROVED"
+     *   treesPlanted  — sum of treesPlanted field across all lands
+     *   volunteers    — total registered users
+     */
     public Map<String, Object> getStats() {
+        Map<String, Object> stats = new LinkedHashMap<>();
 
-        long totalLands = landRepository.countLand();
-        long approved   = landRepository.countByStatus("APPROVED");
-        long trees      = plantationRepository.totalTreesPlanted();
-        long users      = userRepository.userCount();
-
-        double totalSqm = Optional.ofNullable(
-                landRepository.sumAreaSqmByStatus("APPROVED")
-        ).orElse(0.0);
-
-        long hectaresMapped = Math.round(totalSqm / 10_000.0);
-
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("users", users);
-        stats.put("lands", totalLands);
-        stats.put("verified", approved);
-        stats.put("trees", trees);
-        stats.put("hectares", hectaresMapped);
+        stats.put("totalLands",    landRepository.count());
+        stats.put("approvedLands", landRepository.countByStatus("APPROVED"));
+        stats.put("treesPlanted",  landRepository.sumTreesPlanted());
+        stats.put("volunteers",    userRepository.count());
 
         return stats;
     }

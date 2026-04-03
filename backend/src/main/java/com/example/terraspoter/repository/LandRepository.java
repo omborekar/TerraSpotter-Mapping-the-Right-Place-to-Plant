@@ -20,4 +20,10 @@ public interface LandRepository extends JpaRepository<Land, Long> {
 
     @Query("SELECT COUNT(l) FROM Land l")
     long countLand();
+
+    // ── NEW: sum trees planted across all completed plantations ──────────────
+    // Uses COALESCE so it returns 0 instead of null when no records exist yet.
+    // Change `l.treesPlanted` to whatever your actual field name is on Land entity.
+    @Query("SELECT COALESCE(SUM(l.treesPlanted), 0) FROM Land l WHERE l.treesPlanted IS NOT NULL")
+    long sumTreesPlanted();
 }
