@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Repository for Land entity persistence.
+*/
 package com.example.terraspoter.repository;
 
 import com.example.terraspoter.model.Land;

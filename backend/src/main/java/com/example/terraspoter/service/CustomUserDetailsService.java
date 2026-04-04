@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Adapter for Spring Security to load user details.
+*/
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.model.User;

@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Signup component with OTP flow and password helpers.
+*/
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -5,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-/* ── password strength ── */
+// password strength helper
 function getStrength(p) {
   if (!p) return 0;
   let s = 0;
@@ -16,7 +22,7 @@ function getStrength(p) {
   return s;
 }
 
-/* ── 4-box OTP input ── */
+// 4-box OTP input component
 function OtpInput({ value, onChange, disabled }) {
   const refs  = [useRef(), useRef(), useRef(), useRef()];
   const chars = (value + "    ").slice(0, 4).split("");
@@ -78,7 +84,7 @@ function OtpInput({ value, onChange, disabled }) {
   );
 }
 
-/* ── step progress bar ── */
+// step progress bar component
 function Steps({ step }) {
   const labels = ["Details", "Verify Email", "Done"];
   return (
@@ -119,9 +125,7 @@ function Steps({ step }) {
   );
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   MAIN COMPONENT
-══════════════════════════════════════════════════════════════════ */
+// Signup main component
 export default function Signup() {
   const navigate = useNavigate();
 
@@ -137,7 +141,7 @@ export default function Signup() {
   const [showPw,  setShowPw]  = useState(false);
   const [showCp,  setShowCp]  = useState(false);
 
-  /* OTP state */
+  // OTP state
   const [otp,        setOtp]        = useState("");
   const [otpError,   setOtpError]   = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
@@ -159,7 +163,7 @@ export default function Signup() {
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
-  /* age calc */
+  // age calculation
   const today = new Date();
   const dobD  = new Date(form.dob);
   let age = today.getFullYear() - dobD.getFullYear();
@@ -186,7 +190,7 @@ export default function Signup() {
     return Object.keys(e).length === 0;
   };
 
-  /* STEP 0 → 1: send OTP */
+  // STEP 0 → 1: send OTP
   const handleSendOtp = async ev => {
     ev.preventDefault();
     if (!validate()) return;
@@ -206,7 +210,7 @@ export default function Signup() {
     }
   };
 
-  /* STEP 1 → 2: verify OTP + complete signup */
+  // STEP 1 → 2: verify OTP + complete signup
   const handleVerifyOtp = async () => {
     const clean = otp.replace(/\s/g, "");
     if (clean.length < 4) { setOtpError("Enter all 4 digits"); return; }
@@ -231,7 +235,7 @@ export default function Signup() {
     }
   };
 
-  /* resend OTP */
+  // resend OTP
   const handleResend = async () => {
     if (resendSecs > 0) return;
     try {
@@ -251,7 +255,7 @@ export default function Signup() {
   const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
   const strengthColor = ["", "#e53e3e", "#d97706", "#2d8a55", "#0d3320"][strength];
 
-  /* ─────────────────── RENDER ─────────────────── */
+  // render
   return (
     <>
       <style>{`
@@ -374,7 +378,7 @@ export default function Signup() {
 
       <div className="su-page">
 
-        {/* ── LEFT PANEL (unchanged visually) ── */}
+        {/* Left panel */}
         <motion.aside className="su-left"
           initial={{ opacity:0, x:-20 }} animate={{ opacity:1, x:0 }} transition={{ duration:.55 }}>
           <div className="su-left-inner">
@@ -401,7 +405,7 @@ export default function Signup() {
           </div>
         </motion.aside>
 
-        {/* ── RIGHT PANEL ── */}
+        {/* RIGHT PANEL */}
         <motion.div className="su-right"
           initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:.45, delay:.08 }}>
           <div className="su-form-wrap">
@@ -410,7 +414,7 @@ export default function Signup() {
 
             <AnimatePresence mode="wait">
 
-              {/* ══ STEP 0: registration form ══ */}
+              {/* STEP 0: registration form */}
               {step === 0 && (
                 <motion.div key="form"
                   initial={{ opacity:0, x:-24 }} animate={{ opacity:1, x:0 }}
@@ -516,7 +520,7 @@ export default function Signup() {
                 </motion.div>
               )}
 
-              {/* ══ STEP 1: OTP entry ══ */}
+              {/* STEP 1: OTP entry */}
               {step === 1 && (
                 <motion.div key="otp"
                   initial={{ opacity:0, x:24 }} animate={{ opacity:1, x:0 }}
@@ -559,7 +563,7 @@ export default function Signup() {
                 </motion.div>
               )}
 
-              {/* ══ STEP 2: success ══ */}
+              {/* STEP 2: success */}
               {step === 2 && (
                 <motion.div key="success"
                   initial={{ opacity:0, scale:.95 }} animate={{ opacity:1, scale:1 }}

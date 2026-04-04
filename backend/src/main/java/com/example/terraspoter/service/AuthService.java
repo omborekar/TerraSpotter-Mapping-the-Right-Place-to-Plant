@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Authentication and user management helper methods.
+*/
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.model.User;

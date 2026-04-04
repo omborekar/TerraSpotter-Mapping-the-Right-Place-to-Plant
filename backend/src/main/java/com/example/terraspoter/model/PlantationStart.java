@@ -1,4 +1,10 @@
 // com/example/terraspoter/model/PlantationStart.java
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Entity representing the start of a plantation event.
+*/
 package com.example.terraspoter.model;
 
 import jakarta.persistence.*;

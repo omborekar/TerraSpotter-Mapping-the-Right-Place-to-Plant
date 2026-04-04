@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Core Land entity containing geodata and metadata.
+*/
 package com.example.terraspoter.model;
 
 import jakarta.persistence.*;

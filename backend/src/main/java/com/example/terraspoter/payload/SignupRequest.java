@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: DTO for signup request payload.
+*/
 package com.example.terraspoter.payload;
 
 public class SignupRequest {

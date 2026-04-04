@@ -8,7 +8,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 const BASE_URL = import.meta.env.VITE_API_URL;
 import LoadingSpinner from "./ui/LoadingSpinner";
-/* ─── tiny helpers ─────────────────────────────────────────────────────── */
+// tiny helpers
 const Field = ({ label, required, error, children }) => (
   <div className="ts-field">
     <label className="ts-label">
@@ -35,7 +35,7 @@ const StepBadge = ({ n, active, done }) => (
   </div>
 );
 
-/* ─── main component ────────────────────────────────────────────────────── */
+// main component
 const Main = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -258,7 +258,7 @@ const Main = () => {
   return (
     <>
       <style>{`
-        /* ── Google Font ── */
+        /* Google Font */
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -284,7 +284,7 @@ const Main = () => {
 
         body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--ink); }
 
-        /* ── page ── */
+        /* page */
         .ts-page {
           min-height: 100vh;
           display: grid;
@@ -292,7 +292,7 @@ const Main = () => {
           grid-template-rows: auto 1fr;
         }
 
-        /* ── sidebar ── */
+        /* sidebar */
         .ts-sidebar {
           grid-column: 1;
           grid-row: 1 / 3;
@@ -412,7 +412,7 @@ const Main = () => {
           margin-top: 1px;
         }
 
-        /* ── main content ── */
+        /* main content */
         .ts-content {
           grid-column: 2;
           grid-row: 1 / 3;
@@ -440,7 +440,7 @@ const Main = () => {
           color: var(--smoke);
         }
 
-        /* ── stepper ── */
+        /* stepper */
         .ts-stepper {
           display: flex;
           align-items: center;
@@ -483,7 +483,7 @@ const Main = () => {
         .ts-step-badge.active { background: white; color: var(--forest); border-color: white; }
         .ts-step-badge.done { background: var(--leaf); border-color: var(--leaf); color: white; }
 
-        /* ── card ── */
+        /* card */
         .ts-card {
           background: white;
           border-radius: 16px;
@@ -495,7 +495,7 @@ const Main = () => {
           gap: 24px;
         }
 
-        /* ── section title ── */
+        /* section title */
         .ts-section-title {
           display: flex;
           align-items: flex-start;
@@ -525,7 +525,7 @@ const Main = () => {
           margin-top: 2px;
         }
 
-        /* ── field ── */
+        /* field */
         .ts-field { display: flex; flex-direction: column; gap: 6px; }
         .ts-label {
           font-size: 13px;
@@ -567,7 +567,7 @@ const Main = () => {
         .ts-row-2 { grid-template-columns: 1fr 1fr; }
         .ts-row-3 { grid-template-columns: 1fr 1fr 1fr; }
 
-        /* ── map trigger ── */
+        /* map trigger */
         .ts-map-trigger {
           display: flex;
           align-items: center;
@@ -608,7 +608,7 @@ const Main = () => {
           font-weight: 500;
         }
 
-        /* ── toggle group ── */
+        /* toggle group */
         .ts-toggle-group {
           display: flex;
           gap: 8px;
@@ -632,7 +632,7 @@ const Main = () => {
           color: white;
         }
 
-        /* ── photo upload ── */
+        /* photo upload */
         .ts-photo-zone {
           border: 2px dashed var(--line);
           border-radius: 12px;
@@ -683,7 +683,7 @@ const Main = () => {
           line-height: 1;
         }
 
-        /* ── buttons ── */
+        /* buttons */
         .ts-btn-row {
           display: flex;
           gap: 12px;
@@ -723,7 +723,7 @@ const Main = () => {
         }
         .ts-btn-secondary:hover { border-color: var(--forest); }
 
-        /* ── loader ── */
+        /* loader */
         .ts-loader {
           min-height: 100vh;
           display: flex;
@@ -745,7 +745,7 @@ const Main = () => {
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── success ── */
+        /* success */
         .ts-success-screen {
           min-height: 100vh;
           display: flex;
@@ -774,7 +774,7 @@ const Main = () => {
         }
         .ts-success-card p { font-size: 14px; color: var(--smoke); line-height: 1.7; }
 
-        /* ── map modal ── */
+        /* map modal */
         .ts-map-overlay {
           position: fixed;
           inset: 0;
@@ -823,7 +823,7 @@ const Main = () => {
         .ts-map-btn.primary:hover { background: var(--canopy); }
         .ts-map-body { flex: 1; overflow: hidden; }
 
-        /* ── api error ── */
+        /* api error */
         .ts-api-error {
           padding: 12px 16px;
           background: #fef2f2;
@@ -833,7 +833,7 @@ const Main = () => {
           color: var(--danger);
         }
 
-        /* ── responsive ── */
+        /* responsive */
         @media (max-width: 900px) {
           .ts-page { grid-template-columns: 1fr; }
           .ts-sidebar { display: none; }
@@ -843,7 +843,7 @@ const Main = () => {
       `}</style>
 
       <div className="ts-page">
-        {/* ── SIDEBAR ── */}
+        {/* SIDEBAR */}
         <aside className="ts-sidebar">
           <div>
             <div className="ts-sidebar-brand">Terra<span>Spotter</span></div>
@@ -896,7 +896,7 @@ const Main = () => {
           </div>
         </aside>
 
-        {/* ── MAIN CONTENT ── */}
+        {/* MAIN CONTENT */}
         <main className="ts-content">
           <div className="ts-header">
             <h1>Submit Land for Plantation</h1>
@@ -918,7 +918,7 @@ const Main = () => {
           </div>
 
           <AnimatePresence mode="wait">
-            {/* ── STEP 1: MAP ── */}
+            {/* STEP 1: MAP */}
             {step === 1 && (
               <motion.div key="step1" className="ts-card"
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
@@ -959,7 +959,7 @@ const Main = () => {
               </motion.div>
             )}
 
-            {/* ── STEP 2: OWNER ── */}
+            {/* STEP 2: OWNER */}
             {step === 2 && (
               <motion.div key="step2" className="ts-card"
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
@@ -1015,7 +1015,7 @@ const Main = () => {
               </motion.div>
             )}
 
-            {/* ── STEP 3: LAND INFO ── */}
+            {/* STEP 3: LAND INFO */}
             {step === 3 && (
               <motion.div key="step3" className="ts-card"
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
@@ -1112,7 +1112,7 @@ const Main = () => {
               </motion.div>
             )}
 
-            {/* ── STEP 4: PHOTOS ── */}
+            {/* STEP 4: PHOTOS */}
             {step === 4 && (
               <motion.div key="step4" className="ts-card"
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
@@ -1162,7 +1162,7 @@ const Main = () => {
         </main>
       </div>
 
-      {/* ── MAP MODAL ── */}
+      {/* MAP MODAL */}
       <AnimatePresence>
         {mapOpen && (
           <motion.div className="ts-map-overlay"

@@ -37,7 +37,7 @@ function Section({ title, children }) {
 
 export default function AdminLandDetail({ landId, user, onBack, onVote, voting: externalVoting }) {
   const [land, setLand]               = useState(null);
-  const [images, setImages]           = useState([]);   // ✅ separate images state like SiteDetail
+  const [images, setImages]           = useState([]);   // separate images state like SiteDetail
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
   const [activeImg, setActiveImg]     = useState(0);
@@ -48,18 +48,18 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      // ✅ FIX: fetch land details
+      // FIX: fetch land details
       axios.get(`${BASE_URL}/api/lands/${landId}`, { withCredentials: true }),
-      // ✅ FIX: fetch images from dedicated endpoint (same as SiteDetail & Browse)
+      // fetch images from dedicated endpoint (same as SiteDetail & Browse)
       axios.get(`${BASE_URL}/api/lands/${landId}/images`, { withCredentials: true }).catch(() => ({ data: [] })),
-      // ✅ fetch recommendations
+      // fetch recommendations
       axios.get(`${BASE_URL}/api/lands/${landId}/recommendations`, { withCredentials: true }).catch(() => ({ data: [] })),
-      // ✅ fetch reviews
+      // fetch reviews
       axios.get(`${BASE_URL}/api/lands/${landId}/reviews`, { withCredentials: true }).catch(() => ({ data: [] })),
     ])
       .then(([landRes, imgRes, recRes, revRes]) => {
         setLand(landRes.data);
-        // ✅ FIX: use dedicated images endpoint response (array of {id, imageUrl})
+        // use dedicated images endpoint response (array of {id, imageUrl})
         setImages(Array.isArray(imgRes.data) ? imgRes.data : []);
         setRecommendations(Array.isArray(recRes.data) ? recRes.data : []);
         setReviews(Array.isArray(revRes.data) ? revRes.data : []);
@@ -71,7 +71,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
   const handleVote = async (vote) => {
     setVoting(v => ({ ...v, [landId]: vote }));
     try {
-      // ✅ FIX: LandVerificationController is mapped to /lands (no /api prefix)
+      // FIX: LandVerificationController is mapped to /lands (no /api prefix)
       await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, {
         withCredentials: true,
         params: { vote, userId: user.id },
@@ -102,7 +102,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
     </div>
   );
 
-  // ✅ FIX: use dedicated images array (same shape as SiteDetail: [{id, imageUrl}])
+  // use dedicated images array (same shape as SiteDetail: [{id, imageUrl}])
   const imageUrls = images.map(i => i.imageUrl);
   const badge     = statusBadge(land.status);
   const isVoting  = voting[landId] || externalVoting?.[landId];
@@ -182,7 +182,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
           {/* LEFT — images + details */}
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
-            {/* ✅ FIX: Gallery using images from dedicated endpoint */}
+            {/* FIX: Gallery using images from dedicated endpoint */}
             {imageUrls.length > 0 ? (
               <div style={styles.galleryCard}>
                 <div style={styles.mainImgWrap}>
@@ -260,14 +260,14 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
               </Section>
             )}
 
-            {/* ✅ FIX: Community Reviews — show userName instead of userId */}
+            {/* FIX: Community Reviews — show userName instead of userId */}
             {reviews.length > 0 && (
               <Section title={`💬 Community Reviews (${reviews.length})`}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {reviews.map((r, i) => (
                     <div key={i} className="det-review-card">
                       <div className="det-review-head">
-                        {/* ✅ FIX: show userName (same field SiteDetail uses) with avatar initial */}
+                        {/* FIX: show userName (same field SiteDetail uses) with avatar initial */}
                         <span className="det-review-user">
                           <span className="det-review-avatar">
                             {(r.userName || r.name || "?")?.[0]?.toUpperCase()}
@@ -278,7 +278,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
                           {"★".repeat(r.rating || 0)}{"☆".repeat(5 - (r.rating || 0))}
                         </span>
                       </div>
-                      {/* ✅ show feasibility + permission as tags */}
+                      {/* show feasibility + permission as tags */}
                       {(r.feasibilityNote || r.permissionNote) && (
                         <p className="det-review-meta">
                           {r.feasibilityNote && `✅ ${r.feasibilityNote}`}
@@ -306,7 +306,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
           {/* RIGHT — sidebar */}
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-            {/* ✅ FIX: Action card — approve/reject with corrected API path */}
+            {/* FIX: Action card — approve/reject with corrected API path */}
             {land.status === "PENDING" && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
@@ -412,11 +412,11 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
               </div>
             )}
 
-            {/* ✅ FIX: Submission info — show submitter name not raw ID */}
+            {/* FIX: Submission info — show submitter name not raw ID */}
             <div style={styles.sideCard}>
               <div style={styles.sideCardTitle}>Submission Info</div>
               <InfoRow icon="🆔" label="Land ID"       value={land.id} />
-              {/* ✅ use createdByName if backend sends it, fall back to createdBy id */}
+              {/* use createdByName if backend sends it, fall back to createdBy id */}
               <InfoRow
                 icon="👤"
                 label="Submitted by"

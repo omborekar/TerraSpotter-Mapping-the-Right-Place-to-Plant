@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Endpoints to expose aggregated application statistics.
+*/
 package com.example.terraspoter.controller;
 
 import com.example.terraspoter.service.StatsService;

@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Browse lands listing, cards, and map interactions.
+*/
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +50,7 @@ const statusColor = (s) => {
   return map[s] || { bg: "#f3f4f6", text: "#374151" };
 };
 
-/* ── image gallery strip ── */
+/* image gallery strip */
 const ImageStrip = ({ landId, onOpenGallery }) => {
   const [images, setImages] = useState([]);
   const [imgLoading, setImgLoading] = useState(true);
@@ -92,7 +98,7 @@ const ImageStrip = ({ landId, onOpenGallery }) => {
   );
 };
 
-/* ── land card ── */
+/* land card */
 const LandCard = ({ land, onOpenGallery, onNavigate }) => {
   const sc = statusColor(land.landStatus);
   const approxTrees = land.areaSqm ? Math.floor(land.areaSqm / 20) : null;
@@ -158,7 +164,7 @@ const LandCard = ({ land, onOpenGallery, onNavigate }) => {
   );
 };
 
-/* ── main ── */
+/* main */
 const Browse = () => {
   const navigate = useNavigate();
   const [lands, setLands]               = useState([]);

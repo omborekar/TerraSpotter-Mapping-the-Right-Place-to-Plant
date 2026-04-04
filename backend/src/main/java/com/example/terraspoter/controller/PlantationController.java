@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Endpoints for plantation start and completion workflows.
+*/
 package com.example.terraspoter.controller;
 
 import com.example.terraspoter.dto.PlantationShowcaseDTO;

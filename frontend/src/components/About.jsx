@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: About page including timeline and team information.
+*/
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
@@ -90,7 +96,7 @@ export default function About() {
           overflow-x: hidden;
         }
 
-        /* ─── BG TEXTURE ─── */
+        /* BG TEXTURE */
         .ab-root {
           position: relative;
           min-height: 100vh;
@@ -114,10 +120,10 @@ export default function About() {
           padding: 0 36px 120px;
         }
 
-        /* ─── NAV SPACER ─── */
+        /* NAV SPACER */
         .ab-nav-spacer { height: 88px; }
 
-        /* ─── HERO ─── */
+        /* HERO */
         .ab-hero {
           min-height: 72vh;
           display: flex;
@@ -211,7 +217,7 @@ export default function About() {
           background: rgba(255,255,255,0.08);
         }
 
-        /* ─── DIVIDER ─── */
+        /* DIVIDER */
         .ab-divider {
           width: 100%;
           height: 1px;
@@ -219,7 +225,7 @@ export default function About() {
           margin: 0 0 80px;
         }
 
-        /* ─── STATS ─── */
+        /* STATS */
         .ab-stats {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -264,7 +270,7 @@ export default function About() {
           color: var(--muted);
         }
 
-        /* ─── SECTIONS ─── */
+        /* SECTIONS */
         .ab-section { margin-bottom: 96px; }
 
         .ab-section-label {
@@ -285,7 +291,7 @@ export default function About() {
           line-height: 1.1;
         }
 
-        /* ─── VALUES ─── */
+        /* VALUES */
         .ab-values-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
@@ -331,7 +337,7 @@ export default function About() {
           line-height: 1.7;
         }
 
-        /* ─── TIMELINE ─── */
+        /* TIMELINE */
         .ab-timeline {
           position: relative;
           padding-left: 32px;
@@ -387,7 +393,7 @@ export default function About() {
           max-width: 480px;
         }
 
-        /* ─── TEAM ─── */
+        /* TEAM */
         .ab-team-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -454,7 +460,7 @@ export default function About() {
           letter-spacing: 0.03em;
         }
 
-        /* ─── FOOTER BAND ─── */
+        /* FOOTER BAND */
         .ab-footer-band {
           margin-top: 80px;
           padding: 56px;
@@ -483,7 +489,7 @@ export default function About() {
           max-width: 380px;
         }
 
-        /* ─── RESPONSIVE ─── */
+        /* RESPONSIVE */
         @media (max-width: 900px) {
           .ab-stats { grid-template-columns: repeat(2, 1fr); }
           .ab-team-grid { grid-template-columns: repeat(2, 1fr); }
@@ -502,7 +508,7 @@ export default function About() {
         <div className="ab-page">
           <div className="ab-nav-spacer" />
 
-          {/* ── HERO ── */}
+          {/* HERO */}
           <motion.div
             ref={heroRef}
             className="ab-hero"
@@ -547,7 +553,7 @@ export default function About() {
 
           <div className="ab-divider" />
 
-          {/* ── STATS ── */}
+          {/* STATS */}
           <motion.div
             className="ab-stats"
             variants={containerVariants}
@@ -564,7 +570,7 @@ export default function About() {
             ))}
           </motion.div>
 
-          {/* ── VALUES ── */}
+          {/* VALUES */}
           <motion.div
             className="ab-section"
             initial="hidden"
@@ -585,7 +591,7 @@ export default function About() {
             </div>
           </motion.div>
 
-          {/* ── TIMELINE ── */}
+          {/* TIMELINE */}
           <motion.div
             className="ab-section"
             initial="hidden"
@@ -607,7 +613,7 @@ export default function About() {
             </div>
           </motion.div>
 
-          {/* ── TEAM ── */}
+          {/* TEAM */}
           <motion.div
             className="ab-section"
             initial="hidden"
@@ -630,7 +636,7 @@ export default function About() {
             </div>
           </motion.div>
 
-          {/* ── FOOTER CTA ── */}
+          {/* footer cta */}
           <motion.div
             className="ab-footer-band"
             initial={{ opacity: 0, y: 32 }}

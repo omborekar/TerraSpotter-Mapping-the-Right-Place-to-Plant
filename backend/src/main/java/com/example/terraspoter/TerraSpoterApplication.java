@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Spring Boot application entry point and upload resource handler.
+*/
 package com.example.terraspoter;
 
 import org.springframework.boot.SpringApplication;

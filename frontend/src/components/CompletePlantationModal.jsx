@@ -2,16 +2,8 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-/* ─────────────────────────────────────────────────────────────────
-   CompletePlantationModal
-   Shown to the user who originally marked the land "Under Plantation".
-   Collects:
-     • image proof (1–5 photos)
-     • trees actually planted
-     • additional capacity (how many more can be planted)
-     • brief notes
-   Then POSTs to /api/lands/my/:id/plantation-complete
-   ───────────────────────────────────────────────────────────────── */
+// CompletePlantationModal: collects proof photos, planted counts and notes
+// then posts completion to /api/lands/my/:id/plantation-complete
 export default function CompletePlantationModal({ land, onClose, onSuccess }) {
   const [form, setForm] = useState({
     treesPlanted: "",
@@ -26,7 +18,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
-  /* ── photo handling ── */
+  // photo handling
   const addFiles = files => {
     const valid = Array.from(files).filter(f => f.type.startsWith("image/")).slice(0, 5 - photos.length);
     const entries = valid.map(file => ({ file, previewUrl: URL.createObjectURL(file) }));
@@ -39,7 +31,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
     });
   };
 
-  /* ── submit ── */
+  // submit
   const handleSubmit = async () => {
     if (!form.treesPlanted) { setError("Please enter how many trees were planted."); return; }
     if (photos.length === 0) { setError("Please upload at least one proof photo."); return; }

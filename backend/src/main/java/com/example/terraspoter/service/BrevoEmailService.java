@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Service for sending transactional emails via Brevo REST API.
+*/
 package com.example.terraspoter.service;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -7,20 +13,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
-/**
- * Sends transactional emails via the Brevo REST API (no extra Maven dependency).
- *
- * Required environment variables (set in Render dashboard):
- *   BREVO_API_KEY       — your Brevo API key  (xkeysib-...)
- *   BREVO_SENDER_EMAIL  — verified sender address  (e.g. noreply@terraspotter.in)
- *   BREVO_SENDER_NAME   — display name  (e.g. TerraSpotter)
- *
- * application.properties bindings (add these lines):
- *   brevo.api-key=${BREVO_API_KEY}
- *   brevo.sender-email=${BREVO_SENDER_EMAIL}
- *   brevo.sender-name=${BREVO_SENDER_NAME}
- */
 @Service
 public class BrevoEmailService {
 
@@ -35,27 +27,21 @@ public class BrevoEmailService {
 
     private static final String BREVO_SEND_URL = "https://api.brevo.com/v3/smtp/email";
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PUBLIC API
-    // ─────────────────────────────────────────────────────────────────────────
+        // Public API
 
-    /** Send 4-digit OTP email. */
-    public void sendOtpEmail(String toEmail, String firstName, String otp) {
+        public void sendOtpEmail(String toEmail, String firstName, String otp) {
         send(toEmail, firstName,
                 "Your TerraSpotter verification code: " + otp,
                 buildOtpHtml(firstName, otp));
     }
 
-    /** Send welcome / account-confirmed email. */
-    public void sendWelcomeEmail(String toEmail, String firstName) {
+        public void sendWelcomeEmail(String toEmail, String firstName) {
         send(toEmail, firstName,
                 "Welcome to TerraSpotter 🌱",
                 buildWelcomeHtml(firstName, toEmail));
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PRIVATE — HTTP
-    // ─────────────────────────────────────────────────────────────────────────
+        // Private — HTTP
 
     private void send(String toEmail, String toName, String subject, String htmlBody) {
         // Inline the HTML safely into JSON (escape backslash, quote, strip newlines)
@@ -99,15 +85,12 @@ public class BrevoEmailService {
         }
     }
 
-    /** Escape a string for safe embedding in a JSON value. */
-    private static String esc(String s) {
+        private static String esc(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // HTML TEMPLATES
-    // ─────────────────────────────────────────────────────────────────────────
+        // HTML templates
 
     private String buildOtpHtml(String name, String otp) {
         // Build the 4 big digit boxes

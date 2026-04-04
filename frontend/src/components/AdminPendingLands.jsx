@@ -24,10 +24,8 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
 };
 
-/* ────────────────────────────────────────────────────────────
-   CardImage — fetches thumbnail from /api/lands/:id/images
-   (same endpoint Browse & SiteDetail use)
-──────────────────────────────────────────────────────────── */
+// CardImage — fetches thumbnail from /api/lands/:id/images
+// (shared endpoint used by Browse & SiteDetail)
 function CardImage({ landId }) {
   const [thumb,  setThumb]  = useState(null);
   const [extra,  setExtra]  = useState(0);
@@ -73,9 +71,7 @@ function CardImage({ landId }) {
   );
 }
 
-/* ────────────────────────────────────────────────────────────
-   Main
-──────────────────────────────────────────────────────────── */
+// AdminPendingLands main component
 export default function AdminPendingLands() {
   const [lands,        setLands]        = useState([]);
   const [user,         setUser]         = useState(null);
@@ -85,7 +81,7 @@ export default function AdminPendingLands() {
   const [selectedId,   setSelectedId]   = useState(null);
   const [filter,       setFilter]       = useState("ALL");
 
-  /* session */
+  // session
   useEffect(() => {
     axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true })
       .then(r => setUser(r.data))
@@ -93,8 +89,8 @@ export default function AdminPendingLands() {
       .finally(() => setLoading(false));
   }, []);
 
-  /* ── fetch ALL lands so Approved/Rejected counts are live ──
-     Tries /api/lands first (all statuses), falls back to /api/lands/pending */
+    // fetch ALL lands so Approved/Rejected counts are live
+    // Tries /api/lands first (all statuses), falls back to /api/lands/pending
   const fetchLands = useCallback(async () => {
     setLandsLoading(true);
     try {
@@ -116,7 +112,7 @@ export default function AdminPendingLands() {
     if (user?.role === "ADMIN") fetchLands();
   }, [user, fetchLands]);
 
-  /* vote — optimistic update + background refetch */
+  // vote — optimistic update + background refetch
   const handleVote = async (landId, vote) => {
     setVoting(v => ({ ...v, [landId]: vote }));
     try {
@@ -143,7 +139,7 @@ export default function AdminPendingLands() {
     }
   };
 
-  /* guards */
+  // guards
   if (loading) return <LoadingSpinner text="Loading session…" />;
   if (!user?.role) return (
     <div style={g.guard}><span style={g.icon}>🔒</span><p>No active session</p></div>
@@ -152,7 +148,7 @@ export default function AdminPendingLands() {
     <div style={g.guard}><span style={g.icon}>🚫</span><p>Access Denied — Admins only</p></div>
   );
 
-  /* detail drill-in */
+  // detail drill-in
   if (selectedId) return (
     <AdminLandDetail
       landId={selectedId}

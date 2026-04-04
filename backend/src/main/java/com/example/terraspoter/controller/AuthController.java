@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Authentication endpoints (OTP, signup, login, session management).
+*/
 package com.example.terraspoter.controller;
 
 import com.example.terraspoter.model.User;
@@ -39,9 +45,7 @@ public class AuthController {
         this.emailService = emailService;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // GET /api/auth/  — health check + ML warmup (unchanged)
-    // ─────────────────────────────────────────────────────────────────────────
+    // GET /api/auth/ — health check + ML warmup
     @GetMapping("/")
     public String home() {
         new Thread(() -> {
@@ -56,10 +60,7 @@ public class AuthController {
         return "TerraSpotter Backend Running 🚀";
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // POST /api/auth/send-otp
-    // Step 1 of signup: validate email uniqueness then email a 4-digit OTP.
-    // ─────────────────────────────────────────────────────────────────────────
+    // POST /api/auth/send-otp — Step 1 of signup: validate email uniqueness then email a 4-digit OTP.
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody Map<String, String> body) {
         String email = body.get("email");
@@ -94,11 +95,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "OTP sent to " + email));
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // POST /api/auth/signup
-    // Step 2: validate OTP → create user → send welcome email.
-    // SignupRequest now needs an `otp` field (see note below).
-    // ─────────────────────────────────────────────────────────────────────────
+    // POST /api/auth/signup — Step 2: validate OTP → create user → send welcome email.
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
 
@@ -152,9 +149,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Signup successful"));
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // POST /api/auth/login  (unchanged)
-    // ─────────────────────────────────────────────────────────────────────────
+    // POST /api/auth/login — authenticate and create session
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request,
                                    HttpSession session) {
@@ -188,9 +183,7 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // GET /api/auth/session  (unchanged)
-    // ─────────────────────────────────────────────────────────────────────────
+    // GET /api/auth/session — return current session user
     @GetMapping("/session")
     public ResponseEntity<?> getSession(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -211,18 +204,14 @@ public class AuthController {
                         .body("User not found"));
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // POST /api/auth/logout  (unchanged)
-    // ─────────────────────────────────────────────────────────────────────────
+    // POST /api/auth/logout — invalidate session
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpSession session) {
         session.invalidate();
         return ResponseEntity.ok("Logged out successfully");
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // POST /api/auth/google  (unchanged)
-    // ─────────────────────────────────────────────────────────────────────────
+    // POST /api/auth/google — login/register via Google
     @PostMapping("/google")
     public ResponseEntity<?> loginWithGoogle(
             @RequestBody Map<String, String> data,

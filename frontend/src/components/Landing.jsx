@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Landing page React component (hero, features, stats, CTA).
+*/
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -62,7 +68,7 @@ const Landing = () => {
         }
         body { font-family:'DM Sans',sans-serif; background:var(--sand); }
 
-        /* ── hero ── */
+        /* hero */
         .ln-hero {
           min-height: 100vh;
           background: var(--forest);
@@ -196,7 +202,7 @@ const Landing = () => {
           letter-spacing: 1px; color: rgba(255,255,255,.35); margin-top: 4px;
         }
 
-        /* ── stats bar ── */
+        /* stats bar */
         .ln-stats-bar {
           background: var(--forest);
           border-bottom: 1px solid rgba(255,255,255,.06);
@@ -219,7 +225,7 @@ const Landing = () => {
         }
         .ln-stat-l { font-size: 12.5px; color: rgba(255,255,255,.4); }
 
-        /* ── features ── */
+        /* features */
         .ln-features {
           max-width: 1180px; margin: 0 auto;
           padding: 100px 48px 80px;
@@ -269,7 +275,7 @@ const Landing = () => {
         }
         .ln-feature-link:hover { color: var(--forest); }
 
-        /* ── how it works ── */
+        /* how it works */
         .ln-how {
           background: var(--forest);
           padding: 100px 0;
@@ -317,7 +323,7 @@ const Landing = () => {
         .ln-step h4 { font-size: 15px; font-weight: 600; color: white; margin-bottom: 8px; }
         .ln-step p  { font-size: 13.5px; color: rgba(255,255,255,.5); line-height: 1.65; }
 
-        /* ── cta banner ── */
+        /* cta banner */
         .ln-cta-section {
           max-width: 1180px; margin: 0 auto; padding: 100px 48px 120px;
           display: flex; flex-direction: column; align-items: center; text-align: center;
@@ -349,7 +355,7 @@ const Landing = () => {
         }
         .ln-cta-secondary:hover { border-color: var(--forest); }
 
-        /* ── footer ── */
+        /* footer */
         .ln-footer {
           background: var(--forest); border-top: 1px solid rgba(255,255,255,.06);
           padding: 32px 48px;
@@ -378,7 +384,7 @@ const Landing = () => {
         }
       `}</style>
 
-      {/* ── HERO ── */}
+      {/* hero */}
       <section className="ln-hero">
         <canvas ref={canvasRef} className="ln-canvas" />
 
@@ -439,7 +445,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── STATS BAR ── */}
+      {/* stats bar */}
       <div className="ln-stats-bar">
         <div className="ln-stats-inner">
           {[
@@ -458,7 +464,7 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* ── FEATURES ── */}
+      {/* features */}
       <div style={{ background:"var(--sand)" }}>
         <section className="ln-features">
           <motion.div className="ln-features-head"
@@ -509,7 +515,7 @@ const Landing = () => {
         </section>
       </div>
 
-      {/* ── HOW IT WORKS ── */}
+      {/* how it works */}
       <section className="ln-how">
         <div className="ln-how-inner">
           <motion.div initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }}
@@ -537,7 +543,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── CTA ── */}
+      {/* cta */}
       <section style={{ background:"var(--sand)" }}>
         <motion.div className="ln-cta-section"
           initial={{ opacity:0, y:24 }} whileInView={{ opacity:1, y:0 }}
@@ -560,7 +566,7 @@ const Landing = () => {
         </motion.div>
       </section>
 
-      {/* ── FOOTER ── */}
+      {/* footer */}
       <footer className="ln-footer">
         <div className="ln-footer-brand">
           <span className="ln-footer-pip" /> TerraSpotter

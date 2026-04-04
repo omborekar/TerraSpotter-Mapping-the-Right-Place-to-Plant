@@ -1,3 +1,8 @@
+# Project: TerraSpotter Platform
+# Author: Om Borekar
+# Year: 2026
+# Description: Return top tree recommendations from trained model for given climate/soil inputs.
+
 def recommend_trees(temp, rainfall, soil, climate, top_k=5):
 
     input_df = pd.DataFrame([{
@@ -10,17 +15,15 @@ def recommend_trees(temp, rainfall, soil, climate, top_k=5):
     probs = model.predict_proba(input_df)[0]
     classes = model.classes_
 
-    # 👉 add slight randomness (very small)
+    # add tiny randomness to probabilities
     noise = np.random.uniform(0, 0.03, size=probs.shape)
     probs = probs + noise
 
-    # normalize (optional but good)
+    # normalize probabilities
     probs = probs / probs.sum()
 
-    # get top indices
+    # select top indices and shuffle their order slightly
     top_indices = np.argsort(probs)[::-1][:top_k]
-
-    # shuffle slightly (only top results)
     np.random.shuffle(top_indices)
 
     results = []

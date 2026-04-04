@@ -1,4 +1,10 @@
 // PlantationReviewImage.java
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Image entity for plantation review attachments.
+*/
 package com.example.terraspoter.model;
 
 import jakarta.persistence.*;

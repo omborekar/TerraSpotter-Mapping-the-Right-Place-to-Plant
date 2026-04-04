@@ -1,4 +1,10 @@
 // com/example/terraspoter/model/LandRecommendation.java
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Entity representing ML-based tree recommendations for a land.
+*/
 package com.example.terraspoter.model;
 
 import jakarta.persistence.*;

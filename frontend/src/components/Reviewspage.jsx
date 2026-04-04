@@ -1,9 +1,15 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Reviews page with star rating and review submission components.
+*/
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-/* ── Star Rating widget ── */
+// Star Rating widget
 function StarRating({ value, onChange, readOnly = false, size = 28 }) {
   const [hover, setHover] = useState(0);
   const labels = ["", "Poor – not feasible", "Unlikely – needs work", "Possible with effort", "Good – recommended", "Excellent – perfect site"];
@@ -35,7 +41,7 @@ function StarRating({ value, onChange, readOnly = false, size = 28 }) {
   );
 }
 
-/* ── Single review card ── */
+// Single review card
 function ReviewCard({ review }) {
   return (
     <motion.div className="rv-card"
@@ -66,7 +72,7 @@ function ReviewCard({ review }) {
   );
 }
 
-/* ── Write-a-review panel ── */
+// Write-a-review panel
 function WriteReview({ landId, onPosted }) {
   const [form, setForm] = useState({ rating: 0, feasibilityNote: "", permissionNote: "", body: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -152,9 +158,7 @@ function WriteReview({ landId, onPosted }) {
   );
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   MAIN PAGE
-══════════════════════════════════════════════════════════════════ */
+// ReviewsPage main component
 export default function ReviewsPage() {
   const { id } = useParams();
   const navigate = useNavigate();

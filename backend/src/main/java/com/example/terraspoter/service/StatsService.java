@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Aggregates site and community statistics for frontend display.
+*/
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.repository.LandRepository;
@@ -22,15 +28,6 @@ public class StatsService {
         this.plantationCompletionRepository=plantationCompletionRepository;
     }
 
-    /**
-     * Returns live platform statistics for the login page hero panel.
-     *
-     * Keys returned:
-     *   totalLands    — total number of submitted land parcels
-     *   approvedLands — lands with status = "APPROVED"
-     *   treesPlanted  — sum of treesPlanted field across all lands
-     *   volunteers    — total registered users
-     */
     public Map<String, Object> getStats() {
         Map<String, Object> stats = new LinkedHashMap<>();
 

@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: REST endpoints for land CRUD, images, recommendations, and plantation workflows.
+*/
 package com.example.terraspoter.controller;
 
 import com.example.terraspoter.model.Land;
@@ -25,13 +31,13 @@ public class LandController {
     @Autowired private LandService                  landService;
     @Autowired private LandRecommendationRepository recommendationRepository;
 
-    // ── 1. Get all lands ───────────────────────────────────────────────────
+    // Get all lands
     @GetMapping
     public List<Land> getAllLands() {
         return landService.getAllLands();
     }
 
-    // ── 2. Get single land ─────────────────────────────────────────────────
+    // Get single land
     @GetMapping("/{id:\\d+}")
     public ResponseEntity<Land> getLand(@PathVariable Long id) {
         try {
@@ -41,7 +47,7 @@ public class LandController {
         }
     }
 
-    // ── 3. Save land ───────────────────────────────────────────────────────
+    // Save land
     @PostMapping
     public ResponseEntity<?> saveLand(@RequestBody Map<String, Object> payload,
                                       HttpSession session) {
@@ -57,7 +63,7 @@ public class LandController {
         }
     }
 
-    // ── 4. Upload images ───────────────────────────────────────────────────
+    // Upload images
     @PostMapping("/{id:\\d+}/images")
     public ResponseEntity<?> uploadImages(@PathVariable Long id,
                                           @RequestParam("files") List<MultipartFile> files) {
@@ -70,20 +76,20 @@ public class LandController {
         }
     }
 
-    // ── 5. Get images ──────────────────────────────────────────────────────
+    // Get images
     @GetMapping("/{id:\\d+}/images")
     public List<LandImage> getImages(@PathVariable Long id) {
         return landService.getImagesByLandId(id);
     }
 
-    // ── 6. Get recommendations ─────────────────────────────────────────────
+    // Get recommendations
     @GetMapping("/{id:\\d+}/recommendations")
     public ResponseEntity<List<LandRecommendation>> getRecommendations(
             @PathVariable Long id) {
         return ResponseEntity.ok(recommendationRepository.findByLandId(id));
     }
 
-    // ── 7. Refresh recommendations ─────────────────────────────────────────
+    // Refresh recommendations
     @PostMapping("/{id:\\d+}/recommendations/refresh")
     public ResponseEntity<?> refreshRecommendations(@PathVariable Long id) {
         try {
@@ -104,7 +110,7 @@ public class LandController {
         }
     }
 
-    // ── 8. Start plantation ────────────────────────────────────────────────
+    // Start plantation
     @PostMapping("/{id:\\d+}/plantation-start")
     public ResponseEntity<?> startPlantation(@PathVariable Long id,
                                              @RequestBody Map<String, Object> payload,
@@ -121,7 +127,7 @@ public class LandController {
         }
     }
 
-    // ── 9. Complete plantation ─────────────────────────────────────────────
+    // Complete plantation
     @PostMapping("/{id:\\d+}/plantation-complete")
     public ResponseEntity<?> completePlantation(
             @PathVariable Long id,
@@ -148,13 +154,13 @@ public class LandController {
         }
     }
 
-    // ── 10. Get reviews ────────────────────────────────────────────────────
+    // Get reviews
     @GetMapping("/{id:\\d+}/reviews")
     public ResponseEntity<List<LandReview>> getReviews(@PathVariable Long id) {
         return ResponseEntity.ok(landService.getReviews(id));
     }
 
-    // ── 11. Post review ────────────────────────────────────────────────────
+    // Post review
     @PostMapping("/{id:\\d+}/reviews")
     public ResponseEntity<?> addReview(@PathVariable Long id,
                                        @RequestBody Map<String, Object> payload,

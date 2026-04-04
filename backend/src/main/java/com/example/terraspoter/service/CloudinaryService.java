@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Cloudinary integration for uploading and deleting images.
+*/
 package com.example.terraspoter.service;
 
 import com.cloudinary.Cloudinary;
@@ -15,13 +21,6 @@ public class CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
 
-    /**
-     * Uploads a file to Cloudinary under the given folder.
-     * Returns the secure HTTPS URL of the uploaded image.
-     *
-     * @param file   the multipart file to upload
-     * @param folder e.g. "terraspotter/lands" or "terraspotter/completions"
-     */
     public String uploadImage(MultipartFile file, String folder) throws IOException {
         Map<?, ?> result = cloudinary.uploader().upload(
                 file.getBytes(),
@@ -34,11 +33,6 @@ public class CloudinaryService {
         return (String) result.get("secure_url");
     }
 
-    /**
-     * Deletes an image from Cloudinary by its public_id.
-     * public_id is everything after the base URL, without the extension.
-     * e.g. "terraspotter/lands/abc123"
-     */
     public void deleteImage(String publicId) throws IOException {
         cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     }

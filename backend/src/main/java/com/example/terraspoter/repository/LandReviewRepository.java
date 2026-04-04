@@ -1,4 +1,10 @@
 // com/example/terraspoter/repository/LandReviewRepository.java
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Repository for land review entries.
+*/
 package com.example.terraspoter.repository;
 
 import com.example.terraspoter.model.LandReview;

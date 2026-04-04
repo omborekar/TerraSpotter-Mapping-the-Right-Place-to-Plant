@@ -1,3 +1,8 @@
+# Project: TerraSpotter Platform
+# Author: Om Borekar
+# Year: 2026
+# Description: Train and persist the tree recommendation ML model.
+
 import pandas as pd
 import joblib
 
@@ -37,8 +42,8 @@ pipeline = Pipeline([
 # Train
 pipeline.fit(X, y)
 
-print("✅ Model trained")
+print("Model trained")
 
 # Save
 joblib.dump(pipeline, "tree_model.pkl")
-print("💾 Saved as tree_model.pkl")
+print("Saved as tree_model.pkl")

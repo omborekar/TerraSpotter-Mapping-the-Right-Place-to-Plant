@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Repository interface for User persistence.
+*/
 package com.example.terraspoter.repository;
 
 import com.example.terraspoter.model.User;

@@ -7,7 +7,7 @@ import {
 import LoadingSpinner from "./ui/LoadingSpinner";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-/* ── tiny helpers ──────────────────────────────────────────────── */
+// tiny helpers
 const Card = ({ children, className = "" }) => (
   <div className={`pf-card ${className}`}>{children}</div>
 );
@@ -32,7 +32,7 @@ const StatPill = ({ label, value, accent }) => (
   </div>
 );
 
-/* ── main ──────────────────────────────────────────────────────── */
+// main
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [lands, setLands] = useState([]);
@@ -42,7 +42,7 @@ const Profile = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [editData, setEditData] = useState({ fname: "", lname: "", phoneNo: "" });
 
-  /* fetch profile */
+  // fetch profile
   useEffect(() => {
     fetch(`${BASE_URL}/api/users/profile`, { credentials: "include" })
       .then(r => r.json())
@@ -54,7 +54,7 @@ const Profile = () => {
       .finally(() => setPageLoading(false));
   }, []);
 
-  /* fetch user's lands */
+  // fetch user's lands
   useEffect(() => {
     fetch(`${BASE_URL}/api/lands/my`, { credentials: "include" })
       .then(r => r.json())
@@ -62,7 +62,7 @@ const Profile = () => {
       .catch(() => {});
   }, []);
 
-  /* fetch stats */
+  // fetch stats
 const stats = React.useMemo(() => {
   const map = {};
 
@@ -112,7 +112,7 @@ const stats = React.useMemo(() => {
     }
   };
 
-  /* calendar */
+  // calendar
   const today = new Date();
   const year = today.getFullYear();
   const month = today.getMonth();
@@ -122,7 +122,7 @@ const stats = React.useMemo(() => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
-  /* activity from real lands — count submissions per day */
+  // activity: count submissions per day
   const activityMap = {};
   lands.forEach(l => {
     if (l.createdAt) {
@@ -134,7 +134,7 @@ const stats = React.useMemo(() => {
     }
   });
 
-  /* derived stats */
+  // derived stats
   const totalArea = lands.reduce((s, l) => s + (l.areaSqm || 0), 0);
   const pendingLands = lands.filter(l => l.status === "PENDING").length;
   const approvedLands = lands.filter(l => l.status === "APPROVED").length;
@@ -190,7 +190,7 @@ const stats = React.useMemo(() => {
           gap: 28px;
         }
 
-        /* ── loader ── */
+        /* loader */
         .pf-loader {
           min-height: 60vh;
           display: flex;
@@ -210,7 +210,7 @@ const stats = React.useMemo(() => {
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── card ── */
+        /* card */
         .pf-card {
           background: var(--white);
           border-radius: var(--radius);
@@ -219,7 +219,7 @@ const stats = React.useMemo(() => {
           padding: 28px 32px;
         }
 
-        /* ── section title ── */
+        /* section title */
         .pf-section-title {
           display: flex;
           align-items: flex-start;
@@ -239,7 +239,7 @@ const stats = React.useMemo(() => {
         .pf-section-h { font-size: 16px; font-weight: 600; color: var(--forest); }
         .pf-section-sub { font-size: 12.5px; color: var(--smoke); margin-top: 2px; }
 
-        /* ── hero ── */
+        /* hero */
         .pf-hero {
           background: var(--forest);
           border-radius: var(--radius);
@@ -277,7 +277,7 @@ const stats = React.useMemo(() => {
         .pf-hero-meta span { margin-right: 16px; }
         .pf-hero-right { position: relative; z-index: 1; }
 
-        /* ── edit btn ── */
+        /* edit btn */
         .pf-edit-btn {
           padding: 9px 20px;
           border-radius: 7px;
@@ -291,7 +291,7 @@ const stats = React.useMemo(() => {
         }
         .pf-edit-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); }
 
-        /* ── stat pills ── */
+        /* stat pills */
         .pf-stats-row {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -309,7 +309,7 @@ const stats = React.useMemo(() => {
         .pf-stat-val { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1; }
         .pf-stat-lbl { font-size: 12px; color: var(--smoke); font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
 
-        /* ── lands table ── */
+        /* lands table */
         .pf-lands-table { width: 100%; border-collapse: collapse; }
         .pf-lands-table th {
           font-size: 11.5px; font-weight: 600; color: var(--smoke);
@@ -333,7 +333,7 @@ const stats = React.useMemo(() => {
         .pf-status-badge.REJECTED { background: #fee2e2; color: var(--danger); }
         .pf-empty { text-align: center; padding: 40px 20px; color: var(--smoke); font-size: 14px; }
 
-        /* ── chart controls ── */
+        /* chart controls */
         .pf-chart-header {
           display: flex; align-items: center; justify-content: space-between;
           margin-bottom: 20px;
@@ -347,7 +347,7 @@ const stats = React.useMemo(() => {
         }
         .pf-filter-tab.active { background: var(--forest); border-color: var(--forest); color: white; }
 
-        /* ── calendar ── */
+        /* calendar */
         .pf-cal-header {
           display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
         }
@@ -366,7 +366,7 @@ const stats = React.useMemo(() => {
         .pf-cal-legend { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; color: var(--smoke); }
         .pf-cal-legend-swatch { width: 14px; height: 14px; border-radius: 3px; }
 
-        /* ── modal ── */
+        /* modal */
         .pf-modal-overlay {
           position: fixed; inset: 0; background: rgba(0,0,0,0.45);
           display: flex; align-items: center; justify-content: center;
@@ -403,7 +403,7 @@ const stats = React.useMemo(() => {
         }
         .pf-btn-ghost:hover { border-color: var(--smoke); color: var(--ink); }
 
-        /* ── no-stats ── */
+        /* no-stats */
         .pf-no-stats {
           height: 180px; display: flex; flex-direction: column;
           align-items: center; justify-content: center;
@@ -411,7 +411,7 @@ const stats = React.useMemo(() => {
         }
         .pf-no-stats span { font-size: 28px; }
 
-        /* ── custom tooltip ── */
+        /* custom tooltip */
         .pf-tooltip {
           background: var(--forest); color: white; border-radius: 8px;
           padding: 8px 12px; font-size: 12.5px; font-family: 'DM Sans', sans-serif;
@@ -427,7 +427,7 @@ const stats = React.useMemo(() => {
 
       <div className="pf-page">
 
-        {/* ── HERO ── */}
+        {/* HERO */}
         <motion.div className="pf-hero"
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <div className="pf-hero-left">
@@ -448,7 +448,7 @@ const stats = React.useMemo(() => {
           </div>
         </motion.div>
 
-        {/* ── STATS ROW ── */}
+        {/* STATS ROW */}
         <motion.div className="pf-stats-row"
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
           <StatPill label="Lands Submitted" value={lands.length} accent="#0d3320" />
@@ -457,7 +457,7 @@ const stats = React.useMemo(() => {
           <StatPill label="Total Area (m²)" value={totalArea > 0 ? Math.round(totalArea).toLocaleString() : "—"} accent="#2563eb" />
         </motion.div>
 
-        {/* ── MY LANDS ── */}
+        {/* MY LANDS */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}>
           <Card>
             <SectionTitle icon="🌍" title="My Submitted Lands"
@@ -499,7 +499,7 @@ const stats = React.useMemo(() => {
           </Card>
         </motion.div>
 
-        {/* ── CHARTS ── */}
+        {/* CHARTS */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
           <Card>
             <div className="pf-chart-header">
@@ -569,7 +569,7 @@ const stats = React.useMemo(() => {
           </Card>
         </motion.div>
 
-        {/* ── ACTIVITY CALENDAR ── */}
+        {/* ACTIVITY CALENDAR */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}>
           <Card>
             <SectionTitle icon="📅" title="Activity Calendar"
@@ -618,7 +618,7 @@ const stats = React.useMemo(() => {
 
       </div>
 
-      {/* ── EDIT MODAL ── */}
+      {/* EDIT MODAL */}
       <AnimatePresence>
         {editOpen && (
           <motion.div className="pf-modal-overlay"

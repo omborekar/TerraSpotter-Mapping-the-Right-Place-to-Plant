@@ -17,7 +17,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl:     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-/* ── helpers ── */
+// helpers
 const Chip = ({ children, color = "green" }) => (
   <span className={`sd-chip sd-chip-${color}`}>{children}</span>
 );
@@ -45,7 +45,7 @@ const SpinIcon = () => (
   </svg>
 );
 
-/* ── mini star display ── */
+// mini star display
 function MiniStars({ value = 0, count = 0 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
@@ -59,7 +59,7 @@ function MiniStars({ value = 0, count = 0 }) {
   );
 }
 
-/* ── Star Rating widget ── */
+// Star Rating widget
 function StarRating({ value, onChange, readOnly = false, size = 28 }) {
   const [hover, setHover] = useState(0);
   const labels = ["", "Poor – not feasible", "Unlikely – needs work", "Possible with effort", "Good – recommended", "Excellent – perfect site"];
@@ -91,7 +91,7 @@ function StarRating({ value, onChange, readOnly = false, size = 28 }) {
   );
 }
 
-/* ── Inline WriteReview form ── */
+// Inline WriteReview form
 function WriteReview({ landId, onPosted }) {
   const [form, setForm] = useState({ rating: 0, feasibilityNote: "", permissionNote: "", body: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -178,15 +178,11 @@ function WriteReview({ landId, onPosted }) {
   );
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   TAB IDs
-══════════════════════════════════════════════════════════════════ */
+// TAB IDs
 const TAB_DETAILS = "details";
 const TAB_REVIEWS = "reviews";
 
-/* ══════════════════════════════════════════════════════════════════
-   MAIN
-══════════════════════════════════════════════════════════════════ */
+// SiteDetail main component
 export default function SiteDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -208,7 +204,7 @@ export default function SiteDetail() {
   const [refreshError,  setRefreshError]  = useState("");
   const successTimerRef = useRef(null);
 
-  /* ── load ── */
+  // load
   useEffect(() => {
     if (!id) return;
     Promise.all([
@@ -226,7 +222,7 @@ export default function SiteDetail() {
 
   useEffect(() => () => clearTimeout(successTimerRef.current), []);
 
-  /* ── refresh recs ── */
+  // refresh recs
   const handleRefreshRecs = async () => {
     if (refreshStatus === "loading") return;
     setRefreshStatus("loading"); setRefreshError("");
@@ -250,7 +246,7 @@ export default function SiteDetail() {
     }
   };
 
-  /* ── derived ── */
+  // derived
   const approxTrees  = land?.areaSqm ? Math.floor(land.areaSqm / 20) : null;
   const hasMap       = land?.centroidLat && land?.centroidLng;
   const isUnderPlant = land?.landStatus === "Under Plantation";
@@ -384,7 +380,7 @@ export default function SiteDetail() {
         .sd-info-label { font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--smoke); }
         .sd-info-value { font-size:14px;color:var(--ink);font-weight:500; }
 
-        /* ── REVIEWS TAB ── */
+        {/* REVIEWS TAB */}
         .rv-header { display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px; }
         .rv-header-title { font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--forest); }
         .rv-see-all-link {
@@ -410,7 +406,7 @@ export default function SiteDetail() {
         .rv-empty-state { text-align:center;padding:32px 16px;color:var(--smoke);font-size:13.5px; }
         .rv-empty-state span { font-size:32px;display:block;margin-bottom:8px;opacity:.4; }
 
-        /* ── Write review inline ── */
+        {/* Write review inline */}
         .wr-divider { border:none;border-top:1.5px solid var(--line);margin:24px 0; }
         .wr-box { background:var(--sand);border-radius:12px;border:1px solid var(--line);padding:22px 22px 18px; }
         .wr-title { font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--forest);margin-bottom:3px; }
@@ -607,7 +603,7 @@ export default function SiteDetail() {
 
         <div className="sd-body">
 
-          {/* ── LEFT ── */}
+          {/* LEFT */}
           <div>
             <AnimatePresence mode="wait">
 
@@ -710,7 +706,7 @@ export default function SiteDetail() {
                 </motion.div>
               )}
 
-              {/* ══════ REVIEWS TAB ══════ */}
+              {/* REVIEWS TAB */}
               {activeTab === TAB_REVIEWS && (
                 <motion.div key="reviews"
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -777,7 +773,7 @@ export default function SiteDetail() {
                       </div>
                     )}
 
-                    {/* ── WRITE REVIEW FORM inline ── */}
+                    {/* WRITE REVIEW FORM inline */}
                     <hr className="wr-divider" />
                     <WriteReview
                       landId={id}
@@ -789,7 +785,7 @@ export default function SiteDetail() {
             </AnimatePresence>
           </div>
 
-          {/* ── RIGHT SIDEBAR ── */}
+          {/* RIGHT SIDEBAR */}
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4, delay: .18 }}>
             <div className="sd-card">

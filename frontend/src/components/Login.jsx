@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Login page component and form handling.
+*/
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -6,7 +12,7 @@ import { motion } from "framer-motion";
 const BASE_URL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
-/* ── format big numbers: 1240 → "1.2k", 18000 → "18k", 340 → "340" ── */
+// format big numbers: 1240 → "1.2k", 18000 → "18k", 340 → "340"
 function fmt(n) {
   if (n === null || n === undefined) return "—";
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(".0", "") + "M";
@@ -21,7 +27,7 @@ export default function Login() {
   const [showPw,  setShowPw]  = useState(false);
   const navigate = useNavigate();
 
-  /* ── live stats ── */
+  // live stats
   const [stats,      setStats]      = useState(null);   // null = loading
   const [statsError, setStatsError] = useState(false);
 
@@ -35,7 +41,7 @@ export default function Login() {
 
   const validate = () => {
     const e = {};
-    if (!form.email.trim()) e.email    = "Email is required";
+    // left
     if (!form.password)     e.password = "Password is required";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -56,7 +62,7 @@ export default function Login() {
     }
   };
 
-  /* ── stat tiles config ── */
+  // stat tiles config
   const statTiles = stats
     ? [
         { num: fmt(stats.totalLands),    lbl: "Lands mapped"    },
@@ -76,7 +82,7 @@ export default function Login() {
           --mist: #e8f5ee; --sand: #f7f3ee; --ink: #1a1a1a; --smoke: #6b7280;
           --line: #e2e8f0; --white: #ffffff; --danger: #dc2626;
         }
-        body { font-family: 'DM Sans', sans-serif; }
+        /* right */
 
         .lg-page { min-height: 100vh; background: var(--sand); display: grid; grid-template-columns: 1fr 1fr; }
 
@@ -230,7 +236,7 @@ export default function Login() {
 
       <div className="lg-page">
 
-        {/* ── LEFT ── */}
+        {/* left */}
         <motion.div className="lg-left"
           initial={{ opacity:0, x:-20 }} animate={{ opacity:1, x:0 }} transition={{ duration:.6 }}>
 
@@ -247,7 +253,7 @@ export default function Login() {
             </p>
           </div>
 
-          {/* ── LIVE STATS ── */}
+          {/* LIVE STATS */}
           <div className="lg-stats">
             {statTiles.map((tile, i) =>
               tile === null ? (
@@ -272,7 +278,7 @@ export default function Login() {
           </div>
         </motion.div>
 
-        {/* ── RIGHT ── */}
+        {/* right */}
         <motion.div className="lg-right"
           initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
           transition={{ duration:.5, delay:.1 }}>

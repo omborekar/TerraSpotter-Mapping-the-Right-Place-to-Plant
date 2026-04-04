@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Service handling land verification workflows and checks.
+*/
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.model.Land;
@@ -11,12 +17,6 @@ public class LandVerificationService {
     @Autowired
     private LandRepository landRepository;
 
-    /**
-     * Single-vote approval system.
-     * One APPROVE vote → status becomes APPROVED immediately.
-     * One REJECT vote  → status becomes REJECTED immediately.
-     * Either way the land is removed from the PENDING queue.
-     */
     public String verifyLand(Long landId, Long userId, String vote) {
 
         Land land = landRepository.findById(landId)

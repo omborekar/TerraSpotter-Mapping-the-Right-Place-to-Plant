@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Business logic for lands, images, recommendations, and ML integrations.
+*/
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.model.*;
@@ -55,9 +61,7 @@ public class LandService {
             .connectTimeout(Duration.ofSeconds(8))
             .build();
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  LAND CRUD
-    // ─────────────────────────────────────────────────────────────────────────
+    // LAND CRUD
 
     public List<Land> getAllLands() { return landRepository.findAll(); }
 
@@ -113,14 +117,8 @@ public class LandService {
         return saved;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  IMAGES — Cloudinary
-    // ─────────────────────────────────────────────────────────────────────────
+    // IMAGES — Cloudinary
 
-    /**
-     * Upload land photos to Cloudinary under terraspotter/lands/
-     * imageUrl stored in DB is now the full https:// Cloudinary URL.
-     */
     public void saveImages(Long landId, List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
             String imageUrl = cloudinaryService.uploadImage(file, "terraspotter/lands");
@@ -136,9 +134,7 @@ public class LandService {
         return landImageRepository.findByLandId(landId);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  PLANTATION START
-    // ─────────────────────────────────────────────────────────────────────────
+    // PLANTATION START
 
     public Land startPlantation(Long landId,
                                 Map<String, Object> payload,
@@ -166,15 +162,8 @@ public class LandService {
         return landRepository.save(land);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  PLANTATION COMPLETE — Cloudinary for proof images
-    // ─────────────────────────────────────────────────────────────────────────
+    // PLANTATION COMPLETE — Cloudinary for proof images
 
-    /**
-     * Saves completion record, uploads proof photos to Cloudinary
-     * under terraspotter/completions/, then resets land to Vacant
-     * so the next plantation round can begin.
-     */
     public Land completePlantation(Long landId,
                                    Integer treesPlanted,
                                    Integer moreCapacity,
@@ -217,9 +206,7 @@ public class LandService {
         return landRepository.save(land);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  REVIEWS
-    // ─────────────────────────────────────────────────────────────────────────
+    // Reviews
 
     public List<LandReview> getReviews(Long landId) {
         List<LandReview> reviews = reviewRepository.findByLandIdOrderByCreatedAtDesc(landId);
@@ -255,9 +242,7 @@ public class LandService {
         return saved;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  RECOMMENDATIONS
-    // ─────────────────────────────────────────────────────────────────────────
+    // Recommendations
 
     @Transactional
     public List<LandRecommendation> refreshRecommendations(Long landId) throws IOException {
@@ -299,9 +284,7 @@ public class LandService {
         return recommendationRepository.findByLandId(landId);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  OPEN-METEO + ML PIPELINE — unchanged
-    // ─────────────────────────────────────────────────────────────────────────
+    // Open-Meteo + ML pipeline
 
     private MlInputParams resolveMlParamsFromApis(Land land) {
         double lat = (land.getCentroidLat() != null) ? land.getCentroidLat() : 18.4088;

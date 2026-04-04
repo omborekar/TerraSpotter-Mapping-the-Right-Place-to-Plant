@@ -2,13 +2,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-/* ─────────────────────────────────────────────────────────────────
-   PlantationForm  –  modal shown before marking land "Under Plantation"
-   Props:
-     land        – land object (needs .id, .title)
-     onClose()   – dismiss
-     onSuccess() – called after successful POST
-   ───────────────────────────────────────────────────────────────── */
+// PlantationForm — modal shown before marking land "Under Plantation"
+// Props: land (needs .id, .title), onClose(), onSuccess()
 export default function PlantationForm({ land, onClose, onSuccess }) {
   const [form, setForm] = useState({
     plannedDate: "",

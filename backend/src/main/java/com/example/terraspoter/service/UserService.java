@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: User-related business logic and operations.
+*/
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.model.User;

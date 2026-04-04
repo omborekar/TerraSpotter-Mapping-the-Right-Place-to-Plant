@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Contact page and contact form UI.
+*/
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
@@ -243,7 +249,7 @@ const statTiles = dbStats ? [
         .ct-faq-item.open .ct-faq-chevron { transform: rotate(45deg); background: var(--leaf); color: white; border-color: var(--leaf); }
         .ct-faq-body { padding: 0 24px 20px; font-size: 14px; color: var(--body); line-height: 1.75; overflow: hidden; }
 
-        /* BOTTOM CTA */
+        /* bottom cta */
         .ct-bottom-cta { background: var(--forest); border-radius: 24px; padding: 56px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; position: relative; overflow: hidden; }
         .ct-bottom-cta::before { content: ''; position: absolute; right: -80px; top: -80px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(61,176,110,0.15) 0%, transparent 70%); }
         .ct-cta-text h3 { font-family: 'Lora', serif; font-size: 30px; color: var(--white); margin-bottom: 10px; }
@@ -271,7 +277,7 @@ const statTiles = dbStats ? [
       <div className="ct-page">
         <div className="ct-spacer" />
 
-        {/* ── HERO ── */}
+        {/* hero */}
         <motion.div className="ct-hero" variants={containerVariants} initial="hidden" animate="visible">
           <div>
             <motion.div className="ct-eyebrow" variants={itemVariants}>
@@ -321,7 +327,7 @@ const statTiles = dbStats ? [
           </motion.div>
         </motion.div>
 
-        {/* ── FORM + SIDEBAR ── */}
+        {/* form + sidebar */}
         <motion.div className="ct-main-grid" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
 
           <motion.div className="ct-form-card" variants={itemVariants}>
@@ -415,7 +421,7 @@ const statTiles = dbStats ? [
           </motion.div>
         </motion.div>
 
-        {/* ── FAQ ── */}
+        {/* faq */}
         <motion.div className="ct-faq-section" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={containerVariants}>
           <motion.div className="ct-faq-head" variants={itemVariants}>
             <h2 className="ct-faq-title">Common questions<br />from the community</h2>
@@ -444,7 +450,7 @@ const statTiles = dbStats ? [
           </div>
         </motion.div>
 
-        {/* ── BOTTOM CTA ── */}
+        {/* bottom cta */}
         <motion.div className="ct-bottom-cta"
           initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>

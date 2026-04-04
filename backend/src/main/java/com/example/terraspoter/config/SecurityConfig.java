@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Spring Security configuration for application endpoints.
+*/
 package com.example.terraspoter.config;
 
 import org.springframework.context.annotation.Bean;

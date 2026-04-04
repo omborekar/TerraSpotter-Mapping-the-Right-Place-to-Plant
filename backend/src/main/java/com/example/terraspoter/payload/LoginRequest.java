@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: DTO for login request payload.
+*/
 package com.example.terraspoter.payload;
 
 

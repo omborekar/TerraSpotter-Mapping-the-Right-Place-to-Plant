@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: User entity containing profile and authentication fields.
+*/
 package com.example.terraspoter.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

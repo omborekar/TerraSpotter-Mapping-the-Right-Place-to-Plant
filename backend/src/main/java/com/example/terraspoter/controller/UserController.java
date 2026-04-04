@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: User-facing endpoints for profile and user-specific actions.
+*/
 package com.example.terraspoter.controller;
 
 import com.example.terraspoter.model.User;

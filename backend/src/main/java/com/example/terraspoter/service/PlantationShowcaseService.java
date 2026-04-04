@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Provides curated plantation showcase data.
+*/
 package com.example.terraspoter.service;
 
 import com.example.terraspoter.dto.PlantationShowcaseDTO;

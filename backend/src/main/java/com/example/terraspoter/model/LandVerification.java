@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Entity capturing land verification metadata.
+*/
 package com.example.terraspoter.model;
 
 import jakarta.persistence.*;

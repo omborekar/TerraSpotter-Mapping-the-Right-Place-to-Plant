@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: DTO for plantation showcase entries.
+*/
 package com.example.terraspoter.dto;
 
 import lombok.Data;

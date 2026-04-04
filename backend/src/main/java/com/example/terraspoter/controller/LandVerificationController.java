@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Endpoints for land verification APIs used by reviewers/admins.
+*/
 package com.example.terraspoter.controller;
 
 import com.example.terraspoter.service.LandVerificationService;

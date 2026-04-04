@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: In-memory OTP storage utility used during signup verification.
+*/
 package com.example.terraspoter.service;
 
 import org.springframework.stereotype.Component;
@@ -5,12 +11,6 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-/**
- * Thread-safe in-memory OTP store.
- * No external dependency needed — works on Render free tier.
- * OTPs are intentionally lost on restart (user just requests a new one).
- */
 @Component
 public class OtpStore {
 
@@ -20,7 +20,6 @@ public class OtpStore {
 
     private final Map<String, Entry> store = new ConcurrentHashMap<>();
 
-    /** Save (or overwrite) a 4-digit OTP for this email. */
     public void save(String email, String otp) {
         store.put(
                 email.toLowerCase().trim(),
@@ -28,10 +27,6 @@ public class OtpStore {
         );
     }
 
-    /**
-     * Validate OTP — returns true only if it matches and has not expired.
-     * Removes the entry on success (one-time use).
-     */
     public boolean validate(String email, String otp) {
         String key   = email.toLowerCase().trim();
         Entry  entry = store.get(key);
@@ -49,7 +44,6 @@ public class OtpStore {
         return true;
     }
 
-    /** Drop any stored OTP for this email (called on resend). */
     public void invalidate(String email) {
         store.remove(email.toLowerCase().trim());
     }

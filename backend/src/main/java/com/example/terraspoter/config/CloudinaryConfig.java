@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Configuration binding for Cloudinary properties.
+*/
 package com.example.terraspoter.config;
 
 import com.cloudinary.Cloudinary;

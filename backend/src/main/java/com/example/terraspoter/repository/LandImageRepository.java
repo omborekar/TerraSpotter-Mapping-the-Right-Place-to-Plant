@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Repository for land images.
+*/
 package com.example.terraspoter.repository;
 
 import com.example.terraspoter.model.LandImage;

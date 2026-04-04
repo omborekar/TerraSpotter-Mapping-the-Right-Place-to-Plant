@@ -1,4 +1,10 @@
 // com/example/terraspoter/model/LandReview.java
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Entity for user reviews on lands.
+*/
 package com.example.terraspoter.model;
 
 import jakarta.persistence.*;

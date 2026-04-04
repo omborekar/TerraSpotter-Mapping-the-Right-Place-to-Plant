@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Entity representing a plantation completion record.
+*/
 package com.example.terraspoter.model;
 
 import jakarta.persistence.*;
