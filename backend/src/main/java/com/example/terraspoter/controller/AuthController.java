@@ -54,7 +54,7 @@ public class AuthController {
                         + "?temp=25&rainfall=500&soil=clay&climate=tropical";
                 new RestTemplate().getForObject(warmUrl, String.class);
             } catch (Exception e) {
-                System.out.println("ML warmup failed: " + e.getMessage());
+                
             }
         }).start();
         return "TerraSpotter Backend Running 🚀";
@@ -84,7 +84,6 @@ public class AuthController {
 
         try {
             emailService.sendOtpEmail(email, firstName, otp);
-            System.out.println("[OTP] Sent to " + email);
         } catch (Exception e) {
             System.err.println("[OTP] Email send failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -166,8 +165,6 @@ public class AuthController {
         boolean match = authService.checkPassword(
                 request.getPassword(), user.getPassword());
 
-        System.out.println("PASSWORD MATCH: " + match);
-
         if (!match) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid credentials");
@@ -175,9 +172,6 @@ public class AuthController {
 
         session.setMaxInactiveInterval(30 * 60);
         session.setAttribute("userId", user.getId());
-
-        System.out.println("SESSION ID AFTER SET: " + session.getId());
-        System.out.println("SESSION USER SET: " + session.getAttribute("userId"));
 
         user.setPassword(null);
         return ResponseEntity.ok(user);

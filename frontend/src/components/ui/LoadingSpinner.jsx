@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Animated loading spinner component.
+ */
 const LoadingSpinner = ({ text = "Loading..." }) => {
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-br from-green-50 to-green-100">

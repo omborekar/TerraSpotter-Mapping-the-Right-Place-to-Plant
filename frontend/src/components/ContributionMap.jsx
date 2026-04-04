@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Interactive map showing land contributions and plantation coverage.
+ */
 import React from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";

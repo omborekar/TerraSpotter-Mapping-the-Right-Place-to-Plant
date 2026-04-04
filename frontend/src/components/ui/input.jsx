@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Reusable input field component.
+ */
 import * as React from "react"
 
 import { cn } from "../../lib/utils"

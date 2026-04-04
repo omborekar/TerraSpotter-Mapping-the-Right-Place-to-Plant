@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Showcase page displaying completed plantations and impact metrics.
+ */
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, MapPin, Calendar, TreePine, Users, MessageSquare, Camera, X, Check } from "lucide-react";

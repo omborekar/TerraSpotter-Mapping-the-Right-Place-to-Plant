@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: User profile page displaying submitted lands and stats.
+ */
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {

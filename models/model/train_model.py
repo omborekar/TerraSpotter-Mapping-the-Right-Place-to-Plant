@@ -42,8 +42,5 @@ pipeline = Pipeline([
 # Train
 pipeline.fit(X, y)
 
-print("Model trained")
-
 # Save
 joblib.dump(pipeline, "tree_model.pkl")
-print("Saved as tree_model.pkl")

@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Route guard component requiring user authentication.
+ */
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import LoadingSpinner from "./ui/LoadingSpinner";

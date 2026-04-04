@@ -188,9 +188,7 @@ public class LandController {
     private LandRepository landRepository;
     @GetMapping("/pending")
     public List<Land> getPendingLands() {
-        System.out.println("API HIT 🔥");
         List<Land> lands = landRepository.findByStatus("PENDING");
-        System.out.println("RESULT SIZE 👉 " + lands.size());
         return lands;
     }
 }

@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Form to submit plantation completion details with photos.
+ */
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 const BASE_URL = import.meta.env.VITE_API_URL;

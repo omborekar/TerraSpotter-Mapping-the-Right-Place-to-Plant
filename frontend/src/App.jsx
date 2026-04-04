@@ -42,7 +42,6 @@ function App() {
           withCredentials: true
         });
 
-        console.log("APP USER 👉", res.data);
         setUser(res.data);
 
       } catch (err) {

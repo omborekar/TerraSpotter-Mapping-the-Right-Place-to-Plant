@@ -29,13 +29,15 @@ public class BrevoEmailService {
 
         // Public API
 
-        public void sendOtpEmail(String toEmail, String firstName, String otp) {
+    /** Send 4-digit OTP email. */
+    public void sendOtpEmail(String toEmail, String firstName, String otp) {
         send(toEmail, firstName,
                 "Your TerraSpotter verification code: " + otp,
                 buildOtpHtml(firstName, otp));
     }
 
-        public void sendWelcomeEmail(String toEmail, String firstName) {
+    /** Send welcome / account-confirmed email. */
+    public void sendWelcomeEmail(String toEmail, String firstName) {
         send(toEmail, firstName,
                 "Welcome to TerraSpotter 🌱",
                 buildWelcomeHtml(firstName, toEmail));
@@ -76,16 +78,14 @@ public class BrevoEmailService {
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 System.err.println("[Brevo] Send failed ("
                         + response.statusCode() + "): " + response.body());
-            } else {
-                System.out.println("[Brevo] Email sent to " + toEmail
-                        + " | status=" + response.statusCode());
             }
         } catch (Exception e) {
             System.err.println("[Brevo] Exception: " + e.getMessage());
         }
     }
 
-        private static String esc(String s) {
+    /** Escape a string for safe embedding in a JSON value. */
+    private static String esc(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }

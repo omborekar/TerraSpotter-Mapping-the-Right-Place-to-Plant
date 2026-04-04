@@ -1,3 +1,9 @@
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Modal dialog for marking plantation as complete with proof photos.
+ */
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 const BASE_URL = import.meta.env.VITE_API_URL;

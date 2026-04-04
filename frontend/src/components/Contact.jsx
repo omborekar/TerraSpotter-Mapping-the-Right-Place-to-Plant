@@ -75,7 +75,6 @@ const statTiles = dbStats ? [
   dbStats.trees    != null ? { label: "Trees Planted",      value: dbStats.trees,    suffix: "+" } : null,
   dbStats.verified != null ? { label: "Verified Sites",     value: dbStats.verified, suffix: "+" } : null,
 ].filter(Boolean) : [];
-  console.log("DB Stats:", dbStats, " | Tiles:", statTiles);
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubmit = async () => {

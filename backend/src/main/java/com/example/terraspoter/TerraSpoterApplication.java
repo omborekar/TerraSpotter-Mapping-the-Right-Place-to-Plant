@@ -25,7 +25,6 @@ public class TerraSpoterApplication {
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
                 String uploadPath = System.getProperty("user.dir") + "/uploads/";
-                System.out.println(">>> Serving uploads from: " + uploadPath);
                 registry.addResourceHandler("/uploads/**")
                         .addResourceLocations("file:" + uploadPath)
                         .setCachePeriod(3600);

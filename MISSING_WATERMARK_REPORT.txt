@@ -1,0 +1,57 @@
+FILES MISSING WATERMARK HEADER
+==============================
+
+Header Pattern:
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: [component description]
+*/
+
+TOTAL FILES MISSING: 19
+
+FRONTEND (JS/JSX) - 17 MISSING
+=============================
+frontend/src/main.jsx
+frontend/src/lib/utils.js
+frontend/src/App.css
+frontend/src/index.css
+frontend/src/components/ui/LoadingSpinner.jsx
+frontend/src/components/ui/input.jsx
+frontend/src/components/ui/card.jsx
+frontend/src/components/ui/button.jsx
+frontend/src/components/SiteDetail.jsx
+frontend/src/components/ProtectedRoute.jsx
+frontend/src/components/Profile.jsx
+frontend/src/components/PlantationShowcase.jsx
+frontend/src/components/PlantationForm.jsx
+frontend/src/components/Navbar.jsx
+frontend/src/components/Main.jsx
+frontend/src/components/ContributionMap.jsx
+frontend/src/components/CompletePlantationModal.jsx
+frontend/src/components/AdminPendingLands.jsx
+frontend/src/components/AdminLandDetail.jsx
+
+BACKEND (JAVA) - 0 MISSING
+===========================
+✅ All 42 Java files have watermark header
+
+MODELS (PYTHON) - 0 MISSING
+=============================
+✅ models/app.py
+✅ models/model/predict.py
+✅ models/model/train_model.py
+
+FRONTEND COMPONENTS WITH HEADER (8)
+====================================
+✅ App.jsx
+✅ About.jsx
+✅ Browse.jsx
+✅ Contact.jsx
+✅ Landing.jsx
+✅ Login.jsx
+✅ Reviewspage.jsx
+✅ Signup.jsx
+
+STATUS: 56/75 files have watermark (67% coverage)
