@@ -343,6 +343,8 @@ export default function Navbar() {
 
             <nav className="nb-links">
               <Link to="/" className={`nb-link${isActive("/") ? " active" : ""}`}>Home</Link>
+              <Link to="/about" className={`nb-link${isActive("/about") ? " active" : ""}`}>About</Link>
+              <Link to="/contact" className={`nb-link${isActive("/contact") ? " active" : ""}`}>Contact</Link>
               {user && (
                 <>
                   <Link to="/Main" className={`nb-link${isActive("/Main") ? " active" : ""}`}>Submit Land</Link>
