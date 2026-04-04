@@ -69,248 +69,335 @@ export default function Navbar() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+        :root {
+          --nb-bg: #f8f5f0;
+          --nb-bg-glass: rgba(248, 245, 240, 0.88);
+          --nb-border: rgba(30, 20, 10, 0.09);
+          --nb-green-dark: #163d25;
+          --nb-green-mid: #256638;
+          --nb-green-light: #3a8c57;
+          --nb-green-glow: rgba(58, 140, 87, 0.18);
+          --nb-green-glow-strong: rgba(58, 140, 87, 0.28);
+          --nb-text-primary: #111;
+          --nb-text-secondary: #6b6457;
+          --nb-text-muted: #a89e93;
+          --nb-white: #ffffff;
+          --nb-surface: #fff;
+          --nb-surface-hover: #f5f1ec;
+          --nb-red: #b03a2e;
+          --nb-red-bg: #fdf3f2;
+          --nb-shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+          --nb-shadow-md: 0 6px 30px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+          --nb-shadow-lg: 0 12px 50px rgba(0,0,0,0.14), 0 3px 12px rgba(0,0,0,0.08);
+          --nb-radius-sm: 8px;
+          --nb-radius-md: 12px;
+          --nb-radius-lg: 18px;
+          --nb-radius-pill: 100px;
+        }
 
         .nb-root {
-          font-family: 'Inter', sans-serif;
+          font-family: 'DM Sans', sans-serif;
           position: sticky;
           top: 0;
           z-index: 100;
         }
 
+        /* ── Bar ── */
         .nb-bar {
-          background: #f9f7f4;
-          border-bottom: 1px solid rgba(0,0,0,0.07);
-          transition: background 0.25s, box-shadow 0.25s;
+          background: var(--nb-bg);
+          border-bottom: 1px solid var(--nb-border);
+          transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         .nb-bar.raised {
-          background: rgba(249,247,244,0.92);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 20px rgba(0,0,0,0.06);
+          background: var(--nb-bg-glass);
+          backdrop-filter: blur(18px) saturate(1.4);
+          -webkit-backdrop-filter: blur(18px) saturate(1.4);
+          box-shadow: 0 1px 0 var(--nb-border), var(--nb-shadow-md);
         }
 
+        /* ── Inner ── */
         .nb-inner {
-          max-width: 1280px;
+          max-width: 1320px;
           margin: 0 auto;
-          padding: 0 36px;
-          height: 58px;
+          padding: 0 40px;
+          height: 62px;
           display: flex;
           align-items: center;
-          gap: 0;
         }
 
-        /* brand */
+        /* ── Brand ── */
         .nb-brand {
-          font-family: 'Syne', sans-serif;
-          font-weight: 800;
-          font-size: 19px;
-          letter-spacing: -0.4px;
-          color: #111;
+          font-family: 'Playfair Display', serif;
+          font-weight: 700;
+          font-size: 20px;
+          letter-spacing: -0.3px;
+          color: var(--nb-text-primary);
           text-decoration: none;
           display: flex;
           align-items: center;
-          gap: 7px;
+          gap: 9px;
           flex-shrink: 0;
-          margin-right: 40px;
+          margin-right: 44px;
+          transition: opacity 0.15s;
         }
+        .nb-brand:hover { opacity: 0.82; }
+
         .nb-brand-mark {
-          width: 26px;
-          height: 26px;
-          border-radius: 7px;
-          background: #1c4a2e;
+          width: 30px;
+          height: 30px;
+          border-radius: 9px;
+          background: linear-gradient(145deg, var(--nb-green-dark) 0%, var(--nb-green-mid) 100%);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 13px;
+          font-size: 14px;
+          box-shadow: 0 2px 8px var(--nb-green-glow-strong), inset 0 1px 0 rgba(255,255,255,0.12);
+          flex-shrink: 0;
         }
 
-        /* links */
+        /* ── Links ── */
         .nb-links {
           display: flex;
           align-items: center;
-          gap: 2px;
+          gap: 1px;
           flex: 1;
         }
+
         .nb-link {
+          font-family: 'DM Sans', sans-serif;
           font-size: 13.5px;
           font-weight: 500;
-          color: #555;
+          color: var(--nb-text-secondary);
           text-decoration: none;
-          padding: 6px 12px;
-          border-radius: 6px;
-          transition: color 0.15s, background 0.15s;
+          padding: 7px 13px;
+          border-radius: var(--nb-radius-sm);
+          transition: color 0.18s, background 0.18s;
           white-space: nowrap;
           position: relative;
+          letter-spacing: 0.01em;
         }
-        .nb-link:hover { color: #111; background: rgba(0,0,0,0.04); }
-        .nb-link.active { color: #1c4a2e; font-weight: 600; }
+        .nb-link:hover {
+          color: var(--nb-text-primary);
+          background: rgba(22, 61, 37, 0.06);
+        }
+        .nb-link.active {
+          color: var(--nb-green-mid);
+          font-weight: 600;
+          background: rgba(58, 140, 87, 0.08);
+        }
         .nb-link.active::after {
           content: '';
           position: absolute;
-          bottom: -1px;
-          left: 12px;
-          right: 12px;
+          bottom: 2px;
+          left: 13px;
+          right: 13px;
           height: 2px;
-          border-radius: 2px 2px 0 0;
-          background: #3a8c57;
+          border-radius: 2px;
+          background: linear-gradient(90deg, var(--nb-green-light), var(--nb-green-mid));
         }
 
-        /* right */
+        /* ── Right ── */
         .nb-right {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
           margin-left: auto;
           flex-shrink: 0;
         }
 
         .nb-login {
+          font-family: 'DM Sans', sans-serif;
           font-size: 13.5px;
           font-weight: 500;
-          color: #444;
+          color: var(--nb-text-secondary);
           text-decoration: none;
-          padding: 7px 14px;
-          border-radius: 6px;
+          padding: 8px 15px;
+          border-radius: var(--nb-radius-sm);
           transition: background 0.15s, color 0.15s;
+          letter-spacing: 0.01em;
         }
-        .nb-login:hover { background: rgba(0,0,0,0.05); color: #111; }
+        .nb-login:hover {
+          background: rgba(0,0,0,0.05);
+          color: var(--nb-text-primary);
+        }
 
         .nb-signup {
+          font-family: 'DM Sans', sans-serif;
           font-size: 13.5px;
           font-weight: 600;
           color: #fff;
           text-decoration: none;
-          padding: 8px 18px;
-          border-radius: 6px;
-          background: #1c4a2e;
-          transition: background 0.15s, transform 0.1s;
-          letter-spacing: 0.1px;
+          padding: 9px 20px;
+          border-radius: var(--nb-radius-sm);
+          background: linear-gradient(145deg, var(--nb-green-mid) 0%, var(--nb-green-dark) 100%);
+          transition: box-shadow 0.2s, transform 0.12s, filter 0.2s;
+          letter-spacing: 0.02em;
+          box-shadow: 0 2px 10px var(--nb-green-glow-strong), inset 0 1px 0 rgba(255,255,255,0.1);
         }
-        .nb-signup:hover { background: #254f33; }
-        .nb-signup:active { transform: scale(0.98); }
+        .nb-signup:hover {
+          filter: brightness(1.08);
+          box-shadow: 0 4px 18px var(--nb-green-glow-strong);
+        }
+        .nb-signup:active { transform: scale(0.97); }
 
         .nb-divider {
           width: 1px;
           height: 20px;
-          background: rgba(0,0,0,0.1);
-          margin: 0 4px;
+          background: var(--nb-border);
+          margin: 0 2px;
         }
 
-        /* profile pill */
+        /* ── Profile Pill ── */
         .nb-profile { position: relative; }
+
         .nb-profile-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 5px 5px 5px 14px;
-          border-radius: 30px;
-          border: 1.5px solid rgba(0,0,0,0.1);
-          background: white;
+          gap: 9px;
+          padding: 5px 8px 5px 15px;
+          border-radius: var(--nb-radius-pill);
+          border: 1.5px solid var(--nb-border);
+          background: var(--nb-white);
           cursor: pointer;
-          font-family: 'Inter', sans-serif;
+          font-family: 'DM Sans', sans-serif;
           font-size: 13.5px;
           font-weight: 500;
-          color: #222;
-          transition: border-color 0.15s, box-shadow 0.15s;
+          color: var(--nb-text-primary);
+          transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+          letter-spacing: 0.01em;
+          box-shadow: var(--nb-shadow-sm);
         }
         .nb-profile-btn:hover {
-          border-color: rgba(0,0,0,0.2);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+          border-color: rgba(22, 61, 37, 0.25);
+          box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+          background: #fefcfa;
         }
         .nb-profile-btn.open {
-          border-color: #3a8c57;
-          box-shadow: 0 0 0 3px rgba(58,140,87,0.1);
+          border-color: var(--nb-green-light);
+          box-shadow: 0 0 0 3px var(--nb-green-glow);
+          background: #fefcfa;
         }
+
         .nb-initials {
-          width: 28px;
-          height: 28px;
+          width: 29px;
+          height: 29px;
           border-radius: 50%;
-          background: #1c4a2e;
+          background: linear-gradient(140deg, var(--nb-green-dark) 0%, var(--nb-green-light) 100%);
           color: white;
-          font-size: 11px;
+          font-size: 10.5px;
           font-weight: 700;
           display: flex;
           align-items: center;
           justify-content: center;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.8px;
+          flex-shrink: 0;
+          box-shadow: 0 1px 4px var(--nb-green-glow-strong);
+        }
+
+        .nb-chevron {
+          transition: transform 0.22s cubic-bezier(.4,0,.2,1);
+          opacity: 0.35;
           flex-shrink: 0;
         }
-        .nb-chevron { transition: transform 0.2s; opacity: 0.4; }
-        .nb-chevron.open { transform: rotate(180deg); }
+        .nb-chevron.open {
+          transform: rotate(180deg);
+          opacity: 0.6;
+        }
 
-        /* dropdown */
+        /* ── Dropdown ── */
         .nb-dropdown {
           position: absolute;
-          top: calc(100% + 10px);
+          top: calc(100% + 12px);
           right: 0;
-          width: 230px;
-          background: white;
-          border: 1px solid rgba(0,0,0,0.08);
-          border-radius: 14px;
-          box-shadow: 0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+          width: 240px;
+          background: var(--nb-white);
+          border: 1px solid rgba(0,0,0,0.07);
+          border-radius: var(--nb-radius-lg);
+          box-shadow: var(--nb-shadow-lg);
           overflow: hidden;
           z-index: 999;
         }
+
+        /* decorative top strip */
+        .nb-dropdown::before {
+          content: '';
+          display: block;
+          height: 3px;
+          background: linear-gradient(90deg, var(--nb-green-dark), var(--nb-green-light), var(--nb-green-dark));
+        }
+
         .nb-dd-user {
-          padding: 16px 16px 12px;
-          border-bottom: 1px solid #f0f0f0;
+          padding: 14px 16px 12px;
+          border-bottom: 1px solid #f2ede7;
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 11px;
         }
         .nb-dd-avatar {
-          width: 36px;
-          height: 36px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #1c4a2e 0%, #3a8c57 100%);
+          background: linear-gradient(140deg, var(--nb-green-dark) 0%, var(--nb-green-light) 100%);
           color: white;
-          font-size: 13px;
+          font-size: 12.5px;
           font-weight: 700;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          letter-spacing: 0.5px;
+          box-shadow: 0 2px 8px var(--nb-green-glow);
         }
         .nb-dd-info { overflow: hidden; }
         .nb-dd-name {
+          font-family: 'DM Sans', sans-serif;
           font-size: 13.5px;
           font-weight: 600;
-          color: #111;
+          color: var(--nb-text-primary);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          letter-spacing: 0.01em;
         }
         .nb-dd-email {
           font-size: 11.5px;
-          color: #999;
+          color: var(--nb-text-muted);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          margin-top: 1px;
+          margin-top: 2px;
         }
+
         .nb-dd-section { padding: 6px; }
+
         .nb-dd-item {
           display: flex;
           align-items: center;
           gap: 10px;
           padding: 9px 10px;
-          border-radius: 8px;
+          border-radius: var(--nb-radius-sm);
+          font-family: 'DM Sans', sans-serif;
           font-size: 13.5px;
-          color: #333;
+          font-weight: 400;
+          color: #3a3530;
           text-decoration: none;
           background: none;
           border: none;
           width: 100%;
           text-align: left;
           cursor: pointer;
-          font-family: 'Inter', sans-serif;
-          font-weight: 400;
-          transition: background 0.12s, color 0.12s;
+          transition: background 0.14s, color 0.14s;
+          letter-spacing: 0.01em;
         }
-        .nb-dd-item:hover { background: #f5f5f5; color: #111; }
-        .nb-dd-item.logout { color: #c0392b; }
-        .nb-dd-item.logout:hover { background: #fdf2f2; }
+        .nb-dd-item:hover {
+          background: var(--nb-surface-hover);
+          color: var(--nb-text-primary);
+        }
+        .nb-dd-item.logout { color: var(--nb-red); }
+        .nb-dd-item.logout:hover { background: var(--nb-red-bg); }
+
         .nb-dd-badge {
           width: 30px;
           height: 30px;
@@ -318,16 +405,24 @@ export default function Navbar() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 15px;
-          background: #f5f5f5;
+          font-size: 14px;
+          background: #f5f1ec;
           flex-shrink: 0;
+          transition: background 0.14s;
         }
-        .nb-dd-item.logout .nb-dd-badge { background: #fdf2f2; }
-        .nb-dd-sep { height: 1px; background: #f0f0f0; margin: 2px 6px; }
+        .nb-dd-item:hover .nb-dd-badge { background: #ede8e2; }
+        .nb-dd-item.logout .nb-dd-badge { background: var(--nb-red-bg); }
+        .nb-dd-item.logout:hover .nb-dd-badge { background: #fce8e6; }
+
+        .nb-dd-sep {
+          height: 1px;
+          background: #f2ede7;
+          margin: 2px 8px;
+        }
 
         @media (max-width: 768px) {
           .nb-links { display: none; }
-          .nb-inner { padding: 0 16px; }
+          .nb-inner { padding: 0 18px; }
           .nb-brand { margin-right: 0; }
         }
       `}</style>
@@ -386,10 +481,10 @@ export default function Navbar() {
                   <AnimatePresence>
                     {dropdownOpen && (
                       <motion.div className="nb-dropdown"
-                        initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                        initial={{ opacity: 0, y: -10, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                        transition={{ duration: 0.14, ease: "easeOut" }}
+                        exit={{ opacity: 0, y: -10, scale: 0.97 }}
+                        transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
                       >
                         <div className="nb-dd-user">
                           <div className="nb-dd-avatar">
@@ -425,7 +520,6 @@ export default function Navbar() {
                           <Link to="/about" className="nb-dd-item" onClick={() => setDropdownOpen(false)}>
                             <span className="nb-dd-badge">ℹ️</span> About Us
                           </Link>
-                          
                         </div>
 
                         <div className="nb-dd-sep" />
