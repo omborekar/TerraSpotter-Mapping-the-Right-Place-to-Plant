@@ -2,9 +2,108 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TerraSpotter - Mapping the Right Place to Plant</title>
+
+    <!-- ─── Primary SEO ─────────────────────────────────────────── -->
+    <title>TerraSpotter – Mapping the Right Place to Plant</title>
+    <meta name="description" content="TerraSpotter helps NGOs, institutions, and communities identify, verify, and track land for afforestation across India. Submit land parcels, get AI-powered tree recommendations, and monitor verified green impact." />
+    <meta name="keywords" content="afforestation, land mapping, tree planting, green ecosystem, NGO, India, plantation tracking, environmental platform, TerraSpotter" />
+    <meta name="author" content="Om Borekar" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://terraspotterfrontend.vercel.app/" />
+
+    <!-- ─── Favicon ──────────────────────────────────────────────── -->
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- ─── Open Graph (Facebook / LinkedIn / WhatsApp) ─────────── -->
+    <meta property="og:type"         content="website" />
+    <meta property="og:url"          content="https://terraspotterfrontend.vercel.app/" />
+    <meta property="og:title"        content="TerraSpotter – Mapping the Right Place to Plant" />
+    <meta property="og:description"  content="Turning unused, barren, and roadside land into verified green ecosystems — one boundary at a time. Join India's community-driven afforestation platform." />
+    <meta property="og:image"        content="https://terraspotterfrontend.vercel.app/og-image.png" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt"    content="TerraSpotter – Green land mapping platform" />
+    <meta property="og:site_name"    content="TerraSpotter" />
+    <meta property="og:locale"       content="en_IN" />
+
+    <!-- ─── Twitter / X Card ────────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:url"         content="https://terraspotterfrontend.vercel.app/" />
+    <meta name="twitter:title"       content="TerraSpotter – Mapping the Right Place to Plant" />
+    <meta name="twitter:description" content="Turning unused, barren, and roadside land into verified green ecosystems — one boundary at a time." />
+    <meta name="twitter:image"       content="https://terraspotterfrontend.vercel.app/og-image.png" />
+    <meta name="twitter:image:alt"   content="TerraSpotter – Green land mapping platform" />
+
+    <!-- ─── Geo / Regional ──────────────────────────────────────── -->
+    <meta name="geo.region"    content="IN" />
+    <meta name="geo.placename" content="India" />
+    <meta name="language"      content="English" />
+
+    <!-- ─── Theme color (browser chrome / PWA) ─────────────────── -->
+    <meta name="theme-color" content="#163d25" />
+
+    <!-- ─── Structured Data: Organization ──────────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "TerraSpotter",
+      "url": "https://terraspotterfrontend.vercel.app/",
+      "logo": "https://terraspotterfrontend.vercel.app/favicon.ico",
+      "description": "TerraSpotter helps NGOs, institutions, and communities identify, verify, and track land for afforestation across India.",
+      "foundingDate": "2026",
+      "founder": {
+        "@type": "Person",
+        "name": "Om Borekar"
+      },
+      "sameAs": []
+    }
+    </script>
+
+    <!-- ─── Structured Data: WebSite + SearchAction ─────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "TerraSpotter",
+      "url": "https://terraspotterfrontend.vercel.app/",
+      "description": "Community-driven afforestation platform — submit, verify, and track land parcels for tree planting across India.",
+      "inLanguage": "en-IN",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://terraspotterfrontend.vercel.app/browse?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- ─── Structured Data: SoftwareApplication ────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "TerraSpotter",
+      "applicationCategory": "EnvironmentalApplication",
+      "operatingSystem": "Web",
+      "url": "https://terraspotterfrontend.vercel.app/",
+      "description": "An open platform for mapping, submitting, and tracking afforestation land parcels in India. Includes AI-powered tree species recommendations and verified impact data.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Om Borekar"
+      }
+    }
+    </script>
+
   </head>
   <body>
     <div id="root"></div>
