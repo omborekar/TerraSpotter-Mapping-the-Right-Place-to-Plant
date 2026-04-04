@@ -5,6 +5,7 @@
  Description: Login page component and form handling.
 */
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -506,6 +507,11 @@ export default function Login() {
           .lg-right { padding: 48px 24px; align-items: flex-start; padding-top: 64px; }
         }
       `}</style>
+
+      <Helmet>
+        <title>TerraSpotter — Login</title>
+        <meta name="description" content="Sign in to your TerraSpotter account." />
+      </Helmet>
 
       <div className="lg-page">
 

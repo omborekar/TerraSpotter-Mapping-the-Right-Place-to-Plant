@@ -6,6 +6,7 @@
 */
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
@@ -503,6 +504,11 @@ export default function About() {
           .ab-footer-band { padding: 36px 24px; }
         }
       `}</style>
+
+      <Helmet>
+        <title>TerraSpotter — About</title>
+        <meta name="description" content="About TerraSpotter — mission, team, and timeline." />
+      </Helmet>
 
       <div className="ab-root">
         <div className="ab-page">

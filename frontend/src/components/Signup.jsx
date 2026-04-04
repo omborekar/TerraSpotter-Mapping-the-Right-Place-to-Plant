@@ -5,6 +5,7 @@
  Description: Signup component with OTP flow and password helpers.
 */
 import { useState, useRef, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -805,6 +806,11 @@ export default function Signup() {
           .su-right { padding: 36px 20px 64px; }
         }
       `}</style>
+
+      <Helmet>
+        <title>TerraSpotter — Sign up</title>
+        <meta name="description" content="Create a free TerraSpotter account to submit land and join planting." />
+      </Helmet>
 
       <div className="su-page">
 

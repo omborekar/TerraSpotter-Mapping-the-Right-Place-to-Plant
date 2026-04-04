@@ -5,6 +5,7 @@
  Description: Reviews page with star rating and review submission components.
 */
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -265,6 +266,11 @@ export default function ReviewsPage() {
           .rv-summary { gap:16px; }
         }
       `}</style>
+
+      <Helmet>
+        <title>{land?.title ? `${land.title} — Reviews — TerraSpotter` : 'Site reviews — TerraSpotter'}</title>
+        <meta name="description" content={land?.title ? `Community reviews for ${land.title}` : 'Community reviews and ratings for plantation sites.'} />
+      </Helmet>
 
       <div className="rv-page">
         <button className="rv-back" onClick={() => navigate(-1)}>← Back</button>

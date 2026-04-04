@@ -5,6 +5,7 @@
  Description: Contact page and contact form UI.
 */
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
@@ -272,6 +273,11 @@ const statTiles = dbStats ? [
           .ct-hero h1 { font-size: 34px; }
         }
       `}</style>
+
+      <Helmet>
+        <title>TerraSpotter — Contact</title>
+        <meta name="description" content="Contact TerraSpotter — reach out, FAQs, and support." />
+      </Helmet>
 
       <div className="ct-page">
         <div className="ct-spacer" />

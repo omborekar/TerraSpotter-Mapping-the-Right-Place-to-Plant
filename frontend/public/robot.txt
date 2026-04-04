@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*.json$
+
+
+
+Sitemap: https://terraspotterfrontend.vercel.app/sitemap.xml

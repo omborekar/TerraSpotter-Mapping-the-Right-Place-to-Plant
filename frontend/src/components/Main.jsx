@@ -5,6 +5,7 @@
  Description: Main land submission form with polygon mapping and image upload.
  */
 import React, { useEffect, useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
@@ -1001,6 +1002,11 @@ const Main = () => {
           .ts-row-2, .ts-row-3 { grid-template-columns: 1fr; }
         }
       `}</style>
+
+      <Helmet>
+        <title>TerraSpotter — Submit Land</title>
+        <meta name="description" content="Submit a land parcel for afforestation: draw boundary, upload photos, add details." />
+      </Helmet>
 
       <div className="ts-page">
 

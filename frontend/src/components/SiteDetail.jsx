@@ -5,6 +5,7 @@
  Description: Detailed view of land parcels with reviews and plantation status.
  */
 import React, { useEffect, useState, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
@@ -496,6 +497,11 @@ export default function SiteDetail() {
           .wr-row { grid-template-columns:1fr; }
         }
       `}</style>
+
+      <Helmet>
+        <title>{land?.title ? `${land.title} — TerraSpotter` : 'Land details — TerraSpotter'}</title>
+        <meta name="description" content={land?.description || 'Detailed view of plantation site.'} />
+      </Helmet>
 
       <div className="sd-page">
 

@@ -5,6 +5,7 @@
  Description: Browse lands listing, cards, and map interactions.
 */
 import React, { useState, useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
@@ -436,6 +437,11 @@ const Browse = () => {
           .br-gallery-nav.next { right: -8px; }
         }
       `}</style>
+
+      <Helmet>
+        <title>TerraSpotter — Browse Sites</title>
+        <meta name="description" content="Browse plantation sites available for afforestation." />
+      </Helmet>
 
       <div className="br-page">
         <motion.div className="br-header"

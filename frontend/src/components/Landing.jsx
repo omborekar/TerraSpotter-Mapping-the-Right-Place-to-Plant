@@ -5,6 +5,7 @@
  Description: Landing page React component (hero, features, stats, CTA).
 */
 import React, { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -383,6 +384,11 @@ const Landing = () => {
           .ln-footer { flex-direction:column; gap:12px; text-align:center; padding:24px; }
         }
       `}</style>
+
+      <Helmet>
+        <title>TerraSpotter — Landing</title>
+        <meta name="description" content="TerraSpotter — map land, grow forests, and track impact." />
+      </Helmet>
 
       {/* hero */}
       <section className="ln-hero">
