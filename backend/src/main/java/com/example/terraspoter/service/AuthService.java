@@ -47,4 +47,8 @@ public class AuthService {
     public String generateRandomPassword() {
         return "12345678";
     }
+    public void updatePassword(User user, String newRawPassword) {
+        user.setPassword(passwordEncoder.encode(newRawPassword));
+        userRepository.save(user);
+    }
 }

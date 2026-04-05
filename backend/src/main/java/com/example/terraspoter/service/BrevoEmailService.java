@@ -247,4 +247,81 @@ public class BrevoEmailService {
 
                         "</table></td></tr></table></body></html>";
     }
+    public void sendPasswordResetEmail(String toEmail, String firstName, String otp) {
+        send(toEmail, firstName,
+                "Reset your TerraSpotter password",
+                buildPasswordResetHtml(firstName, otp));
+    }
+
+    // ── PRIVATE TEMPLATE (add at bottom of class) ─────────────────
+
+    private String buildPasswordResetHtml(String name, String otp) {
+        StringBuilder digitCells = new StringBuilder();
+        for (char c : otp.toCharArray()) {
+            digitCells.append(
+                    "<td style='padding:0 6px;'>" +
+                            "<div style='width:56px;height:64px;background:#fff7ed;" +
+                            "border:2.5px solid #b45309;border-radius:12px;" +
+                            "display:inline-block;text-align:center;line-height:64px;" +
+                            "font-size:30px;font-weight:700;color:#0d3320;" +
+                            "font-family:Georgia,serif;'>" + c + "</div></td>"
+            );
+        }
+
+        return
+                "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>" +
+                        "<meta name='viewport' content='width=device-width,initial-scale=1'></head>" +
+                        "<body style='margin:0;padding:0;background:#f5f1eb;" +
+                        "font-family:Helvetica Neue,Arial,sans-serif;'>" +
+                        "<table width='100%' cellpadding='0' cellspacing='0' style='background:#f5f1eb;padding:40px 0;'>" +
+                        "<tr><td align='center'>" +
+                        "<table width='560' cellpadding='0' cellspacing='0' style='background:#ffffff;" +
+                        "border-radius:18px;overflow:hidden;box-shadow:0 4px 32px rgba(13,51,32,0.10);'>" +
+
+                        // Header — amber-tinted to visually distinguish from signup OTP
+                        "<tr><td style='background:linear-gradient(135deg,#0d3320 0%,#1a5c38 60%,#92400e 100%);" +
+                        "padding:36px 40px;text-align:center;'>" +
+                        "<div style='display:inline-block;'>" +
+                        "<span style='display:inline-block;width:10px;height:10px;border-radius:50%;" +
+                        "background:#fbbf24;margin-right:8px;vertical-align:middle;'></span>" +
+                        "<span style='font-size:22px;font-weight:600;color:#ffffff;" +
+                        "font-family:Georgia,serif;vertical-align:middle;'>TerraSpotter</span>" +
+                        "</div>" +
+                        "<p style='margin:12px 0 0;font-size:13px;color:rgba(255,255,255,0.55);'>" +
+                        "Password Reset</p>" +
+                        "</td></tr>" +
+
+                        // Body
+                        "<tr><td style='padding:40px 40px 32px;'>" +
+                        "<h1 style='margin:0 0 10px;font-size:24px;font-weight:600;color:#0d3320;" +
+                        "font-family:Georgia,serif;'>Hi " + esc(name) + " 🔑</h1>" +
+                        "<p style='margin:0 0 28px;font-size:15px;color:#6b7a72;line-height:1.65;'>" +
+                        "We received a request to reset your TerraSpotter password. " +
+                        "Use the 4-digit code below to verify it's really you.</p>" +
+
+                        // OTP boxes
+                        "<table cellpadding='0' cellspacing='0' style='margin:0 auto 28px;'>" +
+                        "<tr>" + digitCells + "</tr></table>" +
+
+                        // Expiry warning
+                        "<div style='background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;" +
+                        "padding:14px 18px;text-align:center;margin-bottom:28px;'>" +
+                        "<span style='font-size:13px;color:#c2410c;font-weight:600;'>" +
+                        "⏱ This code expires in 10 minutes</span></div>" +
+
+                        "<p style='font-size:13px;color:#9ca3af;line-height:1.7;margin:0;'>" +
+                        "If you didn't request a password reset, your account is safe — just ignore this email.</p>" +
+                        "</td></tr>" +
+
+                        // Footer
+                        "<tr><td style='background:#f9fbf9;border-top:1px solid #dde5e0;" +
+                        "padding:20px 40px;text-align:center;'>" +
+                        "<p style='margin:0;font-size:12px;color:#a0adb4;line-height:1.6;'>" +
+                        "© 2025 TerraSpotter &nbsp;·&nbsp; Afforestation Intelligence Platform<br>" +
+                        "Automated message — please do not reply.</p>" +
+                        "</td></tr>" +
+
+                        "</table></td></tr></table></body></html>";
+    }
+
 }
