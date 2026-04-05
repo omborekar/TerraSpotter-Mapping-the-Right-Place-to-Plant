@@ -20,6 +20,7 @@ public class OtpStore {
 
     private final Map<String, Entry> store = new ConcurrentHashMap<>();
 
+    /** Save (or overwrite) a 4-digit OTP for this email. */
     public void save(String email, String otp) {
         store.put(
                 email.toLowerCase().trim(),
@@ -44,6 +45,7 @@ public class OtpStore {
         return true;
     }
 
+    /** Drop any stored OTP for this email (called on resend). */
     public void invalidate(String email) {
         store.remove(email.toLowerCase().trim());
     }

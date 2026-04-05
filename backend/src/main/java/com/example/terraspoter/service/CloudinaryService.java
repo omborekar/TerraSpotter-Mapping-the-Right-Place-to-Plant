@@ -21,6 +21,13 @@ public class CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
 
+    /**
+     * Uploads a file to Cloudinary under the given folder.
+     * Returns the secure HTTPS URL of the uploaded image.
+     *
+     * @param file   the multipart file to upload
+     * @param folder e.g. "terraspotter/lands" or "terraspotter/completions"
+     */
     public String uploadImage(MultipartFile file, String folder) throws IOException {
         Map<?, ?> result = cloudinary.uploader().upload(
                 file.getBytes(),

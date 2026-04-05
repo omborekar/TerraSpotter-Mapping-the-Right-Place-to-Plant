@@ -1,0 +1,59 @@
+%% TerraSpotter System Architecture (Mermaid)
+%% Render: `npx -y @mermaid-js/mermaid-cli -i architecture/diagram.mmd -o architecture/diagram.svg`
+
+flowchart LR
+  %% Styling
+  classDef svc fill:#bbf,stroke:#333,stroke-width:1px;
+  classDef infra fill:#efe,stroke:#333,stroke-width:1px;
+  classDef client fill:#ffd,stroke:#333,stroke-width:1px;
+
+  %% Clients
+  Browser["Browser / Mobile\nReact SPA (Vite)"]
+
+  subgraph Frontend["Frontend (Vercel Hosted)"]
+    FE["React SPA\nClient-side routing & Maps\nCalls: /api/*"]
+  end
+
+  subgraph Backend["Backend (Spring Boot)"]
+    BE["TerraSpoter API\nJava 21 · Spring Boot"]
+    Auth["AuthController\nSession-based cookies"]
+    Controllers["Controllers\nAuth, Land, Plantation, Stats"]
+    Services["Services\nCloudinary, ML integration, Email"]
+  end
+
+  subgraph Infra["Infrastructure & 3rd-party"]
+    DB[(PostgreSQL)]
+    Cloudinary[(Cloudinary - Image Storage)]
+    Brevo[(Brevo - Email Service)]
+    ML[(ML Service - Flask API) ]
+    Vercel[(Vercel - Frontend Hosting)]
+    Docker[(Docker - Backend Container)]
+  end
+
+  %% Data files used by ML service (informational)
+  model_file["model/tree_model.pkl"]
+  data_file["data/data.csv"]
+
+  %% Flows
+  Browser -->|loads SPA| Vercel
+  Browser -->|interacts with| FE
+  FE -->|HTTPS| BE
+  BE --> Auth
+  BE --> Controllers
+  Controllers --> Services
+  Services -->|JDBC| DB
+  Services -->|Upload (SDK / HTTPS)| Cloudinary
+  Services -->|Email (REST)| Brevo
+  Services -->|HTTP /predict| ML
+  BE -->|runs in| Docker
+  ML -->|reads| model_file
+  ML -->|reads| data_file
+
+  %% Classes
+  class Browser client;
+  class FE svc;
+  class BE,Auth,Controllers,Services svc;
+  class DB,Cloudinary,Brevo,ML,Docker infra;
+
+  %% Notes (renderers may ignore HTML inside nodes depending on viewer)
+  %% End of diagram

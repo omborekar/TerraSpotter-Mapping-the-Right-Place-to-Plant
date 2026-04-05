@@ -1,59 +1,126 @@
 # TerraSpotter
 
-**A cloud-based platform for sustainable afforestation**, connecting landowners with tree-planting organizations. TerraSpotter leverages AI to estimate plantation capacity, recommend native tree species, and facilitate collaboration through real-time mapping, gamification, and progress tracking.
+TerraSpotter is a smart platform for sustainable afforestation that connects landowners, volunteers, and organizations. It uses maps and AI to estimate plantation capacity, recommends native tree species, and provides tools for coordination and progress tracking.
 
 ---
 
 ## Table of Contents
 - [About](#about)
-- [Features](#features)
-- [Objectives](#objectives)
-- [Technologies Used](#technologies-used)
-- [Installation](#installation)
-- [Usage](#usage)
+- [Quickstart](#quickstart)
+- [Backend](#backend)
+- [Frontend](#frontend)
+- [Models (ML)](#models-ml)
+- [Architecture](#architecture)
+- [Development](#development)
 - [Contributing](#contributing)
-- [Team](#team)
 - [License](#license)
+- [Contact](#contact)
 
 ---
 
 ## About
 
-TerraSpotter is a smart coordination platform designed to combat climate change by promoting afforestation. It bridges the gap between landowners and plantation groups (e.g., NGOs, schools, NSS units) by allowing users to register open land for tree planting. Using AI and Google Maps API, the platform estimates the number of trees suitable for a given area and recommends native species based on geolocation. A chatbot provides step-by-step guidance, while gamification and weekly image uploads ensure engagement and transparency.
+TerraSpotter bridges the gap between landowners and planting groups by allowing users to register land, estimate how many trees a plot can support, and recommend appropriate native species. The project combines a Spring Boot backend, a React + Vite frontend, and a small Flask ML service for tree recommendations.
 
-The project aims to create a scalable, multilingual solution for sustainable tree planting, starting in Maharashtra with potential for global expansion.
+## Quickstart
+
+Prerequisites
+
+- Java 21 (required by the backend)
+- Node.js 18+ and npm
+- Python 3.10+ (for the ML service)
+- PostgreSQL (optional for local DB; configure in backend application properties)
+
+Clone the repo:
+
+```bash
+git clone https://github.com/your-org/your-repo.git
+cd TerraSpotter-Mapping-the-Right-Place-to-Plant
+```
+
+Start services locally (three separate shells are recommended):
+
+- Backend (Spring Boot)
+
+	```bash
+	cd backend
+	# macOS / Linux
+	./mvnw spring-boot:run
+	# Windows (PowerShell / cmd)
+	mvnw.cmd spring-boot:run
+	```
+
+	The backend runs on port 8080 by default. Adjust database settings in `backend/src/main/resources/application.properties` or via environment variables.
+
+- Frontend (Vite + React)
+
+	```bash
+	cd frontend
+	npm install
+	npm run dev
+	```
+
+	The frontend uses Vite (default port 5173). Update the API base URL in `frontend/src/lib/utils.js` if needed.
+
+- Models / ML API (Flask)
+
+	```bash
+	cd models
+	python -m venv venv
+	# Windows
+	venv\\Scripts\\activate
+	# macOS / Linux
+	source venv/bin/activate
+	pip install -r requirements.txt
+	python app.py
+	```
+
+	The ML API serves recommendations on port 5000 at `/predict`.
+
+## Backend
+
+- Location: [backend](backend)
+- Run: `./mvnw spring-boot:run` (or `mvnw.cmd` on Windows)
+- Build jar: `./mvnw clean package` → `java -jar target/TerraSpoter-backend-1.0.0.jar`
+- Java version: 21 (see `backend/pom.xml`)
+
+Configuration
+
+Update `backend/src/main/resources/application.properties` to set database URL, credentials, Cloudinary keys, and other environment-specific settings.
+
+## Frontend
+
+- Location: [frontend](frontend)
+- Run: `npm install` then `npm run dev`
+- Build: `npm run build` and serve the contents of `dist/` for production
+
+## Models (ML)
+
+- Location: [models](models)
+- The Flask app (`models/app.py`) loads a pre-trained model from `models/model/tree_model.pkl` and data from `models/data/data.csv`. The simple HTTP endpoint is `/predict` (GET) and accepts `temp`, `rainfall`, `soil`, and `climate` query parameters.
+
+## Architecture
+
+See the architecture notes and diagrams: [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md)
+
+## Development
+
+- Backend tests: run `./mvnw test` inside `backend`
+- Frontend lint: run `npm run lint` inside `frontend`
+- ML: unit tests not included; run the Flask app locally for manual testing
+
+## Contributing
+
+Contributions are welcome. Please open issues for bugs or feature requests and submit pull requests for review. If you have a contribution workflow you'd like us to follow, add a `CONTRIBUTING.md` in the repo root.
+
+## License
+
+This repository does not include a license file. Add a `LICENSE` at the repository root if you want to set a license for reuse.
+
+## Contact
+
+Project maintained by the TerraSpotter team. Open an issue or contact the maintainers via the repository GitHub page.
 
 ---
 
-## Features
-
-- **Land Registration**: Mark available land for plantation using Google Maps API.
-- **AI-Powered Estimation**: Calculate the approximate number of trees a plot can support.
-- **Tree Recommendations**: Suggest native tree species based on geolocation and environmental data.
-- **Chatbot Support**: Interactive, bilingual chatbot for user guidance.
-- **Gamification**: Earn points for contributions to encourage long-term participation.
-- **Progress Tracking**: Monitor plantation progress via weekly image uploads.
-- **Scalable Design**: Built to expand from regional to global use.
-
----
-
-## Objectives
-
-- Enable users to register open spaces for tree plantation.
-- Estimate plantation capacity using AI and map-based logic.
-- Recommend suitable tree species for specific locations.
-- Facilitate communication between landowners and volunteers/NGOs.
-- Provide user-friendly support through a chatbot.
-- Ensure transparency with image-based progress tracking.
-- Promote participation through gamification.
-- Develop a scalable, multilingual platform for afforestation.
-
----
-
-## Technologies Used
-*Note: Specific technologies will be updated as the project progresses.*
-
----
-
-## Installation
- **Will be added after completion of project**
+Thank you for contributing to TerraSpotter!
