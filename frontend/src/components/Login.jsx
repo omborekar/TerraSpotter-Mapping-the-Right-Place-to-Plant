@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Login page component and form handling.
+ Description: Login page — Tailwind CSS only, nature theme, with forgot password link.
 */
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
@@ -62,569 +62,255 @@ export default function Login() {
 
   const statTiles = stats
     ? [
-        { num: fmt(stats.totalLands),    lbl: "Lands mapped",   icon: "🗺️" },
-        { num: fmt(stats.approvedLands), lbl: "Verified sites",  icon: "✅" },
-        { num: fmt(stats.treesPlanted),  lbl: "Trees planted",   icon: "🌳" },
-        { num: fmt(stats.volunteers),    lbl: "Volunteers",      icon: "🤝" },
+        { num: fmt(stats.totalLands),    lbl: "Lands mapped",  icon: "🗺️" },
+        { num: fmt(stats.approvedLands), lbl: "Verified sites", icon: "✅" },
+        { num: fmt(stats.treesPlanted),  lbl: "Trees planted",  icon: "🌳" },
+        { num: fmt(stats.volunteers),    lbl: "Volunteers",     icon: "🤝" },
       ]
     : Array(4).fill(null);
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-          --forest:       #163d25;
-          --canopy:       #256638;
-          --leaf:         #3a8c57;
-          --sprout:       #5cb87a;
-          --sprout-light: #a8dbb9;
-          --sand:         #f8f5f0;
-          --cream:        #fdfbf8;
-          --ink:          #111;
-          --smoke:        #6b6457;
-          --muted:        #a89e93;
-          --line:         #e8e2da;
-          --white:        #ffffff;
-          --danger:       #b03a2e;
-          --danger-bg:    #fdf3f2;
-          --green-glow:   rgba(58,140,87,0.18);
-          --green-glow-s: rgba(58,140,87,0.28);
-        }
-
-        body { font-family: 'DM Sans', sans-serif; }
-
-        .lg-page {
-          min-height: 100vh;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          background: var(--sand);
-        }
-
-        /* ── LEFT PANEL ── */
-        .lg-left {
-          background: var(--forest);
-          padding: 56px 52px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          position: relative;
-          overflow: hidden;
-        }
-
-        /* Layered radial atmosphere */
-        .lg-left::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background:
-            radial-gradient(ellipse at 15% 85%, rgba(92,184,122,0.20) 0%, transparent 52%),
-            radial-gradient(ellipse at 82% 18%, rgba(22,61,37,0.55) 0%, transparent 48%),
-            radial-gradient(ellipse at 50% 50%, rgba(37,102,56,0.12) 0%, transparent 70%);
-          pointer-events: none;
-        }
-
-        /* Subtle organic grid texture */
-        .lg-left::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          opacity: 0.04;
-          background-image:
-            linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px);
-          background-size: 48px 48px;
-          pointer-events: none;
-        }
-
-        .lg-left-content { position: relative; z-index: 1; }
-
-        .lg-brand {
-          font-family: 'Playfair Display', serif;
-          font-weight: 700;
-          font-size: 22px;
-          color: white;
-          letter-spacing: -0.2px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 60px;
-          text-decoration: none;
-        }
-
-        .lg-brand-mark {
-          width: 32px;
-          height: 32px;
-          border-radius: 9px;
-          background: linear-gradient(145deg, var(--canopy), var(--sprout));
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 15px;
-          box-shadow: 0 2px 12px var(--green-glow-s), inset 0 1px 0 rgba(255,255,255,0.15);
-          flex-shrink: 0;
-        }
-
-        .lg-headline {
-          font-family: 'Playfair Display', serif;
-          font-size: 44px;
-          line-height: 1.10;
-          letter-spacing: -0.6px;
-          color: white;
-          margin-bottom: 20px;
-        }
-        .lg-headline em {
-          font-style: italic;
-          color: var(--sprout);
-        }
-
-        .lg-desc {
-          font-size: 14.5px;
-          color: rgba(255,255,255,0.55);
-          line-height: 1.80;
-          max-width: 330px;
-        }
-
-        /* Stats grid */
-        .lg-stats {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 12px;
-          margin-top: 52px;
-          position: relative;
-          z-index: 1;
-        }
-
-        .lg-stat {
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.09);
-          border-radius: 14px;
-          padding: 18px 20px;
-          min-height: 82px;
-          transition: background 0.22s, border-color 0.22s;
-          position: relative;
-          overflow: hidden;
-        }
-        .lg-stat::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(92,184,122,0.5), transparent);
-          opacity: 0;
-          transition: opacity 0.22s;
-        }
-        .lg-stat:hover {
-          background: rgba(255,255,255,0.09);
-          border-color: rgba(92,184,122,0.25);
-        }
-        .lg-stat:hover::before { opacity: 1; }
-
-        .lg-stat-icon {
-          font-size: 13px;
-          margin-bottom: 8px;
-          opacity: 0.7;
-        }
-
-        .lg-stat-num {
-          font-family: 'Playfair Display', serif;
-          font-size: 28px;
-          color: var(--sprout);
-          line-height: 1;
-          letter-spacing: -0.5px;
-        }
-
-        .lg-stat-lbl {
-          font-size: 10.5px;
-          color: rgba(255,255,255,0.38);
-          text-transform: uppercase;
-          letter-spacing: 1.1px;
-          margin-top: 5px;
-          font-weight: 500;
-        }
-
-        /* Shimmer skeleton */
-        @keyframes shimmer { to { background-position: -200% 0; } }
-
-        .lg-stat-shimmer {
-          height: 24px;
-          border-radius: 6px;
-          margin-bottom: 8px;
-          width: 52%;
-          background: linear-gradient(90deg,
-            rgba(255,255,255,.05) 25%,
-            rgba(255,255,255,.12) 50%,
-            rgba(255,255,255,.05) 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.4s infinite;
-        }
-        .lg-stat-shimmer-lbl {
-          height: 10px;
-          border-radius: 4px;
-          width: 72%;
-          background: linear-gradient(90deg,
-            rgba(255,255,255,.03) 25%,
-            rgba(255,255,255,.08) 50%,
-            rgba(255,255,255,.03) 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.4s infinite;
-          animation-delay: 0.1s;
-        }
-
-        .lg-footer {
-          font-size: 12px;
-          color: rgba(255,255,255,0.25);
-          position: relative;
-          z-index: 1;
-          line-height: 1.7;
-          letter-spacing: 0.01em;
-        }
-
-        /* ── RIGHT PANEL ── */
-        .lg-right {
-          background: var(--cream);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 60px 68px;
-          position: relative;
-        }
-
-        /* Warm grain overlay on right */
-        .lg-right::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          opacity: 0.018;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-          background-size: 200px 200px;
-        }
-
-        .lg-form-wrap {
-          width: 100%;
-          max-width: 380px;
-          position: relative;
-          z-index: 1;
-        }
-
-        /* Eyebrow label */
-        .lg-eyebrow {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 11px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 1.4px;
-          color: var(--leaf);
-          margin-bottom: 12px;
-        }
-        .lg-eyebrow-dot {
-          width: 5px;
-          height: 5px;
-          border-radius: 50%;
-          background: var(--sprout);
-        }
-
-        .lg-form-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 34px;
-          font-weight: 700;
-          color: var(--forest);
-          letter-spacing: -0.4px;
-          margin-bottom: 6px;
-          line-height: 1.1;
-        }
-
-        .lg-form-sub {
-          font-size: 14px;
-          color: var(--smoke);
-          margin-bottom: 36px;
-          line-height: 1.6;
-        }
-
-        /* Fields */
-        .lg-field {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          margin-bottom: 20px;
-        }
-
-        .lg-label {
-          font-size: 11.5px;
-          font-weight: 600;
-          color: #4a3f36;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
-        }
-
-        .lg-input-wrap {
-          position: relative;
-          display: flex;
-          align-items: center;
-        }
-
-        .lg-input {
-          width: 100%;
-          padding: 12px 15px;
-          border: 1.5px solid var(--line);
-          border-radius: 9px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14px;
-          color: var(--ink);
-          outline: none;
-          background: var(--white);
-          transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-          letter-spacing: 0.01em;
-        }
-        .lg-input::placeholder { color: var(--muted); }
-        .lg-input:focus {
-          border-color: var(--leaf);
-          box-shadow: 0 0 0 3px var(--green-glow);
-          background: #fdfffe;
-        }
-        .lg-input.error {
-          border-color: var(--danger);
-          background: var(--danger-bg);
-          box-shadow: 0 0 0 3px rgba(176,58,46,0.08);
-        }
-        .lg-input.has-toggle { padding-right: 46px; }
-
-        .lg-pw-toggle {
-          position: absolute;
-          right: 13px;
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-size: 15px;
-          color: var(--muted);
-          padding: 0;
-          line-height: 1;
-          transition: color 0.15s;
-        }
-        .lg-pw-toggle:hover { color: var(--forest); }
-
-        .lg-err {
-          font-size: 12px;
-          color: var(--danger);
-          margin-top: 2px;
-          font-weight: 500;
-        }
-
-        .lg-api-err {
-          padding: 12px 15px;
-          background: var(--danger-bg);
-          border: 1px solid rgba(176,58,46,0.2);
-          border-radius: 9px;
-          font-size: 13px;
-          color: var(--danger);
-          margin-bottom: 20px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-weight: 500;
-        }
-
-        /* Submit button */
-        .lg-submit {
-          width: 100%;
-          padding: 13.5px;
-          background: linear-gradient(145deg, var(--canopy) 0%, var(--forest) 100%);
-          color: white;
-          border: none;
-          border-radius: 9px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14.5px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: filter 0.2s, transform 0.12s, box-shadow 0.2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          margin-top: 8px;
-          letter-spacing: 0.02em;
-          box-shadow: 0 3px 14px var(--green-glow-s), inset 0 1px 0 rgba(255,255,255,0.10);
-        }
-        .lg-submit:hover:not(:disabled) {
-          filter: brightness(1.08);
-          box-shadow: 0 5px 20px var(--green-glow-s);
-        }
-        .lg-submit:active:not(:disabled) { transform: scale(0.985); }
-        .lg-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .lg-spinner {
-          width: 16px;
-          height: 16px;
-          border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: white;
-          border-radius: 50%;
-          animation: spin 0.65s linear infinite;
-        }
-
-        .lg-divider {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin: 26px 0;
-          font-size: 12px;
-          color: var(--muted);
-          font-weight: 500;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-        }
-        .lg-divider::before,
-        .lg-divider::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: var(--line);
-        }
-
-        .lg-signup-row {
-          text-align: center;
-          font-size: 13.5px;
-          color: var(--smoke);
-          margin-top: 20px;
-        }
-        .lg-signup-row a {
-          color: var(--leaf);
-          font-weight: 600;
-          text-decoration: none;
-          transition: color 0.15s;
-        }
-        .lg-signup-row a:hover { color: var(--forest); }
-
-        @media (max-width: 768px) {
-          .lg-page { grid-template-columns: 1fr; }
-          .lg-left { display: none; }
-          .lg-right { padding: 48px 24px; align-items: flex-start; padding-top: 64px; }
-        }
-      `}</style>
-
       <Helmet>
         <title>TerraSpotter — Login</title>
         <meta name="description" content="Sign in to your TerraSpotter account." />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap"
+          rel="stylesheet"
+        />
       </Helmet>
 
-      <div className="lg-page">
+      <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 font-['DM_Sans',sans-serif]">
 
-        {/* LEFT */}
-        <motion.div className="lg-left"
+        {/* ── LEFT PANEL ── */}
+        <motion.div
+          className="hidden lg:flex flex-col justify-between bg-[#163d25] relative overflow-hidden p-14"
           initial={{ opacity: 0, x: -24 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}>
+          transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Layered radial atmosphere */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute bottom-0 left-0 w-[480px] h-[480px] rounded-full bg-[rgba(92,184,122,0.20)] blur-3xl -translate-x-1/4 translate-y-1/4" />
+            <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-[rgba(22,61,37,0.55)] blur-2xl" />
+            <div className="absolute top-1/2 left-1/2 w-72 h-72 rounded-full bg-[rgba(37,102,56,0.12)] blur-3xl -translate-x-1/2 -translate-y-1/2" />
+            {/* Subtle organic grid texture */}
+            <div
+              className="absolute inset-0 opacity-[0.04]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px)",
+                backgroundSize: "48px 48px",
+              }}
+            />
+          </div>
 
-          <div className="lg-left-content">
-            <div className="lg-brand">
-              <span className="lg-brand-mark">🌿</span>
+          {/* Brand */}
+          <div className="relative z-10">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2.5 no-underline font-['Playfair_Display',serif] font-bold text-[22px] text-white tracking-tight"
+            >
+              <span className="w-8 h-8 rounded-[9px] bg-gradient-to-br from-[#256638] to-[#5cb87a] flex items-center justify-center text-[15px] shadow-lg shadow-[rgba(58,140,87,0.28)] shrink-0">
+                🌿
+              </span>
               TerraSpotter
-            </div>
-            <h1 className="lg-headline">
-              Every plot of land<br />deserves a <em>future</em>
+            </Link>
+          </div>
+
+          {/* Headline + desc */}
+          <div className="relative z-10">
+            <h1 className="font-['Playfair_Display',serif] text-[44px] leading-[1.10] tracking-[-0.6px] text-white mb-5">
+              Every plot of land<br />
+              deserves a <em className="not-italic text-[#5cb87a]">future</em>
             </h1>
-            <p className="lg-desc">
+            <p className="text-[14.5px] text-white/55 leading-[1.80] max-w-[330px]">
               Turning unused, barren, and roadside land into verified green ecosystems —
               one boundary at a time.
             </p>
+
+            {/* LIVE STATS */}
+            <div className="grid grid-cols-2 gap-3 mt-13 mt-12">
+              {statTiles.map((tile, i) =>
+                tile === null ? (
+                  <div
+                    key={i}
+                    className="bg-white/5 border border-white/[0.09] rounded-2xl p-[18px_20px] min-h-[82px] relative overflow-hidden"
+                  >
+                    {/* shimmer skeleton */}
+                    <div
+                      className="h-6 rounded-md mb-2 w-[52%] animate-pulse bg-white/10"
+                      style={{ animationDelay: `${i * 0.08}s` }}
+                    />
+                    <div
+                      className="h-2.5 rounded w-[72%] animate-pulse bg-white/[0.07]"
+                      style={{ animationDelay: `${i * 0.08 + 0.06}s` }}
+                    />
+                  </div>
+                ) : (
+                  <motion.div
+                    key={tile.lbl}
+                    className="group bg-white/5 border border-white/[0.09] rounded-2xl p-[18px_20px] min-h-[82px] relative overflow-hidden hover:bg-white/[0.09] hover:border-[rgba(92,184,122,0.25)] transition-all duration-200 cursor-default"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.07 }}
+                  >
+                    {/* top shimmer line on hover */}
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(92,184,122,0.5)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    <div className="text-[13px] mb-2 opacity-70">{tile.icon}</div>
+                    <div className="font-['Playfair_Display',serif] text-[28px] text-[#5cb87a] leading-none tracking-[-0.5px]">
+                      {tile.num}
+                    </div>
+                    <div className="text-[10.5px] text-white/38 uppercase tracking-[1.1px] mt-1.5 font-medium">
+                      {tile.lbl}
+                    </div>
+                  </motion.div>
+                )
+              )}
+            </div>
           </div>
 
-          {/* LIVE STATS */}
-          <div className="lg-stats">
-            {statTiles.map((tile, i) =>
-              tile === null ? (
-                <div key={i} className="lg-stat">
-                  <div className="lg-stat-shimmer" style={{ animationDelay: `${i * 0.08}s` }} />
-                  <div className="lg-stat-shimmer-lbl" style={{ animationDelay: `${i * 0.08 + 0.06}s` }} />
-                </div>
-              ) : (
-                <motion.div key={tile.lbl} className="lg-stat"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.07 }}>
-                  <div className="lg-stat-icon">{tile.icon}</div>
-                  <div className="lg-stat-num">{tile.num}</div>
-                  <div className="lg-stat-lbl">{tile.lbl}</div>
-                </motion.div>
-              )
-            )}
-          </div>
-
-          <div className="lg-footer">
-            Built for institutions, NGOs, and communities<br />committed to sustainable afforestation.
+          <div className="relative z-10 text-[12px] text-white/25 leading-[1.7] tracking-[0.01em]">
+            Built for institutions, NGOs, and communities<br />
+            committed to sustainable afforestation.
           </div>
         </motion.div>
 
-        {/* RIGHT */}
-        <motion.div className="lg-right"
+        {/* ── RIGHT PANEL ── */}
+        <motion.div
+          className="flex items-center justify-center bg-[#fdfbf8] px-6 py-16 lg:px-[68px] relative"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.52, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
-          <div className="lg-form-wrap">
+          transition={{ duration: 0.52, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Warm grain overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.018]"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
+              backgroundSize: "200px 200px",
+            }}
+          />
 
-            <div className="lg-eyebrow">
-              <span className="lg-eyebrow-dot" />
+          <div className="w-full max-w-[380px] relative z-10">
+
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[1.4px] text-[#3a8c57] mb-3">
+              <span className="w-[5px] h-[5px] rounded-full bg-[#5cb87a] inline-block" />
               Secure Sign-in
             </div>
 
-            <h1 className="lg-form-title">Welcome back</h1>
-            <p className="lg-form-sub">Sign in to your TerraSpotter workspace</p>
+            <h1 className="font-['Playfair_Display',serif] text-[34px] font-bold text-[#163d25] tracking-[-0.4px] mb-1.5 leading-tight">
+              Welcome back
+            </h1>
+            <p className="text-[14px] text-[#6b6457] mb-9 leading-relaxed">
+              Sign in to your TerraSpotter workspace
+            </p>
 
+            {/* API error */}
             {errors.api && (
-              <div className="lg-api-err">⚠ {errors.api}</div>
+              <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200/70 rounded-[9px] text-[13px] text-[#b03a2e] font-medium mb-5">
+                ⚠ {errors.api}
+              </div>
             )}
 
-            <form onSubmit={handleSubmit} noValidate>
-              <div className="lg-field">
-                <label className="lg-label">Email address</label>
+            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+
+              {/* Email */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11.5px] font-semibold text-[#4a3f36] uppercase tracking-[0.8px]">
+                  Email address
+                </label>
                 <input
-                  className={`lg-input${errors.email ? " error" : ""}`}
-                  type="email" name="email" placeholder="you@example.com"
-                  value={form.email} onChange={handleChange} autoComplete="email"
+                  className={`w-full px-[15px] py-3 border-[1.5px] rounded-[9px] font-['DM_Sans',sans-serif] text-[14px] text-[#111] outline-none bg-white placeholder:text-[#a89e93] transition-all duration-200 focus:border-[#3a8c57] focus:ring-2 focus:ring-[rgba(58,140,87,0.18)] focus:bg-[#fdfffe] ${errors.email ? "border-[#b03a2e] bg-[#fdf3f2] ring-2 ring-[rgba(176,58,46,0.08)]" : "border-[#e8e2da]"}`}
+                  type="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  autoComplete="email"
                 />
-                {errors.email && <span className="lg-err">{errors.email}</span>}
+                {errors.email && (
+                  <span className="text-[12px] text-[#b03a2e] font-medium">{errors.email}</span>
+                )}
               </div>
 
-              <div className="lg-field">
-                <label className="lg-label">Password</label>
-                <div className="lg-input-wrap">
+              {/* Password */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11.5px] font-semibold text-[#4a3f36] uppercase tracking-[0.8px]">
+                    Password
+                  </label>
+                  {/* ── FORGOT PASSWORD LINK ── */}
+                  <Link
+                    to="/forgot-password"
+                    className="text-[12px] font-medium text-[#3a8c57] hover:text-[#163d25] transition-colors no-underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative flex items-center">
                   <input
-                    className={`lg-input has-toggle${errors.password ? " error" : ""}`}
-                    type={showPw ? "text" : "password"} name="password"
+                    className={`w-full px-[15px] py-3 pr-[46px] border-[1.5px] rounded-[9px] font-['DM_Sans',sans-serif] text-[14px] text-[#111] outline-none bg-white placeholder:text-[#a89e93] transition-all duration-200 focus:border-[#3a8c57] focus:ring-2 focus:ring-[rgba(58,140,87,0.18)] focus:bg-[#fdfffe] ${errors.password ? "border-[#b03a2e] bg-[#fdf3f2] ring-2 ring-[rgba(176,58,46,0.08)]" : "border-[#e8e2da]"}`}
+                    type={showPw ? "text" : "password"}
+                    name="password"
                     placeholder="••••••••"
-                    value={form.password} onChange={handleChange}
+                    value={form.password}
+                    onChange={handleChange}
                     autoComplete="current-password"
                   />
-                  <button type="button" className="lg-pw-toggle"
-                    onClick={() => setShowPw(v => !v)} tabIndex={-1}>
+                  <button
+                    type="button"
+                    className="absolute right-[13px] bg-transparent border-none cursor-pointer text-[15px] text-[#a89e93] hover:text-[#163d25] transition-colors p-0 leading-none"
+                    onClick={() => setShowPw(v => !v)}
+                    tabIndex={-1}
+                  >
                     {showPw ? "🙈" : "👁"}
                   </button>
                 </div>
-                {errors.password && <span className="lg-err">{errors.password}</span>}
+                {errors.password && (
+                  <span className="text-[12px] text-[#b03a2e] font-medium">{errors.password}</span>
+                )}
               </div>
 
-              <button type="submit" className="lg-submit" disabled={loading}>
-                {loading
-                  ? <><div className="lg-spinner" /> Signing in…</>
-                  : "Sign in →"}
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-[13.5px] mt-2 bg-gradient-to-br from-[#256638] to-[#163d25] text-white border-none rounded-[9px] font-['DM_Sans',sans-serif] text-[14.5px] font-semibold cursor-pointer flex items-center justify-center gap-2 tracking-[0.02em] shadow-[0_3px_14px_rgba(58,140,87,0.28),inset_0_1px_0_rgba(255,255,255,0.10)] hover:brightness-110 hover:shadow-[0_5px_20px_rgba(58,140,87,0.28)] active:scale-[0.985] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Signing in…
+                  </>
+                ) : (
+                  "Sign in →"
+                )}
               </button>
             </form>
 
-            <div className="lg-divider">or</div>
-
-            <div className="lg-signup-row">
-              Don't have an account? <Link to="/signup">Create one free →</Link>
+            {/* Divider */}
+            <div className="flex items-center gap-3.5 my-6 text-[12px] text-[#a89e93] font-medium tracking-[0.05em] uppercase">
+              <div className="flex-1 h-px bg-[#e8e2da]" />
+              or
+              <div className="flex-1 h-px bg-[#e8e2da]" />
             </div>
+
+            {/* Sign-up row */}
+            <p className="text-center text-[13.5px] text-[#6b6457]">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-[#3a8c57] font-semibold no-underline hover:text-[#163d25] transition-colors"
+              >
+                Create one free →
+              </Link>
+            </p>
 
           </div>
         </motion.div>
-
       </div>
     </>
   );
