@@ -2,44 +2,50 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: User profile page displaying submitted lands and stats.
+ Description: User profile page — Tailwind UI, fixed chart X-axis sorting.
 */
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  XAxis, YAxis, Tooltip,
-  CartesianGrid, ResponsiveContainer, AreaChart, Area,
+  XAxis, YAxis, Tooltip, CartesianGrid,
+  ResponsiveContainer, AreaChart, Area,
 } from "recharts";
 import LoadingSpinner from "./ui/LoadingSpinner";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-// ─── tiny helpers ────────────────────────────────────────────
-const Card = ({ children, className = "" }) => (
-  <div className={`pf-card ${className}`}>{children}</div>
-);
-
-const SectionTitle = ({ icon, title, subtitle, action }) => (
-  <div className="pf-section-title">
-    <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flex: 1 }}>
-      <span className="pf-section-icon">{icon}</span>
-      <div>
-        <h3 className="pf-section-h">{title}</h3>
-        {subtitle && <p className="pf-section-sub">{subtitle}</p>}
-      </div>
+// ─── custom tooltip ───────────────────────────────────────────
+const ChartTooltip = ({ active, payload, label, unit }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-[#0d3320] text-white text-xs rounded-lg px-3 py-2 shadow-xl">
+      <p className="font-semibold mb-0.5">{label}</p>
+      <p>{payload[0].value} {unit}</p>
     </div>
-    {action}
+  );
+};
+
+// ─── stat card ────────────────────────────────────────────────
+const StatCard = ({ label, value, accent, icon }) => (
+  <div
+    className="bg-white rounded-2xl border border-slate-100 p-5 flex flex-col gap-3
+               shadow-sm hover:shadow-md transition-shadow duration-200"
+    style={{ borderTop: `3px solid ${accent}` }}
+  >
+    <div className="flex items-center justify-between">
+      <span className="text-2xl">{icon}</span>
+      <span
+        className="text-3xl font-bold tracking-tight"
+        style={{ color: accent, fontFamily: "'DM Serif Display', serif" }}
+      >
+        {value ?? "—"}
+      </span>
+    </div>
+    <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">{label}</p>
   </div>
 );
 
-const StatPill = ({ label, value, accent }) => (
-  <div className="pf-stat-pill" style={{ borderColor: accent + "33" }}>
-    <span className="pf-stat-val" style={{ color: accent }}>{value ?? "—"}</span>
-    <span className="pf-stat-lbl">{label}</span>
-  </div>
-);
-
-// ─── main component ──────────────────────────────────────────
+// ─── main component ───────────────────────────────────────────
 const Profile = () => {
   const [profile,     setProfile]     = useState(null);
   const [lands,       setLands]       = useState([]);
@@ -50,23 +56,18 @@ const Profile = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [editData,    setEditData]    = useState({ fname: "", lname: "", phoneNo: "" });
 
-  // ── fetch profile ─────────────────────────────────────────
+  // ── fetches ───────────────────────────────────────────────
   useEffect(() => {
     fetch(`${BASE_URL}/api/users/profile`, { credentials: "include" })
       .then(r => r.json())
       .then(data => {
         setProfile(data);
-        setEditData({
-          fname:   data.fname   || "",
-          lname:   data.lname   || "",
-          phoneNo: data.phoneNo || "",
-        });
+        setEditData({ fname: data.fname || "", lname: data.lname || "", phoneNo: data.phoneNo || "" });
       })
       .catch(() => {})
       .finally(() => setPageLoading(false));
   }, []);
 
-  // ── fetch user's lands ────────────────────────────────────
   useEffect(() => {
     fetch(`${BASE_URL}/api/lands/my`, { credentials: "include" })
       .then(r => r.json())
@@ -74,10 +75,6 @@ const Profile = () => {
       .catch(() => {});
   }, []);
 
-  // ── fetch plantation completions ──────────────────────────
-  // FIX (URL): controller is @RequestMapping("/api/plantations")
-  // so the full path is /api/plantations/completions/my
-  // (previous version incorrectly used /api/plantation-completions/my)
   useEffect(() => {
     fetch(`${BASE_URL}/api/plantations/completions/my`, { credentials: "include" })
       .then(r => r.json())
@@ -85,38 +82,59 @@ const Profile = () => {
       .catch(() => {});
   }, []);
 
-  // ── activity stats ────────────────────────────────────────
+  // ── activity stats — FIXED X-AXIS SORT ───────────────────
+  // BUG WAS: sorting by label string "Day 3" vs "Day 30" alphabetically
+  // FIX: store numeric sortKey separately and sort by that instead
   const stats = React.useMemo(() => {
     const map = {};
 
-    // count land submissions per day/month
     lands.forEach(l => {
       if (!l.createdAt) return;
       const d = new Date(l.createdAt);
+      // unique key per actual calendar day/month — no collision across months
       const key = filter === "monthly"
-        ? `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
-        : `${d.getFullYear()}-${d.getMonth()}`;
-      if (!map[key]) map[key] = { label: "", reported: 0, planted: 0 };
-      map[key].label = filter === "monthly" ? `Day ${d.getDate()}` : `M${d.getMonth() + 1}`;
+        ? `${d.getFullYear()}-${String(d.getMonth()).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`
+        : `${d.getFullYear()}-${String(d.getMonth()).padStart(2,"0")}`;
+
+      if (!map[key]) map[key] = {
+        // numeric sortKey so "3" sorts before "30"
+        sortKey: filter === "monthly"
+          ? d.getFullYear() * 10000 + d.getMonth() * 100 + d.getDate()
+          : d.getFullYear() * 100 + d.getMonth(),
+        label: filter === "monthly"
+          ? `${d.getDate()} ${d.toLocaleString("default",{month:"short"})}`
+          : d.toLocaleString("default",{month:"short"}),
+        reported: 0,
+        planted:  0,
+      };
       map[key].reported += 1;
     });
 
-    // count actual trees planted from plantation_completions
     completions.forEach(c => {
       if (!c.createdAt) return;
       const d = new Date(c.createdAt);
       const key = filter === "monthly"
-        ? `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
-        : `${d.getFullYear()}-${d.getMonth()}`;
-      if (!map[key]) map[key] = { label: "", reported: 0, planted: 0 };
-      map[key].label = filter === "monthly" ? `Day ${d.getDate()}` : `M${d.getMonth() + 1}`;
+        ? `${d.getFullYear()}-${String(d.getMonth()).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`
+        : `${d.getFullYear()}-${String(d.getMonth()).padStart(2,"0")}`;
+
+      if (!map[key]) map[key] = {
+        sortKey: filter === "monthly"
+          ? d.getFullYear() * 10000 + d.getMonth() * 100 + d.getDate()
+          : d.getFullYear() * 100 + d.getMonth(),
+        label: filter === "monthly"
+          ? `${d.getDate()} ${d.toLocaleString("default",{month:"short"})}`
+          : d.toLocaleString("default",{month:"short"}),
+        reported: 0,
+        planted:  0,
+      };
       map[key].planted += (c.treesPlanted || 0);
     });
 
-    return Object.values(map).sort((a, b) => a.label.localeCompare(b.label));
+    // sort by numeric sortKey — "3 Apr" correctly before "30 Apr"
+    return Object.values(map).sort((a, b) => a.sortKey - b.sortKey);
   }, [lands, completions, filter]);
 
-  // ── save profile ──────────────────────────────────────────
+  // ── save profile ─────────────────────────────────────────
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -133,7 +151,7 @@ const Profile = () => {
     }
   };
 
-  // ── calendar helpers ──────────────────────────────────────
+  // ── calendar ──────────────────────────────────────────────
   const today       = new Date();
   const year        = today.getFullYear();
   const month       = today.getMonth();
@@ -145,12 +163,10 @@ const Profile = () => {
 
   const activityMap = {};
   lands.forEach(l => {
-    if (l.createdAt) {
-      const d = new Date(l.createdAt);
-      if (d.getMonth() === month && d.getFullYear() === year) {
-        const day = d.getDate();
-        activityMap[day] = (activityMap[day] || 0) + 1;
-      }
+    if (!l.createdAt) return;
+    const d = new Date(l.createdAt);
+    if (d.getMonth() === month && d.getFullYear() === year) {
+      activityMap[d.getDate()] = (activityMap[d.getDate()] || 0) + 1;
     }
   });
 
@@ -161,355 +177,172 @@ const Profile = () => {
 
   // ── guards ────────────────────────────────────────────────
   if (pageLoading) return <LoadingSpinner text="Loading profile..." />;
-
   if (!profile) return (
-    <div className="pf-loader">
-      <p style={{ color: "#dc2626" }}>Failed to load profile. Please refresh.</p>
+    <div className="min-h-[60vh] flex items-center justify-center text-red-500 text-sm">
+      Failed to load profile. Please refresh.
     </div>
   );
 
   const initials = `${profile.fname?.[0] || ""}${profile.lname?.[0] || ""}`.toUpperCase();
 
+  const calColors = ["bg-slate-100", "bg-emerald-100", "bg-emerald-200", "bg-emerald-400", "bg-emerald-600"];
+  const calSwatches = ["#f1f5f9", "#d1fae5", "#a7f3d0", "#34d399", "#059669"];
+
   // ── render ────────────────────────────────────────────────
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+      {/* Google font */}
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');`}</style>
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      <div className="min-h-screen bg-[#f7f3ee] py-10 px-4 md:px-8">
+        <div className="max-w-5xl mx-auto flex flex-col gap-6">
 
-        :root {
-          --forest:    #0d3320;
-          --canopy:    #1a5c38;
-          --leaf:      #2d8a55;
-          --sprout:    #4db87a;
-          --mist:      #e8f5ee;
-          --sand:      #f7f3ee;
-          --earth:     #3d2b1f;
-          --ink:       #1a1a1a;
-          --smoke:     #6b7280;
-          --line:      #e2e8f0;
-          --white:     #ffffff;
-          --danger:    #dc2626;
-          --amber:     #d97706;
-          --blue:      #2563eb;
-          --radius:    14px;
-          --shadow:    0 2px 16px rgba(13,51,32,0.08);
-          --shadow-lg: 0 8px 40px rgba(13,51,32,0.13);
-        }
+          {/* ── HERO ──────────────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+            className="relative overflow-hidden bg-[#0d3320] rounded-3xl px-8 py-8 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+          >
+            {/* decorative glow */}
+            <div className="pointer-events-none absolute inset-0"
+              style={{ background: "radial-gradient(circle at 80% 50%, rgba(77,184,122,0.18), transparent 60%)" }} />
 
-        body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--ink); }
+            <div className="relative flex items-center gap-5">
+              {/* avatar */}
+              <div
+                className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center
+                           text-white text-2xl md:text-3xl shrink-0 border-2 border-white/20"
+                style={{
+                  background: "linear-gradient(135deg,#1a5c38,#4db87a)",
+                  fontFamily: "'DM Serif Display', serif",
+                }}
+              >
+                {initials}
+              </div>
 
-        .pf-page {
-          min-height: 100vh;
-          max-width: 1100px;
-          margin: 0 auto;
-          padding: 48px 32px 80px;
-          display: flex;
-          flex-direction: column;
-          gap: 28px;
-        }
-
-        .pf-loader {
-          min-height: 60vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 14px;
-          font-size: 14px;
-          color: var(--smoke);
-        }
-
-        .pf-card {
-          background: var(--white);
-          border-radius: var(--radius);
-          border: 1px solid var(--line);
-          box-shadow: var(--shadow);
-          padding: 28px 32px;
-        }
-
-        .pf-section-title {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 14px;
-          padding-bottom: 20px;
-          border-bottom: 1px solid var(--line);
-          margin-bottom: 24px;
-        }
-        .pf-section-icon {
-          width: 38px; height: 38px;
-          border-radius: 10px;
-          background: var(--mist);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 17px; flex-shrink: 0;
-        }
-        .pf-section-h   { font-size: 16px; font-weight: 600; color: var(--forest); }
-        .pf-section-sub { font-size: 12.5px; color: var(--smoke); margin-top: 2px; }
-
-        .pf-hero {
-          background: var(--forest);
-          border-radius: var(--radius);
-          padding: 36px 40px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 24px;
-          color: white;
-          position: relative;
-          overflow: hidden;
-        }
-        .pf-hero::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: radial-gradient(circle at 80% 50%, rgba(77,184,122,0.15), transparent 60%);
-          pointer-events: none;
-        }
-        .pf-hero-left  { display: flex; align-items: center; gap: 22px; position: relative; z-index: 1; }
-        .pf-hero-right { position: relative; z-index: 1; }
-        .pf-avatar-lg {
-          width: 72px; height: 72px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, var(--canopy), var(--sprout));
-          display: flex; align-items: center; justify-content: center;
-          font-family: 'DM Serif Display', serif;
-          font-size: 26px; color: white; flex-shrink: 0;
-          border: 3px solid rgba(255,255,255,0.2);
-        }
-        .pf-hero-name {
-          font-family: 'DM Serif Display', serif;
-          font-size: 28px; letter-spacing: -0.3px; line-height: 1.15;
-        }
-        .pf-hero-meta { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 5px; }
-        .pf-hero-meta span { margin-right: 16px; }
-
-        .pf-edit-btn {
-          padding: 9px 20px;
-          border-radius: 7px;
-          border: 1.5px solid rgba(255,255,255,0.25);
-          background: rgba(255,255,255,0.08);
-          color: white;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 13.5px; font-weight: 500;
-          cursor: pointer;
-          transition: background 0.15s, border-color 0.15s;
-        }
-        .pf-edit-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); }
-
-        .pf-stats-row {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 14px;
-        }
-        .pf-stat-pill {
-          background: var(--white);
-          border: 1.5px solid var(--line);
-          border-radius: 12px;
-          padding: 18px 20px;
-          display: flex; flex-direction: column; gap: 4px;
-          transition: box-shadow 0.15s;
-        }
-        .pf-stat-pill:hover { box-shadow: var(--shadow); }
-        .pf-stat-val { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1; }
-        .pf-stat-lbl { font-size: 12px; color: var(--smoke); font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
-
-        .pf-lands-table { width: 100%; border-collapse: collapse; }
-        .pf-lands-table th {
-          font-size: 11.5px; font-weight: 600; color: var(--smoke);
-          text-transform: uppercase; letter-spacing: 0.8px;
-          padding: 0 12px 12px; text-align: left; border-bottom: 1px solid var(--line);
-        }
-        .pf-lands-table td {
-          padding: 14px 12px; font-size: 13.5px; color: var(--ink);
-          border-bottom: 1px solid #f8f8f8; vertical-align: middle;
-        }
-        .pf-lands-table tr:last-child td { border-bottom: none; }
-        .pf-lands-table tr:hover td { background: #fafafa; }
-        .pf-status-badge {
-          display: inline-flex; align-items: center; gap: 5px;
-          padding: 4px 10px; border-radius: 20px;
-          font-size: 12px; font-weight: 600;
-        }
-        .pf-status-badge.PENDING  { background: #fef9c3; color: #92400e; }
-        .pf-status-badge.APPROVED { background: var(--mist); color: var(--canopy); }
-        .pf-status-badge.REJECTED { background: #fee2e2; color: var(--danger); }
-        .pf-empty { text-align: center; padding: 40px 20px; color: var(--smoke); font-size: 14px; }
-
-        .pf-chart-header {
-          display: flex; align-items: center; justify-content: space-between;
-          margin-bottom: 20px;
-        }
-        .pf-filter-tabs { display: flex; gap: 4px; }
-        .pf-filter-tab {
-          padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
-          cursor: pointer; border: 1.5px solid var(--line);
-          background: white; color: var(--smoke);
-          font-family: 'DM Sans', sans-serif; transition: all 0.15s;
-        }
-        .pf-filter-tab.active { background: var(--forest); border-color: var(--forest); color: white; }
-        .pf-no-stats {
-          height: 180px; display: flex; flex-direction: column;
-          align-items: center; justify-content: center;
-          color: var(--smoke); font-size: 13.5px; gap: 8px;
-        }
-        .pf-no-stats span { font-size: 28px; }
-
-        .pf-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .pf-cal-month  { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--forest); }
-        .pf-cal-days   { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; text-align: center; margin-bottom: 8px; }
-        .pf-cal-day-label { font-size: 11.5px; font-weight: 600; color: var(--smoke); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 0; }
-        .pf-cal-grid   { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
-        .pf-cal-cell {
-          aspect-ratio: 1; border-radius: 8px;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 12.5px; font-weight: 500; color: var(--ink);
-          transition: transform 0.1s;
-        }
-        .pf-cal-cell:hover { transform: scale(1.1); }
-        .pf-cal-cell.today { outline: 2px solid var(--forest); outline-offset: 1px; font-weight: 700; }
-        .pf-cal-legend { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; color: var(--smoke); }
-        .pf-cal-legend-swatch { width: 14px; height: 14px; border-radius: 3px; }
-
-        .pf-modal-overlay {
-          position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-          display: flex; align-items: center; justify-content: center;
-          z-index: 999; padding: 24px;
-        }
-        .pf-modal {
-          background: white; border-radius: 16px; padding: 36px;
-          width: 100%; max-width: 440px;
-          box-shadow: var(--shadow-lg);
-          display: flex; flex-direction: column; gap: 20px;
-        }
-        .pf-modal h2       { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--forest); }
-        .pf-modal-field    { display: flex; flex-direction: column; gap: 6px; }
-        .pf-modal-label    { font-size: 13px; font-weight: 500; color: var(--earth); }
-        .pf-modal-input {
-          padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 8px;
-          font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
-          outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .pf-modal-input:focus { border-color: var(--leaf); box-shadow: 0 0 0 3px rgba(45,138,85,0.1); }
-        .pf-modal-actions  { display: flex; gap: 10px; justify-content: flex-end; padding-top: 4px; }
-        .pf-btn-primary {
-          padding: 10px 22px; background: var(--forest); color: white;
-          border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif;
-          font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s;
-        }
-        .pf-btn-primary:hover    { background: var(--canopy); }
-        .pf-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-        .pf-btn-ghost {
-          padding: 10px 18px; background: white; color: var(--smoke);
-          border: 1.5px solid var(--line); border-radius: 7px;
-          font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-          cursor: pointer; transition: border-color 0.15s;
-        }
-        .pf-btn-ghost:hover { border-color: var(--smoke); color: var(--ink); }
-
-        @media (max-width: 768px) {
-          .pf-page      { padding: 24px 16px 60px; }
-          .pf-stats-row { grid-template-columns: 1fr 1fr; }
-          .pf-hero      { flex-direction: column; align-items: flex-start; }
-          .pf-card      { padding: 20px; }
-        }
-      `}</style>
-
-      <div className="pf-page">
-
-        {/* ── HERO ─────────────────────────────────────────────────── */}
-        <motion.div className="pf-hero"
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="pf-hero-left">
-            <div className="pf-avatar-lg">{initials}</div>
-            <div>
-              <div className="pf-hero-name">{profile.fname} {profile.lname}</div>
-              <div className="pf-hero-meta">
-                <span>✉ {profile.email}</span>
-                {profile.phoneNo && <span>📞 {profile.phoneNo}</span>}
-                {profile.dob && (
-                  <span>🎂 {new Date(profile.dob).toLocaleDateString("en-IN", {
-                    day: "numeric", month: "short", year: "numeric",
-                  })}</span>
-                )}
+              <div>
+                <h1
+                  className="text-white text-2xl md:text-3xl leading-tight"
+                  style={{ fontFamily: "'DM Serif Display', serif" }}
+                >
+                  {profile.fname} {profile.lname}
+                </h1>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-white/50 text-sm">
+                  <span>✉ {profile.email}</span>
+                  {profile.phoneNo && <span>📞 {profile.phoneNo}</span>}
+                  {profile.dob && (
+                    <span>🎂 {new Date(profile.dob).toLocaleDateString("en-IN",{
+                      day:"numeric", month:"short", year:"numeric"
+                    })}</span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="pf-hero-right">
-            <button className="pf-edit-btn" onClick={() => setEditOpen(true)}>✏ Edit Profile</button>
-          </div>
-        </motion.div>
 
-        {/* ── STAT PILLS ───────────────────────────────────────────── */}
-        <motion.div className="pf-stats-row"
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
-          <StatPill label="Lands Submitted" value={lands.length}      accent="#0d3320" />
-          <StatPill label="Pending Review"  value={pendingLands}       accent="#d97706" />
-          <StatPill label="Approved"        value={approvedLands}      accent="#2d8a55" />
-          <StatPill
-            label="Trees Planted"
-            value={totalTreesPlanted > 0 ? totalTreesPlanted.toLocaleString() : "—"}
-            accent="#2563eb"
-          />
-        </motion.div>
+            <button
+              onClick={() => setEditOpen(true)}
+              className="relative shrink-0 self-start md:self-auto px-5 py-2.5 rounded-xl
+                         border border-white/25 bg-white/8 text-white text-sm font-medium
+                         hover:bg-white/15 hover:border-white/40 transition-all duration-150 cursor-pointer"
+            >
+              ✏ Edit Profile
+            </button>
+          </motion.div>
 
-        {/* ── MY LANDS TABLE ───────────────────────────────────────── */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}>
-          <Card>
-            <SectionTitle
-              icon="🌍"
-              title="My Submitted Lands"
-              subtitle={`${lands.length} land${lands.length !== 1 ? "s" : ""} submitted`}
+          {/* ── STAT CARDS ────────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            <StatCard label="Lands Submitted" value={lands.length}        accent="#0d3320" icon="🌍" />
+            <StatCard label="Pending Review"  value={pendingLands}         accent="#d97706" icon="⏳" />
+            <StatCard label="Approved"        value={approvedLands}        accent="#2d8a55" icon="✅" />
+            <StatCard
+              label="Trees Planted"
+              value={totalTreesPlanted > 0 ? totalTreesPlanted.toLocaleString() : "—"}
+              accent="#2563eb"
+              icon="🌳"
             />
-            {lands.length === 0 ? (
-              <div className="pf-empty">No lands submitted yet. Head to Submit Land to get started.</div>
-            ) : (
-              <table className="pf-lands-table">
-                <thead>
-                  <tr>
-                    <th>Title</th><th>Area (m²)</th><th>Owner</th>
-                    <th>Water</th><th>Status</th><th>Submitted</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lands.map(l => (
-                    <tr key={l.id}>
-                      <td style={{ fontWeight: 500 }}>{l.title || "—"}</td>
-                      <td>{l.areaSqm ? Number(l.areaSqm).toLocaleString() : "—"}</td>
-                      <td>{l.ownerName || "—"}</td>
-                      <td>{l.waterAvailable || "—"}</td>
-                      <td>
-                        <span className={`pf-status-badge ${l.status || "PENDING"}`}>
-                          {l.status === "APPROVED" ? "✓" : l.status === "REJECTED" ? "✗" : "⏳"}{" "}
-                          {l.status || "PENDING"}
-                        </span>
-                      </td>
-                      <td style={{ color: "var(--smoke)", fontSize: 12.5 }}>
-                        {l.createdAt ? new Date(l.createdAt).toLocaleDateString("en-IN", {
-                          day: "numeric", month: "short", year: "numeric",
-                        }) : "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </Card>
-        </motion.div>
+          </motion.div>
 
-        {/* ── ACTIVITY CHARTS ──────────────────────────────────────── */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-          <Card>
-            <div className="pf-chart-header">
+          {/* ── LANDS TABLE ───────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
+            className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden"
+          >
+            {/* header */}
+            <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-100">
+              <span className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-base shrink-0">🌍</span>
               <div>
-                <h3 className="pf-section-h">Activity Stats</h3>
-                <p className="pf-section-sub">Land submissions and trees planted over time</p>
+                <h2 className="text-sm font-semibold text-[#0d3320]">My Submitted Lands</h2>
+                <p className="text-xs text-slate-400 mt-0.5">{lands.length} land{lands.length !== 1 ? "s" : ""} submitted</p>
               </div>
-              <div className="pf-filter-tabs">
-                {["monthly", "yearly"].map(f => (
+            </div>
+
+            {lands.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 text-sm">
+                No lands submitted yet. Head to Submit Land to get started.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-100">
+                      {["Title","Area (m²)","Owner","Water","Status","Submitted"].map(h => (
+                        <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lands.map((l, i) => (
+                      <tr key={l.id}
+                        className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${i === lands.length - 1 ? "border-b-0" : ""}`}>
+                        <td className="px-4 py-3.5 font-medium text-[#0d3320] whitespace-nowrap">{l.title || "—"}</td>
+                        <td className="px-4 py-3.5 text-slate-600">{l.areaSqm ? Number(l.areaSqm).toLocaleString() : "—"}</td>
+                        <td className="px-4 py-3.5 text-slate-600 whitespace-nowrap">{l.ownerName || "—"}</td>
+                        <td className="px-4 py-3.5 text-slate-600 capitalize">{l.waterAvailable || "—"}</td>
+                        <td className="px-4 py-3.5">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold
+                            ${l.status === "APPROVED" ? "bg-emerald-50 text-emerald-700"
+                            : l.status === "REJECTED" ? "bg-red-50 text-red-600"
+                            : "bg-amber-50 text-amber-700"}`}>
+                            {l.status === "APPROVED" ? "✓" : l.status === "REJECTED" ? "✗" : "⏳"}
+                            {l.status || "PENDING"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 text-slate-400 text-xs whitespace-nowrap">
+                          {l.createdAt ? new Date(l.createdAt).toLocaleDateString("en-IN",{
+                            day:"numeric", month:"short", year:"numeric"
+                          }) : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </motion.div>
+
+          {/* ── ACTIVITY CHARTS ───────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
+            className="bg-white rounded-3xl border border-slate-100 shadow-sm px-6 py-6"
+          >
+            {/* chart header */}
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h2 className="text-sm font-semibold text-[#0d3320]">Activity Stats</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Land submissions and trees planted over time</p>
+              </div>
+              <div className="flex gap-1 p-1 bg-slate-100 rounded-xl">
+                {["monthly","yearly"].map(f => (
                   <button key={f}
-                    className={`pf-filter-tab ${filter === f ? "active" : ""}`}
-                    onClick={() => setFilter(f)}>
+                    onClick={() => setFilter(f)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer
+                      ${filter === f
+                        ? "bg-[#0d3320] text-white shadow-sm"
+                        : "text-slate-500 hover:text-slate-700"}`}>
                     {f.charAt(0).toUpperCase() + f.slice(1)}
                   </button>
                 ))}
@@ -517,145 +350,207 @@ const Profile = () => {
             </div>
 
             {stats.length === 0 ? (
-              <div className="pf-no-stats">
-                <span>📊</span>
-                No stats data yet — submit more lands to see trends.
+              <div className="h-44 flex flex-col items-center justify-center text-slate-400 text-sm gap-2">
+                <span className="text-3xl">📊</span>
+                No stats yet — submit more lands to see trends.
               </div>
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                {/* chart 1 — lands reported */}
+                {/* lands reported */}
                 <div>
-                  <p style={{ fontSize: 12, color: "var(--smoke)", marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                    Lands Reported
-                  </p>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <AreaChart data={stats}>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Lands Reported</p>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <AreaChart data={stats} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
                       <defs>
                         <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%"  stopColor="#0d3320" stopOpacity={0.15} />
+                          <stop offset="5%"  stopColor="#0d3320" stopOpacity={0.18} />
                           <stop offset="95%" stopColor="#0d3320" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid stroke="#f0f0f0" strokeDasharray="3 3" />
-                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <Tooltip
-                        contentStyle={{ background: "#0d3320", border: "none", borderRadius: 8, color: "white", fontSize: 12 }}
-                        formatter={(val) => [`${val} land${val !== 1 ? "s" : ""}`, "Reported"]}
+                      <CartesianGrid stroke="#f1f5f9" strokeDasharray="4 4" vertical={false} />
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fontSize: 10, fill: "#94a3b8" }}
+                        axisLine={false} tickLine={false}
+                        interval="preserveStartEnd"
                       />
-                      <Area type="monotone" dataKey="reported" stroke="#0d3320" strokeWidth={2}
-                        fill="url(#g1)" dot={{ fill: "#0d3320", r: 3 }} />
+                      <YAxis
+                        tick={{ fontSize: 10, fill: "#94a3b8" }}
+                        axisLine={false} tickLine={false}
+                        allowDecimals={false}
+                      />
+                      <Tooltip content={<ChartTooltip unit="lands" />} />
+                      <Area
+                        type="monotone" dataKey="reported"
+                        stroke="#0d3320" strokeWidth={2}
+                        fill="url(#g1)"
+                        dot={{ fill: "#0d3320", r: 3, strokeWidth: 0 }}
+                        activeDot={{ r: 5, fill: "#0d3320" }}
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
 
-                {/* chart 2 — trees planted */}
+                {/* trees planted */}
                 <div>
-                  <p style={{ fontSize: 12, color: "var(--smoke)", marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                    Trees Planted
-                  </p>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <AreaChart data={stats}>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Trees Planted</p>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <AreaChart data={stats} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
                       <defs>
                         <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%"  stopColor="#2d8a55" stopOpacity={0.15} />
+                          <stop offset="5%"  stopColor="#2d8a55" stopOpacity={0.18} />
                           <stop offset="95%" stopColor="#2d8a55" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid stroke="#f0f0f0" strokeDasharray="3 3" />
-                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <Tooltip
-                        contentStyle={{ background: "#0d3320", border: "none", borderRadius: 8, color: "white", fontSize: 12 }}
-                        formatter={(val) => [`${val} tree${val !== 1 ? "s" : ""}`, "Planted"]}
+                      <CartesianGrid stroke="#f1f5f9" strokeDasharray="4 4" vertical={false} />
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fontSize: 10, fill: "#94a3b8" }}
+                        axisLine={false} tickLine={false}
+                        interval="preserveStartEnd"
                       />
-                      <Area type="monotone" dataKey="planted" stroke="#2d8a55" strokeWidth={2}
-                        fill="url(#g2)" dot={{ fill: "#2d8a55", r: 3 }} />
+                      <YAxis
+                        tick={{ fontSize: 10, fill: "#94a3b8" }}
+                        axisLine={false} tickLine={false}
+                        allowDecimals={false}
+                      />
+                      <Tooltip content={<ChartTooltip unit="trees" />} />
+                      <Area
+                        type="monotone" dataKey="planted"
+                        stroke="#2d8a55" strokeWidth={2}
+                        fill="url(#g2)"
+                        dot={{ fill: "#2d8a55", r: 3, strokeWidth: 0 }}
+                        activeDot={{ r: 5, fill: "#2d8a55" }}
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
 
               </div>
             )}
-          </Card>
-        </motion.div>
+          </motion.div>
 
-        {/* ── ACTIVITY CALENDAR ────────────────────────────────────── */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}>
-          <Card>
-            <SectionTitle icon="📅" title="Activity Calendar" subtitle="Land submissions this month" />
-            <div className="pf-cal-header">
-              <span className="pf-cal-month">{monthName} {year}</span>
+          {/* ── ACTIVITY CALENDAR ─────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
+            className="bg-white rounded-3xl border border-slate-100 shadow-sm px-6 py-6"
+          >
+            <div className="flex items-center gap-3 pb-5 border-b border-slate-100 mb-5">
+              <span className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-base shrink-0">📅</span>
+              <div>
+                <h2 className="text-sm font-semibold text-[#0d3320]">Activity Calendar</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Land submissions this month</p>
+              </div>
               {Object.keys(activityMap).length > 0 && (
-                <span style={{ fontSize: 12.5, color: "var(--smoke)" }}>
+                <span className="ml-auto text-xs text-slate-400">
                   {Object.keys(activityMap).length} active day{Object.keys(activityMap).length !== 1 ? "s" : ""}
                 </span>
               )}
             </div>
-            <div className="pf-cal-days">
+
+            <div className="flex items-center justify-between mb-4">
+              <h3 style={{ fontFamily:"'DM Serif Display',serif" }}
+                className="text-lg text-[#0d3320]">
+                {monthName} {year}
+              </h3>
+            </div>
+
+            {/* day labels */}
+            <div className="grid grid-cols-7 gap-1 mb-1">
               {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => (
-                <div key={d} className="pf-cal-day-label">{d}</div>
+                <div key={d} className="text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wide py-1">
+                  {d}
+                </div>
               ))}
             </div>
-            <div className="pf-cal-grid">
+
+            {/* day cells */}
+            <div className="grid grid-cols-7 gap-1">
               {Array(startOffset).fill(null).map((_, i) => <div key={`e-${i}`} />)}
               {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
                 const val = activityMap[day] || 0;
-                const colors = ["#f0f0ee","#bbf7d0","#86efac","#4ade80","#16a34a"];
                 const isToday = day === todayDate;
+                const bg = calSwatches[Math.min(val, 4)];
                 return (
-                  <div key={day}
-                    className={`pf-cal-cell${isToday ? " today" : ""}`}
-                    style={{ background: colors[Math.min(val, 4)] }}
-                    title={`${val} submission${val !== 1 ? "s" : ""}`}>
+                  <div
+                    key={day}
+                    title={`${val} submission${val !== 1 ? "s" : ""}`}
+                    className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium
+                      transition-transform hover:scale-110 cursor-default
+                      ${isToday ? "ring-2 ring-[#0d3320] ring-offset-1 font-bold" : ""}
+                      ${val > 0 ? "text-emerald-900" : "text-slate-400"}`}
+                    style={{ background: bg }}
+                  >
                     {day}
                   </div>
                 );
               })}
             </div>
-            <div className="pf-cal-legend">
+
+            {/* legend */}
+            <div className="flex items-center gap-2 mt-4 text-xs text-slate-400">
               <span>Less</span>
-              {["#f0f0ee","#bbf7d0","#86efac","#4ade80","#16a34a"].map((c, i) => (
-                <div key={i} className="pf-cal-legend-swatch" style={{ background: c }} />
+              {calSwatches.map((c, i) => (
+                <div key={i} className="w-3.5 h-3.5 rounded-sm" style={{ background: c }} />
               ))}
               <span>More</span>
             </div>
-          </Card>
-        </motion.div>
+          </motion.div>
 
+        </div>
       </div>
 
-      {/* ── EDIT MODAL ───────────────────────────────────────────────── */}
+      {/* ── EDIT MODAL ──────────────────────────────────────── */}
       <AnimatePresence>
         {editOpen && (
-          <motion.div className="pf-modal-overlay"
+          <motion.div
+            className="fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-6"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={e => e.target === e.currentTarget && setEditOpen(false)}>
-            <motion.div className="pf-modal"
+            onClick={e => e.target === e.currentTarget && setEditOpen(false)}
+          >
+            <motion.div
+              className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl flex flex-col gap-5"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.15 }}>
-              <h2>Edit Profile</h2>
-              <div className="pf-modal-field">
-                <label className="pf-modal-label">First Name</label>
-                <input className="pf-modal-input" value={editData.fname}
-                  onChange={e => setEditData(d => ({ ...d, fname: e.target.value }))} />
-              </div>
-              <div className="pf-modal-field">
-                <label className="pf-modal-label">Last Name</label>
-                <input className="pf-modal-input" value={editData.lname}
-                  onChange={e => setEditData(d => ({ ...d, lname: e.target.value }))} />
-              </div>
-              <div className="pf-modal-field">
-                <label className="pf-modal-label">Phone Number</label>
-                <input className="pf-modal-input" value={editData.phoneNo}
-                  onChange={e => setEditData(d => ({ ...d, phoneNo: e.target.value }))} />
-              </div>
-              <div className="pf-modal-actions">
-                <button className="pf-btn-ghost" onClick={() => setEditOpen(false)}>Cancel</button>
-                <button className="pf-btn-primary" onClick={handleSave} disabled={saving}>
+              transition={{ duration: 0.15 }}
+            >
+              <h2 style={{ fontFamily:"'DM Serif Display',serif" }}
+                className="text-2xl text-[#0d3320]">Edit Profile</h2>
+
+              {[
+                { label: "First Name",    key: "fname" },
+                { label: "Last Name",     key: "lname" },
+                { label: "Phone Number",  key: "phoneNo" },
+              ].map(({ label, key }) => (
+                <div key={key} className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{label}</label>
+                  <input
+                    value={editData[key]}
+                    onChange={e => setEditData(d => ({ ...d, [key]: e.target.value }))}
+                    className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800
+                               outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100
+                               transition-all duration-150"
+                  />
+                </div>
+              ))}
+
+              <div className="flex gap-3 justify-end pt-1">
+                <button
+                  onClick={() => setEditOpen(false)}
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium
+                             text-slate-500 hover:border-slate-400 hover:text-slate-700 transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="px-5 py-2.5 rounded-xl bg-[#0d3320] text-white text-sm font-semibold
+                             hover:bg-[#1a5c38] disabled:opacity-50 disabled:cursor-not-allowed
+                             transition-all cursor-pointer"
+                >
                   {saving ? "Saving…" : "Save Changes"}
                 </button>
               </div>
