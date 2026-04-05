@@ -11,6 +11,7 @@ import axios from "axios";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLandDetail from "./components/AdminLandDetail";
 import Login from "./components/Login";
+import ForgotPassword from "./components/ForgotPassword";
 import Signup from "./components/Signup";
 import Navbar from "./components/Navbar";
 import Landing from "./components/Landing";
@@ -57,9 +58,7 @@ function App() {
 
   // ⏳ Prevent early render
   if (loading) {
-    return <LoadingSpinner text="Loading...">
-
-    </LoadingSpinner>
+    return <LoadingSpinner text="Loading..."></LoadingSpinner>;
   }
 
   return (
@@ -74,6 +73,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
 
