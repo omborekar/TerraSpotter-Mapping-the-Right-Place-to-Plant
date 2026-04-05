@@ -6,6 +6,7 @@
 */
 package com.example.terraspoter.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,14 @@ public class PlantationCompletionImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✅ RELATION instead of plain Long
+    // FIX: added @JsonIgnore to break the infinite circular reference.
+    // Without it Jackson serializes:
+    //   PlantationCompletion → images[] → completionId (PlantationCompletion)
+    //   → images[] → completionId → ... forever
+    // This caused the API to return megabytes of recursive JSON,
+    // the frontend fetch to receive broken/truncated data,
+    // and completions state to stay [] so stats never updated.
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "completion_id", nullable = false)
     private PlantationCompletion completionId;
