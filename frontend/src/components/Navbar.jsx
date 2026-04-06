@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Navigation bar — premium nature theme, fully responsive, no duplicates.
+ Description: Navbar — complete redesign. Clean mobile sheet, zero duplication.
 */
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
@@ -12,413 +12,416 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Navbar() {
-  const [user, setUser]                 = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [mobileOpen, setMobileOpen]     = useState(false);
-  const [scrolled, setScrolled]         = useState(false);
-  const dropdownRef = useRef(null);
-  const navigate    = useNavigate();
-  const location    = useLocation();
+  const [user, setUser]           = useState(null);
+  const [ddOpen, setDdOpen]       = useState(false);
+  const [menuOpen, setMenuOpen]   = useState(false);
+  const [scrolled, setScrolled]   = useState(false);
+  const ddRef    = useRef(null);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
+  /* session */
   useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true });
-        setUser(res.data);
-      } catch { setUser(null); }
+    const fetch = async () => {
+      try { const r = await axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true }); setUser(r.data); }
+      catch { setUser(null); }
     };
-    setTimeout(fetchSession, 300);
-    window.addEventListener("login",  fetchSession);
-    window.addEventListener("logout", fetchSession);
-    return () => {
-      window.removeEventListener("login",  fetchSession);
-      window.removeEventListener("logout", fetchSession);
-    };
+    setTimeout(fetch, 300);
+    window.addEventListener("login",  fetch);
+    window.addEventListener("logout", fetch);
+    return () => { window.removeEventListener("login", fetch); window.removeEventListener("logout", fetch); };
   }, []);
 
+  /* scroll */
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 12);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
+    const h = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", h); return () => window.removeEventListener("scroll", h);
   }, []);
 
+  /* click outside dropdown */
   useEffect(() => {
-    const fn = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
-        setDropdownOpen(false);
-    };
-    document.addEventListener("mousedown", fn);
-    return () => document.removeEventListener("mousedown", fn);
+    const h = (e) => { if (ddRef.current && !ddRef.current.contains(e.target)) setDdOpen(false); };
+    document.addEventListener("mousedown", h); return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  useEffect(() => {
-    setMobileOpen(false);
-    setDropdownOpen(false);
-  }, [location.pathname]);
+  /* close on route change */
+  useEffect(() => { setMenuOpen(false); setDdOpen(false); }, [pathname]);
 
+  /* body scroll lock */
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [mobileOpen]);
+  }, [menuOpen]);
 
-  const handleLogout = async () => {
+  const logout = async () => {
     try {
       await axios.post(`${BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
-      setUser(null);
-      setDropdownOpen(false);
-      setMobileOpen(false);
-      window.dispatchEvent(new Event("logout"));
-      navigate("/login");
-    } catch (err) { console.error("Logout failed", err); }
+      setUser(null); setDdOpen(false); setMenuOpen(false);
+      window.dispatchEvent(new Event("logout")); navigate("/login");
+    } catch (e) { console.error(e); }
   };
 
-  const isActive = (path) => location.pathname === path;
+  const on = (p) => pathname === p;
+  const ini = `${user?.fname?.[0] ?? ""}${user?.lname?.[0] ?? ""}`.toUpperCase();
 
-  const navLinks = user
-    ? [
-        { to: "/",                   label: "Home"    },
-        { to: "/Main",               label: "Submit"  },
-        { to: "/browse",             label: "Browse"  },
-        { to: "/plantationShowcase", label: "History" },
-        { to: "/about",              label: "About"   },
-        { to: "/contact",            label: "Contact" },
-        ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: "Admin" }] : []),
-      ]
-    : [
-        { to: "/",        label: "Home"    },
-        { to: "/about",   label: "About"   },
-        { to: "/contact", label: "Contact" },
-      ];
-
-  const dropdownItems = [
-    { to: "/profile",            icon: "👤", label: "My Profile"   },
-    { to: "/Main",               icon: "🌱", label: "Submit Land"  },
-    { to: "/browse",             icon: "🗺️", label: "Browse Lands" },
-    { to: "/plantationShowcase", icon: "📚", label: "History"      },
-    { to: "/contact",            icon: "📞", label: "Contact"      },
-    { to: "/about",              icon: "ℹ️",  label: "About Us"     },
-    ...(user?.role === "ADMIN" ? [{ to: "/admin/pending", icon: "⚙️", label: "Admin Panel" }] : []),
+  /* ONE source of truth for nav */
+  const NAV = user ? [
+    { to: "/",                   label: "Home",    icon: "🏡" },
+    { to: "/Main",               label: "Submit",  icon: "📍" },
+    { to: "/browse",             label: "Browse",  icon: "🗺️" },
+    { to: "/plantationShowcase", label: "History", icon: "📚" },
+    { to: "/about",              label: "About",   icon: "ℹ️"  },
+    { to: "/contact",            label: "Contact", icon: "📞" },
+    ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: "Admin", icon: "⚙️" }] : []),
+  ] : [
+    { to: "/",        label: "Home",    icon: "🏡" },
+    { to: "/about",   label: "About",   icon: "ℹ️"  },
+    { to: "/contact", label: "Contact", icon: "📞" },
   ];
-
-  const initials = `${user?.fname?.[0] ?? ""}${user?.lname?.[0] ?? ""}`.toUpperCase();
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
 
-        .nb-root { font-family: 'DM Sans', sans-serif; position: sticky; top: 0; z-index: 100; }
+        * { box-sizing: border-box; }
 
-        /* ── bar ── */
-        .nb-bar {
-          height: 64px;
+        .n-root {
+          position: sticky; top: 0; z-index: 200;
+          font-family: 'DM Sans', sans-serif;
+        }
+
+        /* ─── bar ─── */
+        .n-bar {
+          height: 60px;
+          display: flex; align-items: center;
           background: #f8f5f0;
           border-bottom: 1px solid rgba(0,0,0,0.07);
-          transition: background 0.3s, box-shadow 0.3s;
+          transition: background .3s, box-shadow .3s;
         }
-        .nb-bar.scrolled {
-          background: rgba(248,245,240,0.93);
-          backdrop-filter: blur(20px) saturate(1.5);
-          -webkit-backdrop-filter: blur(20px) saturate(1.5);
-          box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 28px rgba(0,0,0,0.09);
+        .n-bar.up {
+          background: rgba(248,245,240,.94);
+          backdrop-filter: blur(18px) saturate(1.4);
+          -webkit-backdrop-filter: blur(18px) saturate(1.4);
+          box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 4px 24px rgba(0,0,0,.09);
         }
-        .nb-inner {
+        .n-inner {
+          width: 100%; max-width: 1280px;
+          margin: 0 auto; padding: 0 32px;
+          display: flex; align-items: center; gap: 0;
           height: 100%;
-          max-width: 1320px;
-          margin: 0 auto;
-          padding: 0 40px;
-          display: flex;
-          align-items: center;
-          gap: 0;
         }
 
-        /* ── brand ── */
-        .nb-brand {
-          display: flex; align-items: center; gap: 10px;
-          text-decoration: none; flex-shrink: 0; margin-right: 40px;
-          transition: opacity 0.15s;
-        }
-        .nb-brand:hover { opacity: 0.82; }
-        .nb-brand img {
-          width: 34px; height: 34px; border-radius: 10px; object-fit: cover;
-          box-shadow: 0 2px 10px rgba(58,140,87,0.28); flex-shrink: 0;
-        }
-        .nb-brand span {
-          font-family: 'Playfair Display', serif;
-          font-size: 20px; font-weight: 700;
-          color: #111; letter-spacing: -0.3px; white-space: nowrap;
-        }
-
-        /* ── desktop links ── */
-        .nb-links { display: flex; align-items: center; gap: 2px; flex: 1; }
-        .nb-link {
-          position: relative;
-          font-size: 13.5px; font-weight: 500; color: #6b6457;
-          text-decoration: none; padding: 7px 13px; border-radius: 8px;
-          transition: color 0.15s, background 0.15s; white-space: nowrap;
-          letter-spacing: 0.01em;
-        }
-        .nb-link:hover { color: #111; background: rgba(22,61,37,0.06); }
-        .nb-link.on { color: #256638; font-weight: 600; background: rgba(58,140,87,0.09); }
-        .nb-link.on::after {
-          content: ''; position: absolute;
-          bottom: 3px; left: 13px; right: 13px;
-          height: 2px; border-radius: 2px;
-          background: linear-gradient(90deg, #3a8c57, #256638);
-        }
-
-        /* ── right cluster ── */
-        .nb-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
-
-        .nb-btn-ghost {
-          font-size: 13.5px; font-weight: 500; color: #6b6457;
-          text-decoration: none; padding: 8px 15px; border-radius: 8px;
-          transition: color 0.15s, background 0.15s; letter-spacing: 0.01em; white-space: nowrap;
-        }
-        .nb-btn-ghost:hover { color: #111; background: rgba(0,0,0,0.05); }
-
-        .nb-divider { width: 1px; height: 20px; background: rgba(0,0,0,0.09); flex-shrink: 0; }
-
-        .nb-btn-cta {
-          font-size: 13.5px; font-weight: 600; color: #fff;
-          text-decoration: none; padding: 9px 20px; border-radius: 9px; white-space: nowrap;
-          background: linear-gradient(145deg, #256638 0%, #163d25 100%);
-          box-shadow: 0 2px 12px rgba(58,140,87,0.30), inset 0 1px 0 rgba(255,255,255,0.10);
-          transition: filter 0.2s, box-shadow 0.2s, transform 0.12s; letter-spacing: 0.02em;
-        }
-        .nb-btn-cta:hover { filter: brightness(1.09); box-shadow: 0 4px 20px rgba(58,140,87,0.35); }
-        .nb-btn-cta:active { transform: scale(0.97); }
-
-        /* ── profile pill ── */
-        .nb-pill {
+        /* ─── brand ─── */
+        .n-brand {
           display: flex; align-items: center; gap: 9px;
-          padding: 5px 6px 5px 16px; border-radius: 100px;
-          border: 1.5px solid rgba(0,0,0,0.09); background: #fff;
+          text-decoration: none; flex-shrink: 0; margin-right: 36px;
+          opacity: 1; transition: opacity .15s;
+        }
+        .n-brand:hover { opacity: .8; }
+        .n-brand img {
+          width: 32px; height: 32px; border-radius: 9px; object-fit: cover;
+          box-shadow: 0 2px 8px rgba(58,140,87,.28);
+        }
+        .n-brand-text {
+          font-family: 'Playfair Display', serif;
+          font-size: 19px; font-weight: 700; color: #111; letter-spacing: -.3px; white-space: nowrap;
+        }
+
+        /* ─── desktop links ─── */
+        .n-links { display: flex; align-items: center; gap: 1px; flex: 1; }
+        .n-link {
+          position: relative; font-size: 13.5px; font-weight: 500; color: #6b6457;
+          text-decoration: none; padding: 6px 11px; border-radius: 7px;
+          transition: color .15s, background .15s; white-space: nowrap;
+        }
+        .n-link:hover { color: #111; background: rgba(0,0,0,.05); }
+        .n-link.hi { color: #1f6b3a; font-weight: 600; background: rgba(58,140,87,.09); }
+        .n-link.hi::after {
+          content: ''; position: absolute; bottom: 2px; left: 11px; right: 11px;
+          height: 2px; border-radius: 2px;
+          background: linear-gradient(90deg, #3a8c57, #1f6b3a);
+        }
+
+        /* ─── right ─── */
+        .n-right { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+
+        /* ghost / cta */
+        .n-ghost {
+          font-size: 13.5px; font-weight: 500; color: #6b6457;
+          text-decoration: none; padding: 7px 14px; border-radius: 7px;
+          transition: color .15s, background .15s; white-space: nowrap;
+        }
+        .n-ghost:hover { color: #111; background: rgba(0,0,0,.05); }
+        .n-vdiv { width: 1px; height: 18px; background: rgba(0,0,0,.09); }
+        .n-cta {
+          font-size: 13.5px; font-weight: 600; color: #fff;
+          text-decoration: none; padding: 8px 18px; border-radius: 8px; white-space: nowrap;
+          background: linear-gradient(145deg, #256638, #163d25);
+          box-shadow: 0 2px 10px rgba(58,140,87,.30), inset 0 1px 0 rgba(255,255,255,.10);
+          transition: filter .2s, transform .12s;
+        }
+        .n-cta:hover { filter: brightness(1.09); }
+        .n-cta:active { transform: scale(.97); }
+
+        /* ─── profile pill ─── */
+        .n-pill {
+          display: flex; align-items: center; gap: 8px;
+          padding: 4px 6px 4px 14px; border-radius: 100px;
+          border: 1.5px solid rgba(0,0,0,.09); background: #fff;
           cursor: pointer; font-family: 'DM Sans', sans-serif;
           font-size: 13.5px; font-weight: 500; color: #111;
-          transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-          box-shadow: 0 1px 4px rgba(0,0,0,0.06); letter-spacing: 0.01em; white-space: nowrap;
+          box-shadow: 0 1px 4px rgba(0,0,0,.06);
+          transition: border-color .18s, box-shadow .18s, background .18s;
+          white-space: nowrap;
         }
-        .nb-pill:hover { border-color: rgba(22,61,37,0.25); box-shadow: 0 2px 14px rgba(0,0,0,0.09); background: #fefcfa; }
-        .nb-pill.open { border-color: #3a8c57; box-shadow: 0 0 0 3px rgba(58,140,87,0.17); background: #fefcfa; }
-
-        .nb-avatar {
-          width: 30px; height: 30px; border-radius: 50%;
-          background: linear-gradient(140deg, #163d25 0%, #3a8c57 100%);
-          color: #fff; font-size: 10.5px; font-weight: 700;
+        .n-pill:hover { border-color: rgba(22,61,37,.25); background: #fefcfa; box-shadow: 0 2px 12px rgba(0,0,0,.09); }
+        .n-pill.open { border-color: #3a8c57; box-shadow: 0 0 0 3px rgba(58,140,87,.16); background: #fefcfa; }
+        .n-ini {
+          width: 28px; height: 28px; border-radius: 50%;
+          background: linear-gradient(135deg, #163d25, #3a8c57);
+          color: #fff; font-size: 10px; font-weight: 700;
           display: flex; align-items: center; justify-content: center;
-          letter-spacing: 0.8px; flex-shrink: 0;
-          box-shadow: 0 1px 4px rgba(58,140,87,0.30);
+          letter-spacing: .8px; flex-shrink: 0;
         }
-        .nb-chev { flex-shrink: 0; opacity: 0.35; transition: transform 0.22s cubic-bezier(.4,0,.2,1), opacity 0.15s; }
-        .nb-chev.open { transform: rotate(180deg); opacity: 0.65; }
+        .n-chv { opacity: .35; flex-shrink: 0; transition: transform .22s, opacity .15s; }
+        .n-chv.r { transform: rotate(180deg); opacity: .6; }
 
-        /* ── dropdown ── */
-        .nb-dd {
+        /* ─── dropdown ─── */
+        .n-dd {
           position: absolute; top: calc(100% + 10px); right: 0;
-          width: 252px; background: #fff;
-          border: 1px solid rgba(0,0,0,0.07); border-radius: 18px;
-          box-shadow: 0 12px 50px rgba(0,0,0,0.13), 0 3px 12px rgba(0,0,0,0.07);
+          width: 240px; background: #fff;
+          border: 1px solid rgba(0,0,0,.08); border-radius: 16px;
+          box-shadow: 0 8px 40px rgba(0,0,0,.13), 0 2px 10px rgba(0,0,0,.07);
           overflow: hidden; z-index: 999;
         }
-        .nb-dd-bar { height: 3px; background: linear-gradient(90deg, #163d25, #3a8c57, #163d25); }
-        .nb-dd-head {
-          display: flex; align-items: center; gap: 11px;
-          padding: 14px 16px 13px; border-bottom: 1px solid #f2ede7;
-        }
-        .nb-dd-avt {
-          width: 40px; height: 40px; border-radius: 50%;
-          background: linear-gradient(140deg, #163d25 0%, #3a8c57 100%);
-          color: #fff; font-size: 13px; font-weight: 700;
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(58,140,87,0.20);
-        }
-        .nb-dd-name { font-size: 13.5px; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.01em; }
-        .nb-dd-email { font-size: 11.5px; color: #a89e93; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-        .nb-dd-body { padding: 6px; }
-        .nb-dd-row {
+        .n-dd-top { height: 3px; background: linear-gradient(90deg, #163d25, #3a8c57, #163d25); }
+        .n-dd-who {
           display: flex; align-items: center; gap: 10px;
-          padding: 9px 10px; border-radius: 9px;
-          font-size: 13.5px; font-weight: 400; color: #3a3530;
+          padding: 13px 15px 12px; border-bottom: 1px solid #f0ebe4;
+        }
+        .n-dd-avt {
+          width: 38px; height: 38px; border-radius: 50%;
+          background: linear-gradient(135deg, #163d25, #3a8c57);
+          color: #fff; font-size: 12px; font-weight: 700;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; box-shadow: 0 2px 6px rgba(58,140,87,.22);
+        }
+        .n-dd-n { font-size: 13px; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .n-dd-e { font-size: 11px; color: #a89e93; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+        .n-dd-body { padding: 5px; }
+        .n-dd-item {
+          display: flex; align-items: center; gap: 9px;
+          padding: 8px 9px; border-radius: 8px;
+          font-size: 13px; color: #3a3530; font-weight: 400;
           text-decoration: none; background: none; border: none;
           width: 100%; text-align: left; cursor: pointer;
-          transition: background 0.13s, color 0.13s; letter-spacing: 0.01em;
+          transition: background .12s, color .12s;
         }
-        .nb-dd-row:hover { background: #f5f1ec; color: #111; }
-        .nb-dd-row.red { color: #b03a2e; }
-        .nb-dd-row.red:hover { background: #fdf3f2; }
-        .nb-dd-ico {
-          width: 30px; height: 30px; border-radius: 7px; background: #f5f1ec;
+        .n-dd-item:hover { background: #f5f1ec; color: #111; }
+        .n-dd-item.logout { color: #b03a2e; }
+        .n-dd-item.logout:hover { background: #fdf3f2; }
+        .n-dd-ico {
+          width: 28px; height: 28px; border-radius: 6px; background: #f5f1ec;
+          display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
+          transition: background .12s;
+        }
+        .n-dd-item:hover .n-dd-ico { background: #ede8e2; }
+        .n-dd-item.logout .n-dd-ico { background: #fdf3f2; }
+        .n-dd-item.logout:hover .n-dd-ico { background: #fce8e6; }
+        .n-dd-sep { height: 1px; background: #f0ebe4; margin: 3px 6px; }
+
+        /* ─── hamburger ─── */
+        .n-ham {
+          display: none; width: 38px; height: 38px; border-radius: 9px;
+          border: 1.5px solid rgba(0,0,0,.09); background: #fff;
+          cursor: pointer; flex-direction: column;
+          align-items: center; justify-content: center; gap: 4.5px;
+          box-shadow: 0 1px 4px rgba(0,0,0,.06);
+          transition: background .15s; flex-shrink: 0;
+        }
+        .n-ham:hover { background: #f0ebe4; }
+        .n-bar-ln {
+          width: 17px; height: 1.5px; background: #333; border-radius: 2px;
+          transition: transform .22s, opacity .18s;
+        }
+        .n-ham.x .n-bar-ln:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+        .n-ham.x .n-bar-ln:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .n-ham.x .n-bar-ln:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+        /* ─── mobile sheet ─── */
+        /* RULE: mobile sheet shows ONLY ONE unified view, no dropdown */
+        .n-sheet {
+          position: fixed; top: 60px; left: 0; right: 0; bottom: 0;
+          background: #f8f5ef; z-index: 190; overflow-y: auto;
+        }
+        .n-sheet-body { padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 0; }
+
+        /* user card at top of sheet */
+        .n-sh-card {
+          display: flex; align-items: center; gap: 12px;
+          padding: 14px 18px; margin-bottom: 14px;
+          background: #fff; border: 1px solid rgba(0,0,0,.08);
+          border-radius: 16px;
+          box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        }
+        .n-sh-avt {
+          width: 46px; height: 46px; border-radius: 50%;
+          background: linear-gradient(135deg, #163d25, #3a8c57);
+          color: #fff; font-size: 15px; font-weight: 700;
           display: flex; align-items: center; justify-content: center;
-          font-size: 14px; flex-shrink: 0; transition: background 0.13s;
+          flex-shrink: 0; box-shadow: 0 2px 10px rgba(58,140,87,.28);
         }
-        .nb-dd-row:hover .nb-dd-ico { background: #ede8e2; }
-        .nb-dd-row.red .nb-dd-ico { background: #fdf3f2; }
-        .nb-dd-row.red:hover .nb-dd-ico { background: #fce8e6; }
-        .nb-dd-sep { height: 1px; background: #f2ede7; margin: 3px 8px; }
+        .n-sh-name { font-size: 15px; font-weight: 600; color: #111; }
+        .n-sh-role {
+          display: inline-block; margin-top: 3px;
+          font-size: 11px; font-weight: 600; text-transform: uppercase;
+          letter-spacing: .8px; color: #1f6b3a;
+          background: rgba(58,140,87,.10); padding: 2px 8px; border-radius: 100px;
+        }
 
-        /* ── hamburger ── */
-        .nb-burger {
-          display: none; width: 40px; height: 40px; border-radius: 10px;
-          border: 1.5px solid rgba(0,0,0,0.09); background: #fff;
-          cursor: pointer; align-items: center; justify-content: center;
-          flex-direction: column; gap: 5px;
-          box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-          transition: background 0.15s, border-color 0.15s; flex-shrink: 0;
+        /* section header */
+        .n-sh-label {
+          font-size: 10px; font-weight: 600; text-transform: uppercase;
+          letter-spacing: 1.2px; color: #a89e93;
+          padding: 0 6px; margin: 12px 0 6px;
         }
-        .nb-burger:hover { background: #f5f1ec; border-color: rgba(22,61,37,0.2); }
-        .nb-burger-ln {
-          display: block; width: 18px; height: 1.5px; border-radius: 2px;
-          background: #333; transition: transform 0.22s ease, opacity 0.2s;
-        }
-        .nb-burger.x .nb-burger-ln:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-        .nb-burger.x .nb-burger-ln:nth-child(2) { opacity: 0; transform: scaleX(0); }
-        .nb-burger.x .nb-burger-ln:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-        /* ── mobile sheet ── */
-        .nb-sheet {
-          position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
-          background: #faf9f7; z-index: 99; overflow-y: auto;
-          border-top: 1px solid rgba(0,0,0,0.07);
-        }
-        .nb-sheet-inner { padding: 12px 16px 40px; }
-
-        .nb-m-link {
+        /* sheet link row */
+        .n-sh-row {
           display: flex; align-items: center; gap: 12px;
-          padding: 13px 16px; border-radius: 12px;
-          font-size: 15px; font-weight: 500; color: #3a3530;
-          text-decoration: none; transition: background 0.14s, color 0.14s; margin-bottom: 2px;
-        }
-        .nb-m-link:hover { background: #f0ebe4; color: #111; }
-        .nb-m-link.on { background: rgba(58,140,87,0.10); color: #256638; font-weight: 600; }
-        .nb-m-dot { width: 6px; height: 6px; border-radius: 50%; background: #3a8c57; flex-shrink: 0; }
-
-        .nb-m-sep { height: 1px; background: #e8e2da; margin: 10px 4px; }
-
-        .nb-m-user {
-          display: flex; align-items: center; gap: 12px;
-          padding: 14px 16px; background: #fff;
-          border: 1px solid #e8e2da; border-radius: 14px; margin-bottom: 10px;
-        }
-        .nb-m-avt {
-          width: 44px; height: 44px; border-radius: 50%;
-          background: linear-gradient(140deg, #163d25 0%, #3a8c57 100%);
-          color: #fff; font-size: 14px; font-weight: 700;
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; letter-spacing: 0.6px; box-shadow: 0 2px 10px rgba(58,140,87,0.25);
-        }
-        .nb-m-name { font-size: 14px; font-weight: 600; color: #111; }
-        .nb-m-email { font-size: 12px; color: #a89e93; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-        .nb-m-act {
-          display: flex; align-items: center; gap: 12px;
-          padding: 13px 16px; border-radius: 12px;
-          font-size: 15px; font-weight: 500; color: #3a3530;
+          padding: 12px 14px; border-radius: 12px;
+          font-size: 15px; font-weight: 500; color: #2a2520;
           text-decoration: none; background: none; border: none;
           width: 100%; text-align: left; cursor: pointer;
-          transition: background 0.14s, color 0.14s; margin-bottom: 2px;
+          transition: background .14s, color .14s; margin-bottom: 2px;
         }
-        .nb-m-act:hover { background: #f0ebe4; color: #111; }
-        .nb-m-act.red { color: #b03a2e; }
-        .nb-m-act.red:hover { background: #fdf3f2; }
-        .nb-m-ico { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
+        .n-sh-row:hover { background: rgba(0,0,0,.05); color: #111; }
+        .n-sh-row.active { background: rgba(58,140,87,.10); color: #1f6b3a; font-weight: 600; }
+        .n-sh-row.danger { color: #b03a2e; }
+        .n-sh-row.danger:hover { background: #fdf3f2; }
+        .n-sh-dot {
+          width: 7px; height: 7px; border-radius: 50%; background: #3a8c57;
+          flex-shrink: 0;
+        }
+        .n-sh-ico {
+          width: 36px; height: 36px; border-radius: 10px; background: #fff;
+          border: 1px solid rgba(0,0,0,.07);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+          transition: background .14s;
+        }
+        .n-sh-row:hover .n-sh-ico { background: #f5f1ec; }
+        .n-sh-row.danger .n-sh-ico { background: #fff5f5; border-color: rgba(176,58,46,.1); }
 
-        .nb-m-signin {
-          display: block; padding: 14px; border-radius: 12px;
-          font-size: 15px; font-weight: 500; text-align: center; color: #6b6457;
-          text-decoration: none; background: #fff; border: 1.5px solid #e8e2da;
-          transition: background 0.14s, color 0.14s; margin-bottom: 8px;
-        }
-        .nb-m-signin:hover { background: #f5f1ec; color: #111; }
-        .nb-m-cta {
-          display: block; padding: 14px; border-radius: 12px;
-          font-size: 15px; font-weight: 600; text-align: center; color: #fff;
-          text-decoration: none; letter-spacing: 0.02em;
-          background: linear-gradient(145deg, #256638 0%, #163d25 100%);
-          box-shadow: 0 3px 14px rgba(58,140,87,0.30); transition: filter 0.15s;
-        }
-        .nb-m-cta:hover { filter: brightness(1.08); }
+        .n-sh-divider { height: 1px; background: rgba(0,0,0,.08); margin: 10px 0; }
 
-        @media (max-width: 900px) {
-          .nb-links, .nb-btn-ghost, .nb-btn-cta, .nb-divider, .nb-pill { display: none !important; }
-          .nb-burger { display: flex; }
-          .nb-inner { padding: 0 18px; }
-          .nb-brand { margin-right: 0; }
+        /* guest auth buttons */
+        .n-sh-auth { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .n-sh-in {
+          padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 500;
+          text-align: center; text-decoration: none; color: #6b6457;
+          background: #fff; border: 1.5px solid rgba(0,0,0,.09);
+          transition: background .14s;
+        }
+        .n-sh-in:hover { background: #f0ebe4; }
+        .n-sh-go {
+          padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600;
+          text-align: center; text-decoration: none; color: #fff;
+          background: linear-gradient(145deg, #256638, #163d25);
+          box-shadow: 0 3px 14px rgba(58,140,87,.30); transition: filter .15s;
+        }
+        .n-sh-go:hover { filter: brightness(1.08); }
+
+        /* responsive breakpoint */
+        @media (max-width: 860px) {
+          .n-links, .n-ghost, .n-vdiv, .n-cta { display: none !important; }
+          .n-pill { display: none !important; }
+          .n-ham { display: flex; }
+          .n-inner { padding: 0 16px; }
+          .n-brand { margin-right: 0; }
+        }
+        @media (min-width: 861px) {
+          .n-ham { display: none !important; }
+          .n-sheet { display: none !important; }
         }
       `}</style>
 
-      <div className="nb-root">
+      <div className="n-root">
 
-        {/* ── BAR ── */}
-        <div className={`nb-bar${scrolled ? " scrolled" : ""}`}>
-          <div className="nb-inner">
+        {/* ══ TOP BAR ══ */}
+        <div className={`n-bar${scrolled ? " up" : ""}`}>
+          <div className="n-inner">
 
-            <Link to="/" className="nb-brand">
+            {/* Brand */}
+            <Link to="/" className="n-brand">
               <img src="/favicon.ico" alt="TerraSpotter" />
-              <span>TerraSpotter</span>
+              <span className="n-brand-text">TerraSpotter</span>
             </Link>
 
-            <nav className="nb-links">
-              {navLinks.map(({ to, label }) => (
-                <Link key={to + label} to={to} className={`nb-link${isActive(to) ? " on" : ""}`}>
-                  {label}
-                </Link>
+            {/* Desktop nav links */}
+            <nav className="n-links">
+              {NAV.map(({ to, label }) => (
+                <Link key={to} to={to} className={`n-link${on(to) ? " hi" : ""}`}>{label}</Link>
               ))}
             </nav>
 
-            <div className="nb-right">
+            {/* Right zone */}
+            <div className="n-right">
 
-              {!user ? (
+              {/* Desktop: guest */}
+              {!user && (
                 <>
-                  <Link to="/login"  className="nb-btn-ghost">Sign in</Link>
-                  <div className="nb-divider" />
-                  <Link to="/signup" className="nb-btn-cta">Get started →</Link>
+                  <Link to="/login"  className="n-ghost">Sign in</Link>
+                  <div className="n-vdiv" />
+                  <Link to="/signup" className="n-cta">Get started →</Link>
                 </>
-              ) : (
-                <div style={{ position: "relative" }} ref={dropdownRef}>
+              )}
+
+              {/* Desktop: profile pill + dropdown */}
+              {user && (
+                <div style={{ position: "relative" }} ref={ddRef}>
                   <button
-                    className={`nb-pill${dropdownOpen ? " open" : ""}`}
-                    onClick={() => setDropdownOpen(o => !o)}
+                    className={`n-pill${ddOpen ? " open" : ""}`}
+                    onClick={() => setDdOpen(o => !o)}
                   >
                     <span>{user.fname}</span>
-                    <div className="nb-avatar">{initials}</div>
-                    <svg className={`nb-chev${dropdownOpen ? " open" : ""}`}
-                      width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 4l4 4 4-4" stroke="#333" strokeWidth="1.6"
-                        strokeLinecap="round" strokeLinejoin="round" />
+                    <div className="n-ini">{ini}</div>
+                    <svg className={`n-chv${ddOpen ? " r" : ""}`} width="11" height="11" viewBox="0 0 11 11" fill="none">
+                      <path d="M2 4l3.5 3.5L9 4" stroke="#444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </button>
 
                   <AnimatePresence>
-                    {dropdownOpen && (
-                      <motion.div className="nb-dd"
-                        initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                        animate={{ opacity: 1,  y: 0,  scale: 1    }}
-                        exit={{    opacity: 0,  y: -8, scale: 0.97 }}
-                        transition={{ duration: 0.17, ease: [0.22, 1, 0.36, 1] }}
+                    {ddOpen && (
+                      <motion.div className="n-dd"
+                        initial={{ opacity: 0, y: -8, scale: .97 }}
+                        animate={{ opacity: 1, y: 0,  scale: 1   }}
+                        exit={{    opacity: 0, y: -8, scale: .97 }}
+                        transition={{ duration: .16, ease: [.22,1,.36,1] }}
                       >
-                        <div className="nb-dd-bar" />
-                        <div className="nb-dd-head">
-                          <div className="nb-dd-avt">{initials}</div>
+                        <div className="n-dd-top" />
+                        <div className="n-dd-who">
+                          <div className="n-dd-avt">{ini}</div>
                           <div style={{ overflow: "hidden" }}>
-                            <div className="nb-dd-name">{user.fname} {user.lname}</div>
-                            <div className="nb-dd-email">{user.email}</div>
+                            <div className="n-dd-n">{user.fname} {user.lname}</div>
+                            <div className="n-dd-e">{user.email}</div>
                           </div>
                         </div>
-                        <div className="nb-dd-body">
-                          {dropdownItems.map(({ to, icon, label }) => (
-                            <Link key={to} to={to} className="nb-dd-row"
-                              onClick={() => setDropdownOpen(false)}>
-                              <span className="nb-dd-ico">{icon}</span>
-                              {label}
+                        <div className="n-dd-body">
+                          {NAV.filter(x => x.to !== "/").map(({ to, icon, label }) => (
+                            <Link key={to} to={to} className="n-dd-item" onClick={() => setDdOpen(false)}>
+                              <span className="n-dd-ico">{icon}</span>{label}
                             </Link>
                           ))}
+                          <Link to="/profile" className="n-dd-item" onClick={() => setDdOpen(false)}>
+                            <span className="n-dd-ico">👤</span>My Profile
+                          </Link>
                         </div>
-                        <div className="nb-dd-sep" />
-                        <div className="nb-dd-body">
-                          <button className="nb-dd-row red" onClick={handleLogout}>
-                            <span className="nb-dd-ico">🚪</span>
-                            Sign out
+                        <div className="n-dd-sep" />
+                        <div className="n-dd-body">
+                          <button className="n-dd-item logout" onClick={logout}>
+                            <span className="n-dd-ico">🚪</span>Sign out
                           </button>
                         </div>
                       </motion.div>
@@ -427,71 +430,81 @@ export default function Navbar() {
                 </div>
               )}
 
+              {/* Hamburger — mobile only */}
               <button
-                className={`nb-burger${mobileOpen ? " x" : ""}`}
-                onClick={() => setMobileOpen(o => !o)}
-                aria-label="Toggle menu"
+                className={`n-ham${menuOpen ? " x" : ""}`}
+                onClick={() => setMenuOpen(o => !o)}
+                aria-label="Menu"
               >
-                <span className="nb-burger-ln" />
-                <span className="nb-burger-ln" />
-                <span className="nb-burger-ln" />
+                <span className="n-bar-ln" />
+                <span className="n-bar-ln" />
+                <span className="n-bar-ln" />
               </button>
-
             </div>
           </div>
         </div>
 
-        {/* ── MOBILE SHEET ── */}
+        {/* ══ MOBILE SHEET — single unified view, no desktop dropdown ══ */}
         <AnimatePresence>
-          {mobileOpen && (
-            <motion.div className="nb-sheet"
-              initial={{ opacity: 0, y: -16 }}
+          {menuOpen && (
+            <motion.div className="n-sheet"
+              initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1,  y: 0   }}
-              exit={{    opacity: 0,  y: -16  }}
-              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+              exit={{    opacity: 0,  y: -12  }}
+              transition={{ duration: .22, ease: [.22,1,.36,1] }}
             >
-              <div className="nb-sheet-inner">
+              <div className="n-sheet-body">
 
-                {navLinks.map(({ to, label }) => (
-                  <Link key={to + label} to={to}
-                    className={`nb-m-link${isActive(to) ? " on" : ""}`}>
-                    {isActive(to) && <span className="nb-m-dot" />}
+                {/* Logged-in: user card */}
+                {user && (
+                  <div className="n-sh-card">
+                    <div className="n-sh-avt">{ini}</div>
+                    <div>
+                      <div className="n-sh-name">{user.fname} {user.lname}</div>
+                      <span className="n-sh-role">{user.role === "ADMIN" ? "Admin" : "Member"}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Navigation */}
+                <div className="n-sh-label">Navigation</div>
+                {NAV.map(({ to, label, icon }) => (
+                  <Link key={to} to={to} className={`n-sh-row${on(to) ? " active" : ""}`}>
+                    <span className="n-sh-ico">{icon}</span>
                     {label}
+                    {on(to) && <span className="n-sh-dot" style={{ marginLeft: "auto" }} />}
                   </Link>
                 ))}
 
-                <div className="nb-m-sep" />
-
-                {!user ? (
+                {/* Logged-in: account section */}
+                {user && (
                   <>
-                    <Link to="/login"  className="nb-m-signin">Sign in</Link>
-                    <Link to="/signup" className="nb-m-cta">Get started →</Link>
-                  </>
-                ) : (
-                  <>
-                    <div className="nb-m-user">
-                      <div className="nb-m-avt">{initials}</div>
-                      <div style={{ overflow: "hidden", flex: 1 }}>
-                        <div className="nb-m-name">{user.fname} {user.lname}</div>
-                        <div className="nb-m-email">{user.email}</div>
-                      </div>
-                    </div>
+                    <div className="n-sh-divider" />
+                    <div className="n-sh-label">Account</div>
 
-                    {dropdownItems.map(({ to, icon, label }) => (
-                      <Link key={to} to={to} className="nb-m-act">
-                        <span className="nb-m-ico">{icon}</span>
-                        {label}
-                      </Link>
-                    ))}
+                    <Link to="/profile" className="n-sh-row" onClick={() => setMenuOpen(false)}>
+                      <span className="n-sh-ico">👤</span>My Profile
+                    </Link>
 
-                    <div className="nb-m-sep" />
+                    <div className="n-sh-divider" />
 
-                    <button className="nb-m-act red" onClick={handleLogout}>
-                      <span className="nb-m-ico">🚪</span>
-                      Sign out
+                    <button className="n-sh-row danger" onClick={logout}>
+                      <span className="n-sh-ico">🚪</span>Sign out
                     </button>
                   </>
                 )}
+
+                {/* Guest: auth buttons */}
+                {!user && (
+                  <>
+                    <div className="n-sh-divider" />
+                    <div className="n-sh-auth">
+                      <Link to="/login"  className="n-sh-in">Sign in</Link>
+                      <Link to="/signup" className="n-sh-go">Get started →</Link>
+                    </div>
+                  </>
+                )}
+
               </div>
             </motion.div>
           )}
