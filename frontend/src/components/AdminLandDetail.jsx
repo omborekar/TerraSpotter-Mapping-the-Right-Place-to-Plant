@@ -10,93 +10,94 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-const statusBadge = (status) => {
-  const map = {
-    PENDING:  { cls: "bg-orange-50 text-orange-700 border-orange-200", dot: "bg-orange-500", label: "Pending Review" },
-    APPROVED: { cls: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500", label: "Approved" },
-    REJECTED: { cls: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-500", label: "Rejected" },
-  };
-  return map[status] || map.PENDING;
+const STATUS = {
+  PENDING:  { dot: "#f59e0b", text: "#fbbf24", bg: "rgba(251,191,36,0.08)",  border: "rgba(251,191,36,0.25)",  label: "Pending Review" },
+  APPROVED: { dot: "#4ade80", text: "#4ade80", bg: "rgba(74,222,128,0.08)",  border: "rgba(74,222,128,0.25)",  label: "Approved" },
+  REJECTED: { dot: "#f87171", text: "#f87171", bg: "rgba(248,113,113,0.08)", border: "rgba(248,113,113,0.25)", label: "Rejected" },
 };
 
-/* ─── Skeleton primitives ─── */
-function Bone({ className = "" }) {
+/* ─── Bone ─── */
+function Bone({ style = {} }) {
   return (
-    <div className={`animate-pulse bg-gradient-to-r from-emerald-50 via-emerald-100 to-emerald-50 bg-[length:200%_100%] rounded-lg ${className}`} />
+    <div style={{
+      background: "linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.09) 50%,rgba(255,255,255,0.04) 75%)",
+      backgroundSize: "200% 100%",
+      animation: "det-shimmer 1.4s infinite",
+      borderRadius: 4,
+      ...style,
+    }} />
   );
 }
 
 function SkeletonDetail() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* topbar */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <Bone className="h-9 w-36" />
-        <div className="flex gap-2">
-          <Bone className="h-7 w-28 rounded-full" />
-          <Bone className="h-7 w-16 rounded-md" />
+    <div style={S.page}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
+        <Bone style={{ height: 34, width: 140 }} />
+        <div style={{ display: "flex", gap: 8 }}>
+          <Bone style={{ height: 26, width: 110, borderRadius: 100 }} />
+          <Bone style={{ height: 26, width: 60, borderRadius: 6 }} />
         </div>
       </div>
-      {/* title */}
-      <div className="space-y-2">
-        <Bone className="h-10 w-2/3" />
-        <Bone className="h-5 w-1/3" />
+      <div style={{ marginBottom: 28 }}>
+        <Bone style={{ height: 36, width: "60%", marginBottom: 10 }} />
+        <Bone style={{ height: 14, width: "30%" }} />
       </div>
-      {/* main grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        <div className="space-y-5">
-          <Bone className="w-full h-80 rounded-2xl" />
-          <Bone className="w-full h-36 rounded-2xl" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 20 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <Bone style={{ height: 340, borderRadius: 10 }} />
+          <Bone style={{ height: 100, borderRadius: 10 }} />
         </div>
-        <div className="space-y-4">
-          <Bone className="w-full h-48 rounded-2xl" />
-          <Bone className="w-full h-52 rounded-2xl" />
-          <Bone className="w-full h-40 rounded-2xl" />
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <Bone style={{ height: 160, borderRadius: 10 }} />
+          <Bone style={{ height: 180, borderRadius: 10 }} />
+          <Bone style={{ height: 130, borderRadius: 10 }} />
         </div>
       </div>
     </div>
   );
 }
 
-/* ─── InfoRow ─── */
-function InfoRow({ icon, label, value }) {
+/* ─── Data row ─── */
+function DataRow({ label, value }) {
   if (!value && value !== false && value !== 0) return null;
   return (
-    <div className="flex gap-3 items-start py-2.5 border-b border-emerald-50 last:border-0">
-      <span className="text-base mt-0.5 shrink-0">{icon}</span>
-      <div>
-        <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-0.5">{label}</div>
-        <div className="text-sm font-medium text-gray-900">{String(value)}</div>
+    <div style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "9px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+      <div style={{ fontFamily: "var(--mono)", fontSize: 9, fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--muted)", minWidth: 96, paddingTop: 2 }}>
+        {label}
       </div>
+      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, color: "var(--text)" }}>
+        {String(value)}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Panel (side card) ─── */
+function Panel({ title, children }) {
+  return (
+    <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "18px 20px" }}>
+      <div style={{ fontFamily: "var(--mono)", fontSize: 9, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 12, paddingBottom: 10, borderBottom: "1px solid var(--border)" }}>
+        {title}
+      </div>
+      {children}
     </div>
   );
 }
 
 /* ─── Section card ─── */
-function Section({ title, children }) {
+function SectionCard({ title, children }) {
   return (
-    <div className="bg-white border border-emerald-100 rounded-2xl p-6 shadow-sm">
-      <h3 className="font-bold text-sm uppercase tracking-wider text-green-900 pb-3 mb-4 border-b border-emerald-100">
+    <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "22px 24px" }}>
+      <div style={{ fontFamily: "var(--mono)", fontSize: 9, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 14, paddingBottom: 11, borderBottom: "1px solid var(--border)" }}>
         {title}
-      </h3>
+      </div>
       {children}
     </div>
   );
 }
 
-/* ─── Side card ─── */
-function SideCard({ title, children }) {
-  return (
-    <div className="bg-white border border-emerald-100 rounded-2xl p-5 shadow-sm">
-      <h4 className="text-[11px] font-bold uppercase tracking-widest text-emerald-400 pb-3 mb-3 border-b border-emerald-100">
-        {title}
-      </h4>
-      {children}
-    </div>
-  );
-}
-
-/* ─── Main component ─── */
+/* ─── Main ─── */
 export default function AdminLandDetail({ landId, user, onBack, onVote, voting: externalVoting }) {
   const [land, setLand]               = useState(null);
   const [images, setImages]           = useState([]);
@@ -128,311 +129,375 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
   const handleVote = async (vote) => {
     setVoting(v => ({ ...v, [landId]: vote }));
     try {
-      await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, {
-        withCredentials: true,
-        params: { vote, userId: user.id },
-      });
+      await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, { withCredentials: true, params: { vote, userId: user.id } });
       const res = await axios.get(`${BASE_URL}/api/lands/${landId}`, { withCredentials: true });
       setLand(res.data);
       if (onVote) onVote(landId, vote);
-    } catch {
-      alert("Error processing vote");
-    } finally {
-      setVoting(v => ({ ...v, [landId]: null }));
-    }
+    } catch { alert("Error processing vote"); }
+    finally { setVoting(v => ({ ...v, [landId]: null })); }
   };
 
-  if (loading) return <SkeletonDetail />;
+  if (loading) return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+        :root{--bg:#0c0f0d;--surface:#131812;--surface2:#1a2019;--border:rgba(255,255,255,0.07);--text:#e8f0eb;--muted:#6b7e71;--green:#4ade80;--mono:'JetBrains Mono',monospace;}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{background:var(--bg);color:var(--text);}
+        @keyframes det-shimmer{to{background-position:-200% 0;}}
+      `}</style>
+      <SkeletonDetail />
+    </>
+  );
 
   if (error) return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 p-8 text-center">
-      <span className="text-5xl">⚠️</span>
-      <p className="text-red-600 font-medium">{error}</p>
-      <button
-        onClick={onBack}
-        className="px-5 py-2.5 bg-white border border-emerald-200 text-green-900 text-sm font-semibold rounded-xl hover:bg-emerald-50 transition-colors"
-      >
-        ← Back to Queue
-      </button>
-    </div>
+    <>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap');*{box-sizing:border-box;margin:0;padding:0;}body{background:#0c0f0d;}`}</style>
+      <div style={{ minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: "'DM Sans', sans-serif" }}>
+        <span style={{ fontSize: 40 }}>⚠️</span>
+        <p style={{ color: "#f87171" }}>{error}</p>
+        <button onClick={onBack} style={S.backBtn}>← Back to Queue</button>
+      </div>
+    </>
   );
 
   const imageUrls = images.map(i => i.imageUrl);
-  const badge     = statusBadge(land.status);
+  const st        = STATUS[land.status] || STATUS.PENDING;
   const isVoting  = voting[landId] || externalVoting?.[landId];
 
   return (
-    <div className="min-h-screen bg-[#f9fbf9] font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        :root{
+          --bg:#0c0f0d; --surface:#131812; --surface2:#1a2019;
+          --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
+          --text:#e8f0eb; --muted:#6b7e71; --subtle:#3a4a3d;
+          --green:#4ade80; --green2:#22c55e; --green-dim:rgba(74,222,128,0.12);
+          --amber:#fbbf24; --red:#f87171;
+          --mono:'JetBrains Mono',monospace;
+        }
+        body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+        @keyframes det-shimmer{to{background-position:-200% 0;}}
+
+        .det-thumb{cursor:pointer;border-radius:5px;overflow:hidden;border:2px solid transparent;transition:all 0.2s;}
+        .det-thumb:hover{border-color:rgba(74,222,128,0.4);}
+        .det-thumb.on{border-color:var(--green);}
+        .det-thumb img{width:100%;height:52px;object-fit:cover;display:block;}
+
+        .map-link{
+          display:inline-flex;align-items:center;gap:6px;
+          padding:7px 14px;background:var(--surface2);border:1px solid var(--border2);
+          border-radius:6px;color:var(--green);font-size:12px;font-weight:600;
+          text-decoration:none;transition:all 0.2s;font-family:'DM Sans',sans-serif;
+        }
+        .map-link:hover{background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.3);}
+
+        @media(max-width:900px){
+          .det-main-grid{grid-template-columns:1fr !important;}
+        }
+        @media(max-width:600px){
+          .det-page{padding:20px 16px 60px !important;}
+        }
+      `}</style>
+
+      <div className="det-page" style={S.page}>
 
         {/* ── Top bar ── */}
-        <div className="flex items-center justify-between flex-wrap gap-3 mb-7">
-          <button
-            onClick={onBack}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-emerald-200 text-green-900 text-sm font-semibold rounded-xl hover:bg-emerald-50 transition-colors shadow-sm"
-          >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 28 }}>
+          <button onClick={onBack} style={S.backBtn} onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(74,222,128,0.3)"; e.currentTarget.style.color = "var(--green)"; }} onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border2)"; e.currentTarget.style.color = "var(--text)"; }}>
             ← Back to Queue
           </button>
-          <div className="flex items-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold border ${badge.cls}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
-              {badge.label}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 100, fontSize: 11, fontWeight: 600, background: st.bg, color: st.text, border: `1px solid ${st.border}` }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: st.dot }} />
+              {st.label}
             </span>
-            <span className="text-xs font-bold text-emerald-400 bg-white border border-emerald-100 px-2.5 py-1 rounded-lg">
+            <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", background: "var(--surface)", border: "1px solid var(--border)", padding: "3px 9px", borderRadius: 5 }}>
               #{land.id}
             </span>
           </div>
         </div>
 
         {/* ── Title ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-          className="mb-7"
-        >
-          <h1 className="font-extrabold text-3xl sm:text-4xl text-green-950 leading-tight">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} style={{ marginBottom: 28 }}>
+          <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(24px, 4vw, 38px)", fontWeight: 800, color: "#fff", lineHeight: 1.1, marginBottom: 6 }}>
             {land.title || "Untitled Land"}
           </h1>
           {land.nearbyLandmark && (
-            <p className="text-sm text-emerald-500 mt-1.5">📍 Near {land.nearbyLandmark}</p>
+            <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", letterSpacing: "0.06em" }}>
+              📍 {land.nearbyLandmark}
+            </div>
           )}
         </motion.div>
 
         {/* ── Main grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
+        <div
+          className="det-main-grid"
+          style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 18, alignItems: "start" }}
+        >
 
           {/* LEFT */}
-          <div className="space-y-5">
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
             {/* Gallery */}
             {imageUrls.length > 0 ? (
-              <div className="bg-white border border-emerald-100 rounded-2xl overflow-hidden shadow-sm">
-                <div className="relative h-72 sm:h-96 bg-emerald-50">
+              <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
+                <div style={{ position: "relative", height: 340, background: "var(--surface2)" }}>
                   <AnimatePresence mode="wait">
                     <motion.img
                       key={activeImg}
                       src={imageUrls[activeImg]}
-                      alt={`Land image ${activeImg + 1}`}
-                      className="w-full h-full object-cover"
+                      alt={`Land ${activeImg + 1}`}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      onError={e => { e.target.src = "https://via.placeholder.com/600x380/e8f5ee/0d3320?text=🌿"; }}
+                      onError={e => { e.target.src = "https://via.placeholder.com/600x340/0d1f12/3d7a52?text=🌿"; }}
                     />
                   </AnimatePresence>
-                  <span className="absolute bottom-3 right-3 bg-black/50 backdrop-blur text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  <span style={{ position: "absolute", bottom: 12, right: 12, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)", color: "#fff", fontFamily: "var(--mono)", fontSize: 10, fontWeight: 600, padding: "4px 10px", borderRadius: 100 }}>
                     {activeImg + 1} / {imageUrls.length}
                   </span>
                 </div>
                 {imageUrls.length > 1 && (
-                  <div className="flex gap-2 p-3 overflow-x-auto bg-white">
+                  <div style={{ display: "flex", gap: 6, padding: "10px 12px", background: "var(--surface2)", overflowX: "auto" }}>
                     {imageUrls.map((url, i) => (
-                      <button
+                      <div
                         key={i}
+                        className={`det-thumb${activeImg === i ? " on" : ""}`}
+                        style={{ flexShrink: 0, width: 72 }}
                         onClick={() => setActiveImg(i)}
-                        className={`shrink-0 w-16 h-12 sm:w-20 sm:h-14 rounded-lg overflow-hidden border-2 transition-all ${
-                          activeImg === i ? "border-emerald-500 scale-105" : "border-transparent hover:border-emerald-300"
-                        }`}
                       >
-                        <img
-                          src={url}
-                          alt={`thumb-${i}`}
-                          className="w-full h-full object-cover"
-                          onError={e => { e.target.src = "https://via.placeholder.com/80x56/e8f5ee/0d3320?text=🌿"; }}
-                        />
-                      </button>
+                        <img src={url} alt={`thumb-${i}`} onError={e => { e.target.src = "https://via.placeholder.com/72x52/0d1f12/3d7a52?text=🌿"; }} />
+                      </div>
                     ))}
                   </div>
                 )}
               </div>
             ) : (
-              <div className="bg-white border border-emerald-100 rounded-2xl h-60 flex flex-col items-center justify-center gap-3 shadow-sm">
-                <span className="text-5xl opacity-40">🌍</span>
-                <p className="text-sm text-emerald-400">No images uploaded</p>
+              <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, height: 240, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                <span style={{ fontSize: 40, opacity: 0.2 }}>🌍</span>
+                <span style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em" }}>NO IMAGES UPLOADED</span>
               </div>
             )}
 
             {/* Description */}
             {land.description && (
-              <Section title="Description">
-                <p className="text-sm text-gray-600 leading-relaxed">{land.description}</p>
-              </Section>
+              <SectionCard title="Description">
+                <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.75 }}>{land.description}</p>
+              </SectionCard>
             )}
 
             {/* Notes */}
             {land.notes && (
-              <Section title="Additional Notes">
-                <p className="text-sm text-gray-600 leading-relaxed">{land.notes}</p>
-              </Section>
+              <SectionCard title="Additional Notes">
+                <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.75 }}>{land.notes}</p>
+              </SectionCard>
             )}
 
             {/* ML Recommendations */}
             {recommendations.length > 0 && (
-              <Section title="🌱 ML Plant Recommendations">
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+              <SectionCard title="ML Plant Recommendations">
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
                   {recommendations.map((r, i) => (
-                    <div key={i} className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                      <div className="font-bold text-sm text-green-900 mb-1">{r.plantName}</div>
+                    <div key={i} style={{ background: "rgba(74,222,128,0.04)", border: "1px solid rgba(74,222,128,0.12)", borderRadius: 8, padding: "12px 14px" }}>
+                      <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{r.plantName}</div>
                       {r.suitabilityScore != null && (
-                        <div className="text-xs font-semibold text-emerald-600 mb-1.5">
-                          Suitability: {(r.suitabilityScore * 100).toFixed(0)}%
+                        <div style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--green)", marginBottom: 5 }}>
+                          {(r.suitabilityScore * 100).toFixed(0)}% suitable
                         </div>
                       )}
-                      {r.reason && <div className="text-xs text-gray-600 leading-relaxed">{r.reason}</div>}
+                      {r.reason && <div style={{ fontSize: 11, color: "var(--muted)", lineHeight: 1.5 }}>{r.reason}</div>}
                     </div>
                   ))}
                 </div>
-              </Section>
+              </SectionCard>
             )}
 
-            {/* Community Reviews */}
+            {/* Reviews */}
             {reviews.length > 0 && (
-              <Section title={`💬 Community Reviews (${reviews.length})`}>
-                <div className="space-y-3">
+              <SectionCard title={`Community Reviews — ${reviews.length}`}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {reviews.map((r, i) => (
-                    <div key={i} className="bg-white border border-emerald-100 rounded-xl p-4 shadow-sm">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex items-center gap-2 text-sm font-semibold text-green-900">
-                          <span className="w-7 h-7 rounded-full bg-gradient-to-br from-green-700 to-emerald-400 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                    <div key={i} style={{ background: "var(--surface2)", border: "1px solid var(--border)", borderRadius: 8, padding: "14px 16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: "#fff" }}>
+                          <span style={{ width: 24, height: 24, borderRadius: "50%", background: "linear-gradient(135deg, #1a4d2e, #22c55e)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
                             {(r.userName || r.name || "?")?.[0]?.toUpperCase()}
                           </span>
                           {r.userName || r.name || `User #${r.userId}`}
                         </span>
-                        <span className="text-amber-500 text-sm font-bold">
+                        <span style={{ color: "#fbbf24", fontSize: 12, fontWeight: 700, letterSpacing: 1 }}>
                           {"★".repeat(r.rating || 0)}{"☆".repeat(5 - (r.rating || 0))}
                         </span>
                       </div>
                       {(r.feasibilityNote || r.permissionNote) && (
-                        <p className="text-xs text-emerald-500 mb-1.5">
+                        <p style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--muted)", marginBottom: 5 }}>
                           {r.feasibilityNote && `✅ ${r.feasibilityNote}`}
-                          {r.feasibilityNote && r.permissionNote && " · "}
+                          {r.feasibilityNote && r.permissionNote && "  ·  "}
                           {r.permissionNote && `🔐 ${r.permissionNote}`}
                         </p>
                       )}
                       {r.createdAt && (
-                        <p className="text-xs text-gray-400 mb-2">
+                        <p style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--muted)", marginBottom: 7 }}>
                           {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                         </p>
                       )}
                       {r.body && (
-                        <p className="text-sm text-gray-600 leading-relaxed border-l-4 border-emerald-400 pl-3 italic">
+                        <p style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.65, borderLeft: "2px solid var(--green)", paddingLeft: 10, fontStyle: "italic" }}>
                           "{r.body}"
                         </p>
                       )}
                     </div>
                   ))}
                 </div>
-              </Section>
+              </SectionCard>
             )}
           </div>
 
-          {/* RIGHT sidebar */}
-          <div className="space-y-4">
+          {/* RIGHT */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-            {/* Action card – PENDING */}
+            {/* Action card */}
             {land.status === "PENDING" && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-gradient-to-br from-green-950 to-green-800 rounded-2xl p-6 shadow-xl"
+                style={{ background: "var(--surface)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "22px 20px" }}
               >
-                <h3 className="font-extrabold text-white text-lg mb-1">Admin Decision</h3>
-                <p className="text-white/60 text-sm leading-relaxed mb-5">
-                  Review all details before approving or rejecting this submission.
+                <div style={{ fontFamily: "var(--mono)", fontSize: 9, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 10 }}>
+                  ADMIN / DECISION
+                </div>
+                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>
+                  Cast Your Vote
+                </h3>
+                <p style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6, marginBottom: 18 }}>
+                  Review all details carefully before approving or rejecting.
                 </p>
-                <div className="flex flex-col gap-3">
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   <button
                     onClick={() => handleVote("APPROVE")}
                     disabled={!!isVoting}
-                    className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-colors"
+                    style={{
+                      width: "100%", padding: "11px", background: isVoting ? "rgba(74,222,128,0.1)" : "rgba(74,222,128,0.12)",
+                      border: "1px solid rgba(74,222,128,0.35)", borderRadius: 7,
+                      fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700,
+                      color: "var(--green)", cursor: isVoting ? "not-allowed" : "pointer",
+                      opacity: isVoting ? 0.6 : 1, transition: "all 0.2s",
+                    }}
                   >
-                    {isVoting === "APPROVE" ? "⏳ Approving…" : "✅ Approve Submission"}
+                    {isVoting === "APPROVE" ? "⏳ Approving…" : "✓ Approve Submission"}
                   </button>
                   <button
                     onClick={() => handleVote("REJECT")}
                     disabled={!!isVoting}
-                    className="w-full py-3 bg-white/10 hover:bg-white/20 disabled:opacity-60 disabled:cursor-not-allowed text-red-300 border border-red-300/30 font-bold text-sm rounded-xl transition-colors"
+                    style={{
+                      width: "100%", padding: "11px", background: "rgba(248,113,113,0.06)",
+                      border: "1px solid rgba(248,113,113,0.2)", borderRadius: 7,
+                      fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700,
+                      color: "var(--red)", cursor: isVoting ? "not-allowed" : "pointer",
+                      opacity: isVoting ? 0.6 : 1, transition: "all 0.2s",
+                    }}
                   >
-                    {isVoting === "REJECT" ? "⏳ Rejecting…" : "❌ Reject Submission"}
+                    {isVoting === "REJECT" ? "⏳ Rejecting…" : "✕ Reject Submission"}
                   </button>
                 </div>
               </motion.div>
             )}
 
-            {/* Already decided banner */}
+            {/* Already decided */}
             {land.status !== "PENDING" && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`rounded-2xl p-5 shadow-lg ${
-                  land.status === "APPROVED"
-                    ? "bg-gradient-to-br from-green-800 to-green-700"
-                    : "bg-gradient-to-br from-red-900 to-red-700"
-                }`}
+                style={{
+                  background: land.status === "APPROVED" ? "rgba(74,222,128,0.06)" : "rgba(248,113,113,0.06)",
+                  border: `1px solid ${land.status === "APPROVED" ? "rgba(74,222,128,0.2)" : "rgba(248,113,113,0.2)"}`,
+                  borderRadius: 10, padding: "18px 20px",
+                }}
               >
-                <div className="font-extrabold text-white text-lg mb-1">
-                  {land.status === "APPROVED" ? "✅ Approved" : "❌ Rejected"}
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 800, color: land.status === "APPROVED" ? "var(--green)" : "var(--red)", marginBottom: 4 }}>
+                  {land.status === "APPROVED" ? "✓ Approved" : "✕ Rejected"}
                 </div>
-                <p className="text-white/60 text-sm">
-                  This submission has already been {land.status.toLowerCase()}.
-                </p>
+                <p style={{ fontSize: 12, color: "var(--muted)" }}>This submission has been {land.status.toLowerCase()}.</p>
               </motion.div>
             )}
 
             {/* Ownership */}
-            <SideCard title="Ownership Details">
-              <InfoRow icon="👤" label="Owner Name"     value={land.ownerName} />
-              <InfoRow icon="📞" label="Phone"          value={land.ownerPhone} />
-              <InfoRow icon="🏷" label="Ownership Type" value={land.ownershipType} />
-              <InfoRow icon="✅" label="Permission"     value={land.permissionStatus} />
-            </SideCard>
+            <Panel title="Ownership">
+              <DataRow label="Owner"     value={land.ownerName} />
+              <DataRow label="Phone"     value={land.ownerPhone} />
+              <DataRow label="Type"      value={land.ownershipType} />
+              <DataRow label="Permission" value={land.permissionStatus} />
+            </Panel>
 
-            {/* Land Info */}
-            <SideCard title="Land Information">
-              <InfoRow icon="📐" label="Area"        value={land.areaSqm ? `${land.areaSqm.toLocaleString()} sqm (${(land.areaSqm / 10000).toFixed(3)} ha)` : null} />
-              <InfoRow icon="🪨" label="Soil Type"   value={land.soilType} />
-              <InfoRow icon="📊" label="Land Status" value={land.landStatus} />
-              <InfoRow icon="🔒" label="Fencing"     value={land.fencing !== undefined ? (land.fencing ? "Yes" : "No") : null} />
-              <InfoRow icon="🛤" label="Access Road" value={land.accessRoad} />
-              <InfoRow icon="📍" label="Landmark"    value={land.nearbyLandmark} />
-            </SideCard>
+            {/* Land info */}
+            <Panel title="Land Info">
+              <DataRow label="Area"       value={land.areaSqm ? `${land.areaSqm.toLocaleString()} sqm` : null} />
+              <DataRow label="Hectares"   value={land.areaSqm ? `${(land.areaSqm / 10000).toFixed(3)} ha` : null} />
+              <DataRow label="Soil"       value={land.soilType} />
+              <DataRow label="Status"     value={land.landStatus} />
+              <DataRow label="Fencing"    value={land.fencing !== undefined ? (land.fencing ? "Yes" : "No") : null} />
+              <DataRow label="Road"       value={land.accessRoad} />
+              <DataRow label="Landmark"   value={land.nearbyLandmark} />
+            </Panel>
 
             {/* Water */}
-            <SideCard title="Water Availability">
-              <InfoRow icon="💧" label="Available"  value={land.waterAvailable} />
-              <InfoRow icon="🔁" label="Frequency"  value={land.waterFrequency} />
-            </SideCard>
+            <Panel title="Water">
+              <DataRow label="Available"  value={land.waterAvailable} />
+              <DataRow label="Frequency"  value={land.waterFrequency} />
+            </Panel>
 
             {/* Location */}
             {(land.centroidLat || land.centroidLng) && (
-              <SideCard title="Location">
-                <InfoRow icon="🌐" label="Latitude"  value={land.centroidLat?.toFixed(6)} />
-                <InfoRow icon="🌐" label="Longitude" value={land.centroidLng?.toFixed(6)} />
-                <a
-                  href={`https://maps.google.com/?q=${land.centroidLat},${land.centroidLng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 text-green-800 text-xs font-semibold rounded-lg hover:bg-emerald-100 transition-colors"
-                >
-                  🗺 Open in Google Maps
-                </a>
-              </SideCard>
+              <Panel title="Coordinates">
+                <DataRow label="Lat"  value={land.centroidLat?.toFixed(6)} />
+                <DataRow label="Long" value={land.centroidLng?.toFixed(6)} />
+                <div style={{ marginTop: 12 }}>
+                  <a
+                    href={`https://maps.google.com/?q=${land.centroidLat},${land.centroidLng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="map-link"
+                  >
+                    ↗ Open in Maps
+                  </a>
+                </div>
+              </Panel>
             )}
 
             {/* Submission info */}
-            <SideCard title="Submission Info">
-              <InfoRow icon="🆔" label="Land ID"         value={land.id} />
-              <InfoRow icon="👤" label="Submitted by"    value={land.createdByName || land.submittedByName || (land.createdBy ? `User #${land.createdBy}` : null)} />
-              <InfoRow icon="📅" label="Submitted on"    value={land.createdAt ? new Date(land.createdAt).toLocaleString("en-IN") : null} />
-              <InfoRow icon="🖼" label="Photos uploaded" value={images.length > 0 ? `${images.length} photo${images.length > 1 ? "s" : ""}` : "None"} />
-            </SideCard>
+            <Panel title="Submission">
+              <DataRow label="Land ID"  value={land.id} />
+              <DataRow label="Submitted by" value={land.createdByName || land.submittedByName || (land.createdBy ? `User #${land.createdBy}` : null)} />
+              <DataRow label="Date"     value={land.createdAt ? new Date(land.createdAt).toLocaleString("en-IN") : null} />
+              <DataRow label="Photos"   value={images.length > 0 ? `${images.length} file${images.length > 1 ? "s" : ""}` : "None"} />
+            </Panel>
 
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
+
+const S = {
+  page: {
+    maxWidth: 1200,
+    margin: "0 auto",
+    padding: "32px 32px 80px",
+    fontFamily: "'DM Sans', sans-serif",
+    minHeight: "100vh",
+    background: "#0c0f0d",
+  },
+  backBtn: {
+    display: "inline-flex", alignItems: "center", gap: 6,
+    padding: "8px 16px", background: "#131812", border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: 8, fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600,
+    color: "#e8f0eb", cursor: "pointer", transition: "all 0.2s",
+  },
+};

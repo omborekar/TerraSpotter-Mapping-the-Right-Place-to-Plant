@@ -11,54 +11,60 @@ import AdminLandDetail from "./AdminLandDetail";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-const statusBadge = (status) => {
-  const map = {
-    PENDING:  { cls: "bg-orange-50 text-orange-700 border-orange-200", dot: "bg-orange-500", label: "Pending" },
-    APPROVED: { cls: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500", label: "Approved" },
-    REJECTED: { cls: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-500", label: "Rejected" },
-  };
-  return map[status] || map.PENDING;
+const STATUS = {
+  PENDING:  { dot: "#f59e0b", text: "#fbbf24", bg: "rgba(251,191,36,0.08)",  border: "rgba(251,191,36,0.2)",  label: "Pending" },
+  APPROVED: { dot: "#4ade80", text: "#4ade80", bg: "rgba(74,222,128,0.08)",  border: "rgba(74,222,128,0.2)",  label: "Approved" },
+  REJECTED: { dot: "#f87171", text: "#f87171", bg: "rgba(248,113,113,0.08)", border: "rgba(248,113,113,0.2)", label: "Rejected" },
 };
 
-/* ─── Bone skeleton ─── */
-function Bone({ className = "" }) {
+/* ─── Bone ─── */
+function Bone({ style = {} }) {
   return (
-    <div
-      className={`rounded-lg bg-gradient-to-r from-emerald-50 via-emerald-100 to-emerald-50 animate-pulse ${className}`}
-    />
+    <div style={{
+      background: "linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.09) 50%,rgba(255,255,255,0.04) 75%)",
+      backgroundSize: "200% 100%",
+      animation: "adm-shimmer 1.4s infinite",
+      borderRadius: 4,
+      ...style,
+    }} />
   );
 }
 
-/* ─── Skeleton for a single land card ─── */
 function SkeletonCard() {
   return (
-    <div className="bg-white border border-emerald-100 rounded-2xl overflow-hidden grid grid-cols-1 sm:grid-cols-[200px_1fr] shadow-sm">
-      <Bone className="h-44 sm:h-auto sm:min-h-[180px] rounded-none" />
-      <div className="p-5 space-y-3">
-        <div className="flex justify-between items-start gap-3">
-          <Bone className="h-5 w-2/3" />
-          <Bone className="h-6 w-20 rounded-full" />
+    <div style={{
+      background: "var(--surface)",
+      border: "1px solid var(--border)",
+      borderRadius: 10,
+      display: "grid",
+      gridTemplateColumns: "180px 1fr",
+      overflow: "hidden",
+    }}>
+      <Bone style={{ borderRadius: 0, minHeight: 160 }} />
+      <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Bone style={{ height: 16, width: "55%" }} />
+          <Bone style={{ height: 22, width: 80, borderRadius: 100 }} />
         </div>
-        <div className="flex gap-3 flex-wrap">
-          <Bone className="h-4 w-24" />
-          <Bone className="h-4 w-28" />
-          <Bone className="h-4 w-20" />
+        <div style={{ display: "flex", gap: 16 }}>
+          <Bone style={{ height: 12, width: 90 }} />
+          <Bone style={{ height: 12, width: 110 }} />
+          <Bone style={{ height: 12, width: 70 }} />
         </div>
-        <Bone className="h-4 w-full" />
-        <Bone className="h-4 w-4/5" />
-        <div className="flex gap-2 pt-1">
-          <Bone className="h-6 w-16 rounded-md" />
-          <Bone className="h-6 w-20 rounded-md" />
-          <Bone className="h-6 w-14 rounded-md" />
+        <Bone style={{ height: 12, width: "85%" }} />
+        <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+          <Bone style={{ height: 22, width: 70, borderRadius: 4 }} />
+          <Bone style={{ height: 22, width: 80, borderRadius: 4 }} />
         </div>
-        <div className="pt-2 flex justify-between items-center border-t border-emerald-50">
-          <div className="flex gap-2">
-            <Bone className="h-8 w-28 rounded-xl" />
-            <Bone className="h-8 w-20 rounded-full" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto", paddingTop: 12, borderTop: "1px solid var(--border)" }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Bone style={{ height: 32, width: 110, borderRadius: 6 }} />
+            <Bone style={{ height: 32, width: 22, borderRadius: "50%" }} />
+            <Bone style={{ height: 32, width: 80, borderRadius: 4 }} />
           </div>
-          <div className="flex gap-2">
-            <Bone className="h-8 w-24 rounded-xl" />
-            <Bone className="h-8 w-20 rounded-xl" />
+          <div style={{ display: "flex", gap: 8 }}>
+            <Bone style={{ height: 32, width: 90, borderRadius: 6 }} />
+            <Bone style={{ height: 32, width: 80, borderRadius: 6 }} />
           </div>
         </div>
       </div>
@@ -73,64 +79,49 @@ function CardImage({ landId }) {
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    axios
-      .get(`${BASE_URL}/api/lands/${landId}/images`, { withCredentials: true })
+    axios.get(`${BASE_URL}/api/lands/${landId}/images`, { withCredentials: true })
       .then(res => {
         const imgs = Array.isArray(res.data) ? res.data : [];
-        if (imgs.length > 0) {
-          setThumb(imgs[0].imageUrl);
-          setExtra(imgs.length - 1);
-          setStatus("loaded");
-        } else {
-          setStatus("empty");
-        }
+        if (imgs.length > 0) { setThumb(imgs[0].imageUrl); setExtra(imgs.length - 1); setStatus("loaded"); }
+        else setStatus("empty");
       })
       .catch(() => setStatus("empty"));
   }, [landId]);
 
-  if (status === "loading") {
-    return (
-      <div className="w-full h-full min-h-[180px] bg-gradient-to-r from-emerald-50 via-emerald-100 to-emerald-50 animate-pulse" />
-    );
-  }
+  const baseStyle = { width: "100%", height: "100%", minHeight: 160, display: "flex", alignItems: "center", justifyContent: "center" };
 
-  if (status === "empty" || !thumb) {
-    return (
-      <div className="w-full h-full min-h-[180px] bg-emerald-50 flex flex-col items-center justify-center gap-1.5">
-        <span className="text-3xl opacity-40">🌍</span>
-        <p className="text-xs text-emerald-400">No photos</p>
-      </div>
-    );
-  }
+  if (status === "loading") return (
+    <div style={baseStyle}>
+      <Bone style={{ position: "absolute", inset: 0, borderRadius: 0 }} />
+    </div>
+  );
+
+  if (status === "empty" || !thumb) return (
+    <div style={{ ...baseStyle, flexDirection: "column", gap: 6, background: "rgba(255,255,255,0.02)" }}>
+      <span style={{ fontSize: 28, opacity: 0.25 }}>🌍</span>
+      <span style={{ fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em" }}>NO PHOTOS</span>
+    </div>
+  );
 
   return (
-    <div className="relative w-full h-full min-h-[180px]">
+    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 160 }}>
       <img
-        src={thumb}
-        alt="land"
-        className="w-full h-full object-cover"
-        onError={e => { e.target.src = "https://via.placeholder.com/220x220/edf7f2/0b2e1a?text=🌿"; }}
+        src={thumb} alt="land"
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        onError={e => { e.target.src = "https://via.placeholder.com/180x160/0d1f12/3d7a52?text=🌿"; }}
       />
       {extra > 0 && (
-        <span className="absolute bottom-2 right-2 bg-black/50 backdrop-blur-sm text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
-          +{extra} more
-        </span>
+        <span style={{
+          position: "absolute", bottom: 8, right: 8,
+          background: "rgba(0,0,0,0.65)", backdropFilter: "blur(6px)",
+          color: "#fff", fontSize: 10, fontWeight: 600, padding: "3px 8px", borderRadius: 100,
+        }}>+{extra}</span>
       )}
     </div>
   );
 }
 
-/* ─── Summary tile ─── */
-function SumTile({ value, label, color }) {
-  return (
-    <div className="bg-white border border-emerald-100 rounded-2xl px-5 py-4 hover:shadow-md transition-shadow">
-      <div className={`font-extrabold text-4xl leading-none mb-1.5 ${color}`}>{value}</div>
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">{label}</div>
-    </div>
-  );
-}
-
-/* ─── Main component ─── */
+/* ─── Main ─── */
 export default function AdminPendingLands() {
   const [lands, setLands]               = useState([]);
   const [user, setUser]                 = useState(null);
@@ -142,89 +133,60 @@ export default function AdminPendingLands() {
 
   useEffect(() => {
     axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true })
-      .then(r => setUser(r.data))
-      .catch(() => setUser(null))
-      .finally(() => setSessionLoad(false));
+      .then(r => setUser(r.data)).catch(() => setUser(null)).finally(() => setSessionLoad(false));
   }, []);
 
   const fetchLands = useCallback(async () => {
     setLandsLoading(true);
     try {
       let res;
-      try {
-        res = await axios.get(`${BASE_URL}/api/lands`, { withCredentials: true });
-      } catch {
-        res = await axios.get(`${BASE_URL}/api/lands/pending`, { withCredentials: true });
-      }
+      try { res = await axios.get(`${BASE_URL}/api/lands`, { withCredentials: true }); }
+      catch { res = await axios.get(`${BASE_URL}/api/lands/pending`, { withCredentials: true }); }
       setLands(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      console.error("fetchLands:", err);
-    } finally {
-      setLandsLoading(false);
-    }
+    } catch (err) { console.error("fetchLands:", err); }
+    finally { setLandsLoading(false); }
   }, []);
 
-  useEffect(() => {
-    if (user?.role === "ADMIN") fetchLands();
-  }, [user, fetchLands]);
+  useEffect(() => { if (user?.role === "ADMIN") fetchLands(); }, [user, fetchLands]);
 
   const handleVote = async (landId, vote) => {
     setVoting(v => ({ ...v, [landId]: vote }));
     try {
-      await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, {
-        withCredentials: true,
-        params: { vote, userId: user.id },
-      });
-      setLands(prev =>
-        prev.map(l =>
-          l.id === landId ? { ...l, status: vote === "APPROVE" ? "APPROVED" : "REJECTED" } : l
-        )
-      );
+      await axios.post(`${BASE_URL}/lands/${landId}/verify`, null, { withCredentials: true, params: { vote, userId: user.id } });
+      setLands(prev => prev.map(l => l.id === landId ? { ...l, status: vote === "APPROVE" ? "APPROVED" : "REJECTED" } : l));
       fetchLands();
-    } catch {
-      alert("Error processing vote. Please try again.");
-      fetchLands();
-    } finally {
-      setVoting(v => ({ ...v, [landId]: null }));
-    }
+    } catch { alert("Error processing vote. Please try again."); fetchLands(); }
+    finally { setVoting(v => ({ ...v, [landId]: null })); }
   };
 
   /* ── Guards ── */
   if (sessionLoading) return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div className="flex items-start justify-between flex-wrap gap-4 mb-6">
-        <div className="space-y-2">
-          <Bone className="h-4 w-24" />
-          <Bone className="h-9 w-56" />
+    <div style={S.page}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <Bone style={{ height: 10, width: 80 }} />
+          <Bone style={{ height: 30, width: 220 }} />
         </div>
-        <div className="flex gap-2">
-          {[...Array(4)].map((_, i) => <Bone key={i} className="h-9 w-24 rounded-full" />)}
+        <div style={{ display: "flex", gap: 6 }}>
+          {[...Array(4)].map((_, i) => <Bone key={i} style={{ height: 34, width: 90, borderRadius: 100 }} />)}
         </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        {[...Array(4)].map((_, i) => <Bone key={i} className="h-24 rounded-2xl" />)}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
+        {[...Array(4)].map((_, i) => <Bone key={i} style={{ height: 88, borderRadius: 8 }} />)}
       </div>
-      <div className="space-y-4">
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {[...Array(3)].map((_, i) => <SkeletonCard key={i} />)}
       </div>
     </div>
   );
 
   if (!user?.role) return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-emerald-600">
-      <span className="text-5xl">🔒</span>
-      <p className="font-medium">No active session</p>
-    </div>
+    <div style={S.guard}><span style={{ fontSize: 40 }}>🔒</span><p>No active session</p></div>
   );
-
   if (user.role !== "ADMIN") return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-emerald-600">
-      <span className="text-5xl">🚫</span>
-      <p className="font-medium">Access Denied — Admins only</p>
-    </div>
+    <div style={S.guard}><span style={{ fontSize: 40 }}>🚫</span><p>Access Denied — Admins only</p></div>
   );
 
-  /* ── Detail drill-in ── */
   if (selectedId) return (
     <AdminLandDetail
       landId={selectedId}
@@ -243,162 +205,221 @@ export default function AdminPendingLands() {
     REJECTED: lands.filter(l => l.status === "REJECTED").length,
   };
 
-  const filterLabels = { ALL: "All", PENDING: "Pending", APPROVED: "Approved", REJECTED: "Rejected" };
-
   return (
-    <div className="min-h-screen bg-[#f9fbf9] font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        :root{
+          --bg:#0c0f0d; --surface:#131812; --surface2:#1a2019;
+          --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
+          --text:#e8f0eb; --muted:#6b7e71; --subtle:#3a4a3d;
+          --green:#4ade80; --green2:#22c55e; --green-dim:#1a4d2e;
+          --amber:#fbbf24; --red:#f87171;
+          --mono:'JetBrains Mono',monospace;
+        }
+        body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+        @keyframes adm-shimmer{to{background-position:-200% 0;}}
+        @keyframes adm-pulse-bar{
+          0%{transform:translateX(-100%);}
+          100%{transform:translateX(200%);}
+        }
+      `}</style>
 
+      <div style={S.page}>
         {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-7">
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-500 mb-1">Admin Panel</div>
-            <h1 className="font-extrabold text-3xl sm:text-4xl text-green-950 leading-tight">Land Review Queue</h1>
+            <div style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--green)", letterSpacing: "0.2em", marginBottom: 8 }}>
+              ADMIN / LAND_REVIEW_QUEUE
+            </div>
+            <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(22px, 3.5vw, 34px)", fontWeight: 800, color: "#fff", lineHeight: 1.1 }}>
+              Review Queue
+            </h1>
           </div>
 
-          {/* Filter tabs */}
-          <div className="flex flex-wrap gap-2">
-            {["ALL", "PENDING", "APPROVED", "REJECTED"].map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
-                  filter === f
-                    ? "bg-green-950 text-white border-green-950"
-                    : "bg-white text-gray-600 border-emerald-200 hover:border-emerald-400 hover:text-green-900"
-                }`}
-              >
-                {filterLabels[f]}
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                  filter === f ? "bg-white/20 text-white" : "bg-emerald-50 text-emerald-400"
-                }`}>
-                  {counts[f]}
-                </span>
-              </button>
-            ))}
+          {/* Filter pills */}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {["ALL", "PENDING", "APPROVED", "REJECTED"].map(f => {
+              const s = STATUS[f] || {};
+              const isActive = filter === f;
+              return (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 7,
+                    padding: "7px 16px", borderRadius: 100,
+                    fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600,
+                    cursor: "pointer", transition: "all 0.2s",
+                    background: isActive ? (f === "ALL" ? "rgba(74,222,128,0.15)" : s.bg) : "var(--surface)",
+                    border: `1px solid ${isActive ? (f === "ALL" ? "rgba(74,222,128,0.3)" : s.border) : "var(--border)"}`,
+                    color: isActive ? (f === "ALL" ? "var(--green)" : s.text) : "var(--muted)",
+                  }}
+                >
+                  {f !== "ALL" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: s.dot, flexShrink: 0 }} />}
+                  {f === "ALL" ? "All" : f.charAt(0) + f.slice(1).toLowerCase()}
+                  <span style={{
+                    fontFamily: "var(--mono)", fontSize: 10, fontWeight: 600,
+                    padding: "1px 6px", borderRadius: 4,
+                    background: isActive ? "rgba(255,255,255,0.12)" : "var(--surface2)",
+                    color: isActive ? "#fff" : "var(--muted)",
+                  }}>
+                    {counts[f]}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* ── Loading bar ── */}
         {landsLoading && (
-          <div className="h-1 rounded-full mb-4 overflow-hidden bg-emerald-100">
-            <div className="h-full bg-gradient-to-r from-emerald-400 to-green-600 animate-[loadbar_1.2s_linear_infinite] bg-[length:200%_100%]" />
+          <div style={{ height: 2, background: "var(--surface2)", borderRadius: 1, marginBottom: 20, overflow: "hidden", position: "relative" }}>
+            <div style={{
+              position: "absolute", top: 0, bottom: 0, width: "60%",
+              background: "linear-gradient(90deg, transparent, var(--green), transparent)",
+              animation: "adm-pulse-bar 1.2s ease-in-out infinite",
+            }} />
           </div>
         )}
 
         {/* ── Summary tiles ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
-          <SumTile value={counts.ALL}      label="Total Submissions" color="text-green-950" />
-          <SumTile value={counts.PENDING}  label="Awaiting Review"   color="text-orange-600" />
-          <SumTile value={counts.APPROVED} label="Approved"          color="text-emerald-600" />
-          <SumTile value={counts.REJECTED} label="Rejected"          color="text-red-600" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 28 }}>
+          {[
+            { val: counts.ALL,      lbl: "Total",    color: "#fff",         border: "var(--border)" },
+            { val: counts.PENDING,  lbl: "Pending",  color: "var(--amber)", border: "rgba(251,191,36,0.2)" },
+            { val: counts.APPROVED, lbl: "Approved", color: "var(--green)", border: "rgba(74,222,128,0.2)" },
+            { val: counts.REJECTED, lbl: "Rejected", color: "var(--red)",   border: "rgba(248,113,113,0.2)" },
+          ].map((s, i) => (
+            <div key={i} style={{
+              background: "var(--surface)", border: `1px solid ${s.border}`,
+              borderRadius: 8, padding: "16px 20px",
+            }}>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 36, fontWeight: 800, lineHeight: 1, color: s.color }}>{s.val}</div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 9, fontWeight: 600, letterSpacing: "0.15em", color: "var(--muted)", marginTop: 6, textTransform: "uppercase" }}>{s.lbl}</div>
+            </div>
+          ))}
         </div>
 
-        {/* ── Land cards ── */}
+        {/* ── Cards ── */}
         {landsLoading && lands.length === 0 ? (
-          <div className="space-y-4">
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-emerald-400">
-            <div className="text-5xl mb-4">🌿</div>
-            <h3 className="font-bold text-xl text-green-900 mb-2">
-              No {filter === "ALL" ? "" : filterLabels[filter].toLowerCase() + " "}submissions
-            </h3>
-            <p className="text-sm">Check back later or adjust your filter.</p>
+          <div style={{ textAlign: "center", padding: "80px 20px", color: "var(--muted)" }}>
+            <div style={{ fontSize: 44, marginBottom: 14, opacity: 0.3 }}>📭</div>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 700, color: "var(--subtle)", marginBottom: 6 }}>
+              Queue empty
+            </div>
+            <p style={{ fontSize: 13 }}>No {filter !== "ALL" ? filter.toLowerCase() + " " : ""}submissions found.</p>
           </div>
         ) : (
           <motion.div
-            className="space-y-4"
+            style={{ display: "flex", flexDirection: "column", gap: 10 }}
             initial="hidden"
             animate="visible"
-            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
           >
             {filtered.map(land => {
-              const badge    = statusBadge(land.status);
+              const st = STATUS[land.status] || STATUS.PENDING;
               const isVoting = voting[land.id];
               const submitterName =
                 land.createdByName || land.submittedByName ||
-                (land.createdBy   ? `User #${land.createdBy}`   : null) ||
+                (land.createdBy ? `User #${land.createdBy}` : null) ||
                 (land.submittedBy ? `User #${land.submittedBy}` : null);
-              const submitterInitial = (submitterName || "?")?.[0]?.toUpperCase();
 
               return (
                 <motion.div
                   key={land.id}
-                  className="bg-white border border-emerald-100 rounded-2xl overflow-hidden grid grid-cols-1 sm:grid-cols-[200px_1fr] shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-emerald-200 transition-all"
-                  variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
+                  style={{
+                    background: "var(--surface)", border: "1px solid var(--border)",
+                    borderRadius: 10, overflow: "hidden",
+                    display: "grid", gridTemplateColumns: "180px 1fr",
+                    transition: "border-color 0.2s, box-shadow 0.2s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--border2)"; e.currentTarget.style.boxShadow = "0 4px 32px rgba(0,0,0,0.4)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
+                  variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.38 } } }}
                 >
                   {/* Image */}
-                  <div className="relative overflow-hidden">
+                  <div style={{ position: "relative", overflow: "hidden", background: "var(--surface2)" }}>
                     <CardImage landId={land.id} />
                     {land.status === "APPROVED" && (
-                      <div className="absolute inset-0 bg-emerald-700/20 flex items-center justify-center">
-                        <span className="font-extrabold text-green-800 text-sm tracking-widest">✓ APPROVED</span>
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(74,222,128,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontFamily: "var(--mono)", fontSize: 11, fontWeight: 600, color: "var(--green)", letterSpacing: "0.12em" }}>✓ APPROVED</span>
                       </div>
                     )}
                     {land.status === "REJECTED" && (
-                      <div className="absolute inset-0 bg-red-700/15 flex items-center justify-center">
-                        <span className="font-extrabold text-red-800 text-sm tracking-widest">✕ REJECTED</span>
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(248,113,113,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontFamily: "var(--mono)", fontSize: 11, fontWeight: 600, color: "var(--red)", letterSpacing: "0.12em" }}>✕ REJECTED</span>
                       </div>
                     )}
                   </div>
 
                   {/* Body */}
-                  <div className="p-5 flex flex-col gap-3">
+                  <div style={{ padding: "18px 22px", display: "flex", flexDirection: "column", gap: 10 }}>
                     {/* Title + badge */}
-                    <div className="flex items-start justify-between gap-3 flex-wrap">
-                      <h2 className="font-bold text-base text-green-950 leading-snug">
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                      <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>
                         {land.title || "Untitled Land"}
                       </h2>
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shrink-0 ${badge.cls}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
-                        {badge.label}
+                      <span style={{
+                        display: "inline-flex", alignItems: "center", gap: 5,
+                        padding: "3px 10px", borderRadius: 100, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",
+                        background: st.bg, color: st.text, border: `1px solid ${st.border}`, flexShrink: 0,
+                      }}>
+                        <span style={{ width: 5, height: 5, borderRadius: "50%", background: st.dot }} />
+                        {st.label}
                       </span>
                     </div>
 
-                    {/* Meta */}
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
-                      {land.areaSqm   && <span>📐 {(land.areaSqm / 10000).toFixed(2)} ha</span>}
-                      {land.ownerName && <span>👤 {land.ownerName}</span>}
+                    {/* Meta row */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>
+                      {land.areaSqm    && <span>⬛ {(land.areaSqm / 10000).toFixed(2)} ha</span>}
+                      {land.ownerName  && <span>👤 {land.ownerName}</span>}
                       {land.ownerPhone && <span>📞 {land.ownerPhone}</span>}
-                      {land.createdAt  && (
-                        <span>🗓 {new Date(land.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
-                      )}
+                      {land.createdAt  && <span>🗓 {new Date(land.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>}
                       {land.waterAvailable && <span>💧 {land.waterAvailable}</span>}
                     </div>
 
                     {/* Description */}
                     {land.description && (
-                      <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{land.description}</p>
+                      <p style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {land.description}
+                      </p>
                     )}
 
                     {/* Tags */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {land.soilType      && <span className="text-[11px] font-semibold bg-emerald-50 border border-emerald-100 text-green-700 px-2.5 py-0.5 rounded-md">🪨 {land.soilType}</span>}
-                      {land.ownershipType && <span className="text-[11px] font-semibold bg-emerald-50 border border-emerald-100 text-green-700 px-2.5 py-0.5 rounded-md">🏷 {land.ownershipType}</span>}
-                      {land.fencing !== undefined && (
-                        <span className="text-[11px] font-semibold bg-emerald-50 border border-emerald-100 text-green-700 px-2.5 py-0.5 rounded-md">
-                          {land.fencing ? "🔒 Fenced" : "⛓ No Fence"}
-                        </span>
-                      )}
-                      {land.accessRoad && <span className="text-[11px] font-semibold bg-emerald-50 border border-emerald-100 text-green-700 px-2.5 py-0.5 rounded-md">🛤 {land.accessRoad}</span>}
-                      {land.landStatus && <span className="text-[11px] font-semibold bg-emerald-50 border border-emerald-100 text-green-700 px-2.5 py-0.5 rounded-md">📊 {land.landStatus}</span>}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {land.soilType      && <Tag>{land.soilType}</Tag>}
+                      {land.ownershipType && <Tag>{land.ownershipType}</Tag>}
+                      {land.fencing !== undefined && <Tag>{land.fencing ? "Fenced" : "No Fence"}</Tag>}
+                      {land.accessRoad    && <Tag>{land.accessRoad}</Tag>}
+                      {land.landStatus    && <Tag>{land.landStatus}</Tag>}
                     </div>
 
                     {/* Footer */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 mt-auto border-t border-emerald-50">
-                      <div className="flex items-center flex-wrap gap-2">
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginTop: "auto", paddingTop: 12, borderTop: "1px solid var(--border)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                         <button
                           onClick={() => setSelectedId(land.id)}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-50 border border-emerald-200 text-green-900 text-xs font-semibold rounded-xl hover:bg-emerald-100 transition-colors"
+                          style={{
+                            display: "inline-flex", alignItems: "center", gap: 5,
+                            padding: "7px 14px", background: "var(--surface2)", border: "1px solid var(--border2)",
+                            borderRadius: 6, fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "var(--text)",
+                            cursor: "pointer", transition: "all 0.2s",
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "rgba(74,222,128,0.08)"; e.currentTarget.style.borderColor = "rgba(74,222,128,0.25)"; e.currentTarget.style.color = "var(--green)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = "var(--surface2)"; e.currentTarget.style.borderColor = "var(--border2)"; e.currentTarget.style.color = "var(--text)"; }}
                         >
-                          🔍 View Details
+                          ↗ Full Detail
                         </button>
                         {submitterName && (
-                          <span className="flex items-center gap-1.5 text-xs text-emerald-400">
-                            <span className="w-5 h-5 rounded-full bg-gradient-to-br from-green-700 to-emerald-400 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-                              {submitterInitial}
+                          <span style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--mono)", fontSize: 10, color: "var(--muted)" }}>
+                            <span style={{ width: 20, height: 20, borderRadius: "50%", background: "linear-gradient(135deg, #1a4d2e, #22c55e)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700 }}>
+                              {(submitterName)?.[0]?.toUpperCase()}
                             </span>
                             {submitterName}
                           </span>
@@ -406,20 +427,32 @@ export default function AdminPendingLands() {
                       </div>
 
                       {land.status === "PENDING" && (
-                        <div className="flex gap-2">
+                        <div style={{ display: "flex", gap: 6 }}>
                           <button
                             onClick={() => handleVote(land.id, "APPROVE")}
                             disabled={!!isVoting}
-                            className="px-4 py-2 bg-green-950 hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl transition-colors"
+                            style={{
+                              padding: "7px 16px", background: isVoting ? "var(--green-dim)" : "rgba(74,222,128,0.12)",
+                              border: "1px solid rgba(74,222,128,0.3)", borderRadius: 6,
+                              fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700,
+                              color: "var(--green)", cursor: isVoting ? "not-allowed" : "pointer",
+                              opacity: isVoting ? 0.6 : 1, transition: "all 0.2s",
+                            }}
                           >
-                            {isVoting === "APPROVE" ? "⏳ Approving…" : "✅ Approve"}
+                            {isVoting === "APPROVE" ? "⏳ …" : "✓ Approve"}
                           </button>
                           <button
                             onClick={() => handleVote(land.id, "REJECT")}
                             disabled={!!isVoting}
-                            className="px-4 py-2 bg-red-50 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed text-red-600 border border-red-200 text-xs font-bold rounded-xl transition-colors"
+                            style={{
+                              padding: "7px 14px", background: "rgba(248,113,113,0.06)",
+                              border: "1px solid rgba(248,113,113,0.2)", borderRadius: 6,
+                              fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700,
+                              color: "var(--red)", cursor: isVoting ? "not-allowed" : "pointer",
+                              opacity: isVoting ? 0.6 : 1, transition: "all 0.2s",
+                            }}
                           >
-                            {isVoting === "REJECT" ? "⏳ Rejecting…" : "❌ Reject"}
+                            {isVoting === "REJECT" ? "⏳ …" : "✕ Reject"}
                           </button>
                         </div>
                       )}
@@ -431,12 +464,33 @@ export default function AdminPendingLands() {
           </motion.div>
         )}
       </div>
-
-      <style>{`
-        @keyframes loadbar {
-          to { background-position: -200% 0; }
-        }
-      `}</style>
-    </div>
+    </>
   );
 }
+
+function Tag({ children }) {
+  return (
+    <span style={{
+      fontFamily: "var(--mono)", fontSize: 10, fontWeight: 500,
+      padding: "3px 9px", background: "rgba(255,255,255,0.04)",
+      border: "1px solid var(--border)", color: "var(--muted)", borderRadius: 4,
+    }}>
+      {children}
+    </span>
+  );
+}
+
+const S = {
+  page: {
+    maxWidth: 1200,
+    margin: "0 auto",
+    padding: "36px 32px 80px",
+    fontFamily: "'DM Sans', sans-serif",
+    minHeight: "100vh",
+  },
+  guard: {
+    display: "flex", flexDirection: "column", alignItems: "center",
+    justifyContent: "center", minHeight: "60vh", gap: 12,
+    fontFamily: "'DM Sans', sans-serif", color: "#6b7e71", fontSize: 15,
+  },
+};
