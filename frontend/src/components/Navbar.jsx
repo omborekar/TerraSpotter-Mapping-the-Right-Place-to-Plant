@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Navbar — broadsheet editorial redesign with full-screen mobile overlay.
+ Description: Navbar — side-drawer mobile menu, closes on same-route tap, full redesign.
 */
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
@@ -14,7 +14,7 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 export default function Navbar() {
   const [user, setUser]         = useState(null);
   const [ddOpen, setDdOpen]     = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [drawer, setDrawer]     = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const ddRef    = useRef(null);
   const navigate = useNavigate();
@@ -53,11 +53,11 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  /* body lock when menu open */
+  /* body lock when drawer open */
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
+    document.body.style.overflow = drawer ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [menuOpen]);
+  }, [drawer]);
 
   /* close desktop dropdown on route change */
   useEffect(() => { setDdOpen(false); }, [pathname]);
@@ -65,7 +65,7 @@ export default function Navbar() {
   const logout = async () => {
     try {
       await axios.post(`${BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
-      setUser(null); setDdOpen(false); setMenuOpen(false);
+      setUser(null); setDdOpen(false); setDrawer(false);
       window.dispatchEvent(new Event("logout")); navigate("/login");
     } catch (e) { console.error(e); }
   };
@@ -73,474 +73,405 @@ export default function Navbar() {
   const on = (p) => pathname === p;
   const ini = `${user?.fname?.[0] ?? ""}${user?.lname?.[0] ?? ""}`.toUpperCase();
 
-  /* go to route, always close menu (handles same-route tap) */
-  const go = (to) => {
-    setMenuOpen(false);
+  /* closes drawer; if already on that route, still closes */
+  const drawerGo = (to) => {
+    setDrawer(false);
     if (pathname !== to) navigate(to);
   };
 
   const NAV = user ? [
-    { to: "/",                   label: "Home",    idx: "01" },
-    { to: "/Main",               label: "Submit",  idx: "02" },
-    { to: "/browse",             label: "Browse",  idx: "03" },
-    { to: "/plantationShowcase", label: "History", idx: "04" },
-    { to: "/about",              label: "About",   idx: "05" },
-    { to: "/contact",            label: "Contact", idx: "06" },
-    ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: "Admin", idx: "07" }] : []),
+    { to: "/",                   label: "Home",    icon: "🏡" },
+    { to: "/Main",               label: "Submit",  icon: "📍" },
+    { to: "/browse",             label: "Browse",  icon: "🗺️" },
+    { to: "/plantationShowcase", label: "History", icon: "📚" },
+    { to: "/about",              label: "About",   icon: "ℹ️"  },
+    { to: "/contact",            label: "Contact", icon: "📞" },
+    ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: "Admin", icon: "⚙️" }] : []),
   ] : [
-    { to: "/",        label: "Home",    idx: "01" },
-    { to: "/about",   label: "About",   idx: "02" },
-    { to: "/contact", label: "Contact", idx: "03" },
+    { to: "/",        label: "Home",    icon: "🏡" },
+    { to: "/about",   label: "About",   icon: "ℹ️"  },
+    { to: "/contact", label: "Contact", icon: "📞" },
   ];
+
+  const DD_ITEMS = NAV.filter(x => x.to !== "/").concat([{ to: "/profile", label: "My Profile", icon: "👤" }]);
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600;1,700&family=Epilogue:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
 
-        :root {
-          --nv-cream: #f5f0e8;
-          --nv-parchment: #ede7d9;
-          --nv-forest: #0d3320;
-          --nv-leaf: #2d7a4a;
-          --nv-sprout: #4db87a;
-          --nv-ink: #0e1a12;
-          --nv-warm: #8c8678;
-          --nv-line: #d6cfc4;
-        }
+        .nv { font-family: 'DM Sans', sans-serif; position: sticky; top: 0; z-index: 200; }
 
-        /* ── ROOT ── */
-        .nv { font-family: 'Epilogue', sans-serif; position: sticky; top: 0; z-index: 200; }
-
-        /* top accent rule */
-        .nv-rule {
-          height: 2px;
-          background: linear-gradient(90deg, var(--nv-forest) 0%, var(--nv-leaf) 50%, var(--nv-forest) 100%);
-        }
-
-        /* ── BAR ── */
+        /* ── bar ── */
         .nv-bar {
-          height: 58px;
-          background: var(--nv-cream);
-          border-bottom: 1px solid var(--nv-line);
-          transition: background 0.3s, box-shadow 0.3s;
-          position: relative;
+          height: 62px; display: flex; align-items: center;
+          background: #f8f5f0;
+          border-bottom: 1px solid rgba(0,0,0,0.07);
+          transition: background .3s, box-shadow .3s;
         }
         .nv-bar.up {
-          background: rgba(245,240,232,0.96);
-          backdrop-filter: blur(20px) saturate(1.4);
-          -webkit-backdrop-filter: blur(20px) saturate(1.4);
-          box-shadow: 0 1px 0 var(--nv-line), 0 4px 24px rgba(14,26,18,0.08);
+          background: rgba(248,245,240,.94);
+          backdrop-filter: blur(20px) saturate(1.5);
+          -webkit-backdrop-filter: blur(20px) saturate(1.5);
+          box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 4px 28px rgba(0,0,0,.09);
         }
         .nv-inner {
-          max-width: 1280px; margin: 0 auto;
-          padding: 0 48px;
-          height: 100%;
-          display: flex; align-items: center;
-          gap: 0;
+          width: 100%; max-width: 1280px; margin: 0 auto;
+          padding: 0 32px; display: flex; align-items: center;
+          height: 100%; gap: 0;
         }
 
-        /* ── BRAND ── */
+        /* ── brand ── */
         .nv-brand {
-          display: flex; align-items: center; gap: 8px;
-          text-decoration: none; flex-shrink: 0;
-          transition: opacity 0.2s;
+          display: flex; align-items: center; gap: 9px;
+          text-decoration: none; flex-shrink: 0; margin-right: 36px;
+          transition: opacity .15s;
         }
-        .nv-brand:hover { opacity: 0.75; }
-        .nv-brand-pip {
-          width: 7px; height: 7px; border-radius: 50%;
-          background: var(--nv-sprout);
-          flex-shrink: 0;
-          box-shadow: 0 0 0 2px rgba(77,184,122,0.2);
+        .nv-brand:hover { opacity: .8; }
+        .nv-brand img {
+          width: 32px; height: 32px; border-radius: 9px; object-fit: cover;
+          box-shadow: 0 2px 8px rgba(58,140,87,.28); flex-shrink: 0;
         }
-        .nv-brand-word {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 22px; font-weight: 600; font-style: italic;
-          color: var(--nv-ink); letter-spacing: -0.02em;
-          white-space: nowrap; line-height: 1;
+        .nv-brand-txt {
+          font-family: 'Playfair Display', serif;
+          font-size: 19px; font-weight: 700; color: #111; letter-spacing: -.3px; white-space: nowrap;
         }
 
-        /* ── DESKTOP NAV ── */
-        .nv-links {
-          display: flex; align-items: center; gap: 0;
-          position: absolute; left: 50%; transform: translateX(-50%);
-        }
+        /* ── desktop links ── */
+        .nv-links { display: flex; align-items: center; gap: 1px; flex: 1; }
         .nv-lk {
-          position: relative;
-          font-family: 'Epilogue', sans-serif;
-          font-size: 10px; font-weight: 700;
-          text-transform: uppercase; letter-spacing: 0.18em;
-          color: var(--nv-warm);
-          text-decoration: none; padding: 8px 14px;
-          transition: color 0.2s;
-          white-space: nowrap;
+          position: relative; font-size: 13.5px; font-weight: 500; color: #6b6457;
+          text-decoration: none; padding: 6px 11px; border-radius: 7px;
+          transition: color .15s, background .15s; white-space: nowrap;
         }
-        .nv-lk:hover { color: var(--nv-ink); }
-        .nv-lk.hi { color: var(--nv-forest); }
-        /* active pip below */
+        .nv-lk:hover { color: #111; background: rgba(0,0,0,.05); }
+        .nv-lk.hi { color: #1f6b3a; font-weight: 600; background: rgba(58,140,87,.09); }
         .nv-lk.hi::after {
-          content: '';
-          position: absolute;
-          bottom: 4px; left: 50%; transform: translateX(-50%);
-          width: 4px; height: 4px; border-radius: 50%;
-          background: var(--nv-sprout);
+          content: ''; position: absolute; bottom: 2px; left: 11px; right: 11px;
+          height: 2px; border-radius: 2px;
+          background: linear-gradient(90deg, #3a8c57, #1f6b3a);
         }
 
-        /* ── RIGHT ZONE ── */
-        .nv-right {
-          margin-left: auto; flex-shrink: 0;
-          display: flex; align-items: center; gap: 10px;
-        }
+        /* ── right ── */
+        .nv-right { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
 
-        /* guest links */
-        .nv-signin {
-          font-size: 10px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.18em; color: var(--nv-warm);
-          text-decoration: none; padding: 7px 12px;
-          transition: color 0.2s;
-          white-space: nowrap;
+        .nv-ghost {
+          font-size: 13.5px; font-weight: 500; color: #6b6457;
+          text-decoration: none; padding: 7px 14px; border-radius: 7px;
+          transition: color .15s, background .15s; white-space: nowrap;
         }
-        .nv-signin:hover { color: var(--nv-ink); }
-        .nv-vd { width: 1px; height: 14px; background: var(--nv-line); }
-        .nv-start {
-          font-size: 10px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.14em; color: var(--nv-cream);
-          text-decoration: none; padding: 8px 20px;
-          background: var(--nv-forest);
-          border-radius: 2px;
-          transition: background 0.2s, transform 0.12s;
-          white-space: nowrap;
+        .nv-ghost:hover { color: #111; background: rgba(0,0,0,.05); }
+        .nv-vd { width: 1px; height: 18px; background: rgba(0,0,0,.09); }
+        .nv-cta {
+          font-size: 13.5px; font-weight: 600; color: #fff;
+          text-decoration: none; padding: 8px 18px; border-radius: 8px;
+          background: linear-gradient(145deg, #256638, #163d25);
+          box-shadow: 0 2px 10px rgba(58,140,87,.30), inset 0 1px 0 rgba(255,255,255,.10);
+          transition: filter .2s, transform .12s; white-space: nowrap;
         }
-        .nv-start:hover { background: var(--nv-leaf); }
-        .nv-start:active { transform: scale(0.97); }
+        .nv-cta:hover { filter: brightness(1.09); }
+        .nv-cta:active { transform: scale(.97); }
 
-        /* ── MONOGRAM ── */
-        .nv-mono-wrap { position: relative; }
-        .nv-mono {
-          width: 36px; height: 36px; border-radius: 50%;
-          background: var(--nv-forest);
-          color: var(--nv-cream);
-          font-family: 'Epilogue', sans-serif;
-          font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+        /* ── profile pill ── */
+        .nv-pill {
+          display: flex; align-items: center; gap: 8px;
+          padding: 4px 6px 4px 14px; border-radius: 100px;
+          border: 1.5px solid rgba(0,0,0,.09); background: #fff;
+          cursor: pointer; font-family: 'DM Sans', sans-serif;
+          font-size: 13.5px; font-weight: 500; color: #111;
+          box-shadow: 0 1px 4px rgba(0,0,0,.06);
+          transition: border-color .18s, box-shadow .18s, background .18s; white-space: nowrap;
+        }
+        .nv-pill:hover { border-color: rgba(22,61,37,.25); background: #fefcfa; box-shadow: 0 2px 12px rgba(0,0,0,.09); }
+        .nv-pill.open { border-color: #3a8c57; box-shadow: 0 0 0 3px rgba(58,140,87,.16); background: #fefcfa; }
+        .nv-ini {
+          width: 28px; height: 28px; border-radius: 50%;
+          background: linear-gradient(135deg, #163d25, #3a8c57);
+          color: #fff; font-size: 10px; font-weight: 700;
           display: flex; align-items: center; justify-content: center;
-          cursor: pointer; border: none;
-          box-shadow: 0 0 0 2px var(--nv-cream), 0 0 0 3px rgba(13,51,32,0.25);
-          transition: box-shadow 0.2s, background 0.2s;
-          flex-shrink: 0;
+          letter-spacing: .8px; flex-shrink: 0;
         }
-        .nv-mono:hover {
-          background: var(--nv-leaf);
-          box-shadow: 0 0 0 2px var(--nv-cream), 0 0 0 3px var(--nv-sprout);
-        }
-        .nv-mono.open {
-          box-shadow: 0 0 0 2px var(--nv-cream), 0 0 0 3.5px var(--nv-sprout);
-          background: var(--nv-leaf);
-        }
+        .nv-chv { opacity: .35; flex-shrink: 0; transition: transform .22s, opacity .15s; }
+        .nv-chv.r { transform: rotate(180deg); opacity: .6; }
 
-        /* ── DESKTOP DROPDOWN ── */
+        /* ── desktop dropdown ── */
         .nv-dd {
-          position: absolute; top: calc(100% + 12px); right: 0;
-          width: 260px;
-          background: var(--nv-cream);
-          border: 1px solid var(--nv-line);
-          border-radius: 2px;
-          box-shadow: 0 12px 48px rgba(14,26,18,0.14), 0 2px 8px rgba(14,26,18,0.06);
+          position: absolute; top: calc(100% + 10px); right: 0;
+          width: 238px; background: #fff;
+          border: 1px solid rgba(0,0,0,.08); border-radius: 16px;
+          box-shadow: 0 8px 40px rgba(0,0,0,.13), 0 2px 10px rgba(0,0,0,.07);
           overflow: hidden; z-index: 999;
         }
-        /* top rule */
-        .nv-dd-rule {
-          height: 2px;
-          background: linear-gradient(90deg, var(--nv-forest), var(--nv-sprout));
-        }
-        /* user block */
-        .nv-dd-user {
-          display: flex; align-items: center; gap: 12px;
-          padding: 16px 18px 14px;
-          border-bottom: 1px solid var(--nv-line);
+        .nv-dd-top { height: 3px; background: linear-gradient(90deg, #163d25, #3a8c57, #163d25); }
+        .nv-dd-who {
+          display: flex; align-items: center; gap: 10px;
+          padding: 13px 15px 12px; border-bottom: 1px solid #f0ebe4;
         }
         .nv-dd-avt {
-          width: 40px; height: 40px; border-radius: 50%;
-          background: var(--nv-forest);
-          color: var(--nv-cream); font-size: 12px; font-weight: 700;
+          width: 38px; height: 38px; border-radius: 50%;
+          background: linear-gradient(135deg, #163d25, #3a8c57);
+          color: #fff; font-size: 12px; font-weight: 700;
           display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; font-family: 'Epilogue', sans-serif;
-          letter-spacing: 0.06em;
+          flex-shrink: 0; box-shadow: 0 2px 6px rgba(58,140,87,.22);
         }
-        .nv-dd-name {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 17px; font-weight: 600; color: var(--nv-ink);
-          letter-spacing: -0.01em; line-height: 1.2;
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .nv-dd-email {
-          font-size: 10px; color: var(--nv-warm); margin-top: 2px;
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-          letter-spacing: 0.02em;
-        }
-        /* items */
-        .nv-dd-items { padding: 6px 8px 8px; }
-        .nv-dd-item {
-          display: flex; align-items: center; gap: 10px;
-          padding: 9px 10px; border-radius: 2px;
-          font-size: 11px; font-weight: 600; text-transform: uppercase;
-          letter-spacing: 0.12em; color: var(--nv-warm);
+        .nv-dd-name { font-size: 13px; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .nv-dd-email { font-size: 11px; color: #a89e93; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+        .nv-dd-body { padding: 5px; }
+        .nv-dd-row {
+          display: flex; align-items: center; gap: 9px;
+          padding: 8px 9px; border-radius: 8px;
+          font-size: 13px; color: #3a3530;
           text-decoration: none; background: none; border: none;
           width: 100%; text-align: left; cursor: pointer;
-          transition: background 0.15s, color 0.15s;
-          font-family: 'Epilogue', sans-serif;
+          transition: background .12s, color .12s;
         }
-        .nv-dd-item:hover { background: var(--nv-parchment); color: var(--nv-ink); }
-        .nv-dd-item.out { color: #b03a2e; }
-        .nv-dd-item.out:hover { background: #fdf3f2; color: #8b1f14; }
-        .nv-dd-sep { height: 1px; background: var(--nv-line); margin: 4px 8px; }
-
-        /* ── MENU TOGGLE (mobile) ── */
-        .nv-menu-btn {
-          display: none;
-          font-family: 'Epilogue', sans-serif;
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.22em; color: var(--nv-warm);
-          background: none; border: none; cursor: pointer;
-          padding: 8px 4px; transition: color 0.2s;
-          flex-shrink: 0; line-height: 1;
+        .nv-dd-row:hover { background: #f5f1ec; color: #111; }
+        .nv-dd-row.out { color: #b03a2e; }
+        .nv-dd-row.out:hover { background: #fdf3f2; }
+        .nv-dd-ico {
+          width: 28px; height: 28px; border-radius: 6px; background: #f5f1ec;
+          display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
         }
-        .nv-menu-btn:hover { color: var(--nv-ink); }
+        .nv-dd-row:hover .nv-dd-ico { background: #ede8e2; }
+        .nv-dd-row.out .nv-dd-ico { background: #fdf3f2; }
+        .nv-dd-row.out:hover .nv-dd-ico { background: #fce8e6; }
+        .nv-dd-sep { height: 1px; background: #f0ebe4; margin: 3px 6px; }
 
-        /* ── FULL-SCREEN OVERLAY MENU ── */
-        .nv-overlay {
-          position: fixed; inset: 0;
-          background: var(--nv-forest);
-          z-index: 500;
+        /* ── hamburger ── */
+        .nv-ham {
+          display: none; width: 38px; height: 38px; border-radius: 9px;
+          border: 1.5px solid rgba(0,0,0,.09); background: #fff;
+          cursor: pointer; flex-direction: column;
+          align-items: center; justify-content: center; gap: 4.5px;
+          box-shadow: 0 1px 4px rgba(0,0,0,.06); transition: background .15s; flex-shrink: 0;
+        }
+        .nv-ham:hover { background: #f0ebe4; }
+        .nv-ham-ln {
+          width: 17px; height: 1.5px; background: #333; border-radius: 2px;
+          transition: transform .22s, opacity .18s;
+        }
+        .nv-ham.x .nv-ham-ln:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+        .nv-ham.x .nv-ham-ln:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .nv-ham.x .nv-ham-ln:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+        /* ── backdrop ── */
+        .nv-backdrop {
+          position: fixed; inset: 0; z-index: 290;
+          background: rgba(10,20,12,.45);
+          backdrop-filter: blur(2px);
+          -webkit-backdrop-filter: blur(2px);
+        }
+
+        /* ── side drawer ── */
+        .nv-drawer {
+          position: fixed; top: 0; right: 0; bottom: 0;
+          width: min(320px, 82vw);
+          background: #f8f5ef;
+          z-index: 300;
           display: flex; flex-direction: column;
+          box-shadow: -8px 0 40px rgba(0,0,0,.18);
           overflow: hidden;
         }
-        /* overlay top bar */
-        .nv-ov-top {
-          height: 60px; flex-shrink: 0;
+
+        /* drawer header */
+        .nv-dr-head {
           display: flex; align-items: center; justify-content: space-between;
-          padding: 0 24px;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+          padding: 0 20px;
+          height: 62px; flex-shrink: 0;
+          background: #163d25;
+          border-bottom: 1px solid rgba(255,255,255,.08);
         }
-        .nv-ov-brand {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 20px; font-weight: 600; font-style: italic;
-          color: var(--nv-cream); letter-spacing: -0.02em;
-          display: flex; align-items: center; gap: 8px;
+        .nv-dr-brand {
+          display: flex; align-items: center; gap: 9px;
         }
-        .nv-ov-brand-pip {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: var(--nv-sprout); flex-shrink: 0;
+        .nv-dr-brand img {
+          width: 30px; height: 30px; border-radius: 8px; object-fit: cover;
+          box-shadow: 0 2px 8px rgba(0,0,0,.3);
         }
-        .nv-ov-close {
-          font-family: 'Epilogue', sans-serif;
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.22em; color: rgba(255,255,255,0.45);
-          background: none; border: none; cursor: pointer;
-          transition: color 0.2s;
+        .nv-dr-brand-txt {
+          font-family: 'Playfair Display', serif;
+          font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -.2px;
         }
-        .nv-ov-close:hover { color: var(--nv-cream); }
+        .nv-dr-close {
+          width: 34px; height: 34px; border-radius: 8px;
+          background: rgba(255,255,255,.10); border: none; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          color: rgba(255,255,255,.8); font-size: 16px;
+          transition: background .15s;
+        }
+        .nv-dr-close:hover { background: rgba(255,255,255,.18); }
 
-        /* user strip in overlay */
-        .nv-ov-user {
-          display: flex; align-items: center; gap: 14px;
-          padding: 20px 28px 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          flex-shrink: 0;
+        /* user card */
+        .nv-dr-user {
+          margin: 16px 16px 4px;
+          padding: 14px 16px;
+          background: #fff;
+          border: 1px solid rgba(0,0,0,.07);
+          border-radius: 14px;
+          display: flex; align-items: center; gap: 12px;
+          box-shadow: 0 2px 10px rgba(0,0,0,.06);
         }
-        .nv-ov-avt {
-          width: 46px; height: 46px; border-radius: 50%;
-          background: rgba(77,184,122,0.15);
-          border: 1px solid rgba(77,184,122,0.25);
-          color: var(--nv-sprout);
-          font-family: 'Epilogue', sans-serif; font-size: 14px; font-weight: 700;
-          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-          letter-spacing: 0.06em;
+        .nv-dr-avt {
+          width: 44px; height: 44px; border-radius: 50%;
+          background: linear-gradient(135deg, #163d25, #3a8c57);
+          color: #fff; font-size: 14px; font-weight: 700;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; box-shadow: 0 2px 8px rgba(58,140,87,.28);
         }
-        .nv-ov-uname {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 20px; font-weight: 600;
-          color: var(--nv-cream); letter-spacing: -0.01em; line-height: 1.1;
-        }
-        .nv-ov-role {
-          font-family: 'Epilogue', sans-serif;
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.2em; color: var(--nv-sprout); margin-top: 3px;
+        .nv-dr-uname { font-size: 14px; font-weight: 600; color: #111; }
+        .nv-dr-badge {
+          display: inline-flex; align-items: center;
+          margin-top: 3px; padding: 2px 8px; border-radius: 100px;
+          font-size: 10px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase;
+          background: rgba(58,140,87,.12); color: #1f6b3a;
         }
 
-        /* nav items in overlay */
-        .nv-ov-list {
-          flex: 1; overflow-y: auto; padding: 16px 20px 32px;
-          display: flex; flex-direction: column;
-        }
-        .nv-ov-item {
-          display: flex; align-items: baseline; gap: 16px;
-          padding: 14px 8px;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
-          background: none; border-right: none; border-left: none; border-top: none;
-          width: 100%; text-align: left; cursor: pointer;
-          transition: padding-left 0.2s;
-        }
-        .nv-ov-item:last-of-type { border-bottom: none; }
-        .nv-ov-item:hover { padding-left: 16px; }
-        .nv-ov-item.hi { padding-left: 16px; }
-        .nv-ov-item-idx {
-          font-family: 'Epilogue', sans-serif;
-          font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
-          color: rgba(77,184,122,0.5); flex-shrink: 0; padding-top: 4px;
-        }
-        .nv-ov-item.hi .nv-ov-item-idx { color: var(--nv-sprout); }
-        .nv-ov-item-label {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(32px, 7vw, 52px); font-weight: 600;
-          color: rgba(255,255,255,0.35); letter-spacing: -0.03em; line-height: 1;
-          transition: color 0.2s;
-        }
-        .nv-ov-item:hover .nv-ov-item-label { color: var(--nv-cream); }
-        .nv-ov-item.hi .nv-ov-item-label { color: var(--nv-cream); }
+        /* scrollable body */
+        .nv-dr-body { flex: 1; overflow-y: auto; padding: 8px 12px 24px; }
 
-        /* overlay bottom zone */
-        .nv-ov-footer {
-          flex-shrink: 0;
-          border-top: 1px solid rgba(255,255,255,0.07);
-          padding: 18px 28px;
-          display: flex; align-items: center; justify-content: space-between;
-          gap: 12px; flex-wrap: wrap;
+        /* section label */
+        .nv-dr-lbl {
+          font-size: 10px; font-weight: 600; text-transform: uppercase;
+          letter-spacing: 1.2px; color: #a89e93;
+          padding: 12px 8px 6px;
         }
-        .nv-ov-profile-btn {
-          font-family: 'Epilogue', sans-serif;
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.18em; color: rgba(255,255,255,0.4);
-          background: none; border: none; cursor: pointer;
-          transition: color 0.2s; padding: 0;
-        }
-        .nv-ov-profile-btn:hover { color: var(--nv-cream); }
-        .nv-ov-logout {
-          font-family: 'Epilogue', sans-serif;
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.18em; color: rgba(248,113,113,0.6);
-          background: none; border: none; cursor: pointer;
-          transition: color 0.2s; padding: 0;
-        }
-        .nv-ov-logout:hover { color: #f87171; }
 
-        /* guest auth in overlay */
-        .nv-ov-auth {
-          padding: 24px 24px 32px;
-          display: flex; flex-direction: column; gap: 10px; flex-shrink: 0;
+        /* nav row */
+        .nv-dr-row {
+          display: flex; align-items: center; gap: 12px;
+          padding: 11px 12px; border-radius: 11px;
+          font-size: 14.5px; font-weight: 500; color: #2d2520;
+          text-decoration: none; cursor: pointer;
+          background: none; border: none; width: 100%; text-align: left;
+          transition: background .13s, color .13s; margin-bottom: 2px;
         }
-        .nv-ov-auth-ghost {
-          padding: 14px; text-align: center; border-radius: 2px;
-          font-family: 'Epilogue', sans-serif; font-size: 11px; font-weight: 700;
-          text-transform: uppercase; letter-spacing: 0.14em;
-          color: rgba(255,255,255,0.5);
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
-          cursor: pointer; transition: background 0.2s, color 0.2s;
+        .nv-dr-row:hover { background: rgba(0,0,0,.05); color: #111; }
+        .nv-dr-row.hi {
+          background: linear-gradient(135deg, rgba(58,140,87,.12), rgba(31,107,58,.06));
+          color: #1a5c34; font-weight: 600;
         }
-        .nv-ov-auth-ghost:hover { background: rgba(255,255,255,0.1); color: var(--nv-cream); }
-        .nv-ov-auth-solid {
-          padding: 14px; text-align: center; border-radius: 2px;
-          font-family: 'Epilogue', sans-serif; font-size: 11px; font-weight: 700;
-          text-transform: uppercase; letter-spacing: 0.14em;
-          color: var(--nv-forest); background: var(--nv-sprout);
-          border: none; cursor: pointer; transition: background 0.2s;
-        }
-        .nv-ov-auth-solid:hover { background: #62d48e; }
+        .nv-dr-row.danger { color: #b03a2e; }
+        .nv-dr-row.danger:hover { background: #fdf3f2; }
 
-        /* ── RESPONSIVE ── */
-        @media(max-width: 860px) {
-          .nv-links, .nv-signin, .nv-vd, .nv-start, .nv-mono-wrap { display: none !important; }
-          .nv-menu-btn { display: block; }
-          .nv-inner { padding: 0 20px; }
+        .nv-dr-ico {
+          width: 38px; height: 38px; border-radius: 10px;
+          background: #fff; border: 1px solid rgba(0,0,0,.07);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 16px; flex-shrink: 0;
+          box-shadow: 0 1px 4px rgba(0,0,0,.06);
+          transition: background .13s, box-shadow .13s;
         }
-        @media(min-width: 861px) {
-          .nv-menu-btn { display: none !important; }
-          .nv-overlay { display: none; }
+        .nv-dr-row:hover .nv-dr-ico { background: #f0ebe4; box-shadow: none; }
+        .nv-dr-row.hi .nv-dr-ico {
+          background: rgba(58,140,87,.15);
+          border-color: rgba(58,140,87,.2); box-shadow: none;
+        }
+        .nv-dr-row.danger .nv-dr-ico { background: #fff5f5; border-color: rgba(176,58,46,.1); }
+
+        .nv-dr-txt { flex: 1; }
+        .nv-dr-dot {
+          width: 6px; height: 6px; border-radius: 50%; background: #3a8c57; flex-shrink: 0;
+        }
+
+        .nv-dr-sep { height: 1px; background: rgba(0,0,0,.07); margin: 6px 4px; }
+
+        /* guest buttons */
+        .nv-dr-auth { display: flex; flex-direction: column; gap: 8px; padding: 8px 0; }
+        .nv-dr-signin {
+          padding: 13px; border-radius: 11px; font-size: 14.5px; font-weight: 500;
+          text-align: center; text-decoration: none; color: #6b6457;
+          background: #fff; border: 1.5px solid rgba(0,0,0,.09);
+          transition: background .13s; display: block;
+        }
+        .nv-dr-signin:hover { background: #f0ebe4; }
+        .nv-dr-go {
+          padding: 13px; border-radius: 11px; font-size: 14.5px; font-weight: 600;
+          text-align: center; text-decoration: none; color: #fff; display: block;
+          background: linear-gradient(145deg, #256638, #163d25);
+          box-shadow: 0 3px 14px rgba(58,140,87,.30); transition: filter .15s;
+        }
+        .nv-dr-go:hover { filter: brightness(1.08); }
+
+        /* responsive */
+        @media (max-width: 860px) {
+          .nv-links, .nv-ghost, .nv-vd, .nv-cta, .nv-pill { display: none !important; }
+          .nv-ham { display: flex; }
+          .nv-inner { padding: 0 16px; }
+          .nv-brand { margin-right: 0; }
+        }
+        @media (min-width: 861px) {
+          .nv-ham { display: none !important; }
         }
       `}</style>
 
       <div className="nv">
-        {/* top accent rule */}
-        <div className="nv-rule" />
 
         {/* ══ BAR ══ */}
         <div className={`nv-bar${scrolled ? " up" : ""}`}>
           <div className="nv-inner">
 
-            {/* Brand */}
             <Link to="/" className="nv-brand">
-              <span className="nv-brand-pip" />
-              <span className="nv-brand-word">TerraSpotter</span>
+              <img src="/favicon.ico" alt="TerraSpotter" />
+              <span className="nv-brand-txt">TerraSpotter</span>
             </Link>
 
-            {/* Desktop centered nav */}
             <nav className="nv-links">
               {NAV.map(({ to, label }) => (
-                <Link key={to} to={to} className={`nv-lk${on(to) ? " hi" : ""}`}>
-                  {label}
-                </Link>
+                <Link key={to} to={to} className={`nv-lk${on(to) ? " hi" : ""}`}>{label}</Link>
               ))}
             </nav>
 
-            {/* Right controls */}
             <div className="nv-right">
-
-              {/* Guest */}
-              {!user && (
+              {!user ? (
                 <>
-                  <Link to="/login"  className="nv-signin">Sign in</Link>
+                  <Link to="/login"  className="nv-ghost">Sign in</Link>
                   <div className="nv-vd" />
-                  <Link to="/signup" className="nv-start">Get started →</Link>
+                  <Link to="/signup" className="nv-cta">Get started →</Link>
                 </>
-              )}
-
-              {/* Logged in — monogram + dropdown */}
-              {user && (
-                <div className="nv-mono-wrap" ref={ddRef}>
+              ) : (
+                <div style={{ position: "relative" }} ref={ddRef}>
                   <button
-                    className={`nv-mono${ddOpen ? " open" : ""}`}
+                    className={`nv-pill${ddOpen ? " open" : ""}`}
                     onClick={() => setDdOpen(o => !o)}
-                    aria-label="Account menu"
                   >
-                    {ini}
+                    <span>{user.fname}</span>
+                    <div className="nv-ini">{ini}</div>
+                    <svg className={`nv-chv${ddOpen ? " r" : ""}`} width="11" height="11" viewBox="0 0 11 11" fill="none">
+                      <path d="M2 4l3.5 3.5L9 4" stroke="#444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </button>
 
                   <AnimatePresence>
                     {ddOpen && (
-                      <motion.div
-                        className="nv-dd"
-                        initial={{ opacity: 0, y: -10, scale: 0.97 }}
-                        animate={{ opacity: 1, y: 0,   scale: 1    }}
-                        exit={{    opacity: 0, y: -10, scale: 0.97 }}
-                        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                      <motion.div className="nv-dd"
+                        initial={{ opacity: 0, y: -8, scale: .97 }}
+                        animate={{ opacity: 1, y: 0,  scale: 1   }}
+                        exit={{    opacity: 0, y: -8, scale: .97 }}
+                        transition={{ duration: .16, ease: [.22,1,.36,1] }}
                       >
-                        <div className="nv-dd-rule" />
-
-                        <div className="nv-dd-user">
+                        <div className="nv-dd-top" />
+                        <div className="nv-dd-who">
                           <div className="nv-dd-avt">{ini}</div>
                           <div style={{ overflow: "hidden" }}>
                             <div className="nv-dd-name">{user.fname} {user.lname}</div>
                             <div className="nv-dd-email">{user.email}</div>
                           </div>
                         </div>
-
-                        <div className="nv-dd-items">
-                          <Link to="/profile" className="nv-dd-item" onClick={() => setDdOpen(false)}>
-                            My Profile
+                        <div className="nv-dd-body">
+                          <Link to="/profile" className="nv-dd-row" onClick={() => setDdOpen(false)}>
+                            <span className="nv-dd-ico">👤</span>My Profile
                           </Link>
-                          {NAV.filter(x => x.to !== "/").map(({ to, label }) => (
-                            <Link key={to} to={to} className="nv-dd-item" onClick={() => setDdOpen(false)}>
-                              {label}
+                          {NAV.filter(x => x.to !== "/").map(({ to, icon, label }) => (
+                            <Link key={to} to={to} className="nv-dd-row" onClick={() => setDdOpen(false)}>
+                              <span className="nv-dd-ico">{icon}</span>{label}
                             </Link>
                           ))}
                         </div>
-
                         <div className="nv-dd-sep" />
-
-                        <div className="nv-dd-items">
-                          <button className="nv-dd-item out" onClick={logout}>
-                            Sign out
+                        <div className="nv-dd-body">
+                          <button className="nv-dd-row out" onClick={logout}>
+                            <span className="nv-dd-ico">🚪</span>Sign out
                           </button>
                         </div>
                       </motion.div>
@@ -549,94 +480,113 @@ export default function Navbar() {
                 </div>
               )}
 
-              {/* Mobile menu toggle */}
+              {/* hamburger — mobile only */}
               <button
-                className="nv-menu-btn"
-                onClick={() => setMenuOpen(o => !o)}
-                aria-label="Open menu"
+                className={`nv-ham${drawer ? " x" : ""}`}
+                onClick={() => setDrawer(o => !o)}
+                aria-label="Menu"
               >
-                {menuOpen ? "Close" : "Menu"}
+                <span className="nv-ham-ln" />
+                <span className="nv-ham-ln" />
+                <span className="nv-ham-ln" />
               </button>
-
             </div>
           </div>
         </div>
 
-        {/* ══ FULL-SCREEN OVERLAY MENU (mobile only) ══ */}
+        {/* ══ SIDE DRAWER + BACKDROP ══ */}
         <AnimatePresence>
-          {menuOpen && (
-            <motion.div
-              className="nv-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-            >
-              {/* Top bar */}
-              <div className="nv-ov-top">
-                <div className="nv-ov-brand">
-                  <span className="nv-ov-brand-pip" />
-                  TerraSpotter
-                </div>
-                <button className="nv-ov-close" onClick={() => setMenuOpen(false)}>
-                  Close
-                </button>
-              </div>
+          {drawer && (
+            <>
+              {/* backdrop */}
+              <motion.div
+                className="nv-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{    opacity: 0 }}
+                transition={{ duration: .22 }}
+                onClick={() => setDrawer(false)}
+              />
 
-              {/* User strip */}
-              {user && (
-                <motion.div
-                  className="nv-ov-user"
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1, duration: 0.32 }}
-                >
-                  <div className="nv-ov-avt">{ini}</div>
-                  <div>
-                    <div className="nv-ov-uname">{user.fname} {user.lname}</div>
-                    <div className="nv-ov-role">{user.role === "ADMIN" ? "Administrator" : "Member"}</div>
+              {/* drawer panel — slides in from right */}
+              <motion.div
+                className="nv-drawer"
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{    x: "100%" }}
+                transition={{ duration: .28, ease: [.32, .72, 0, 1] }}
+              >
+                {/* header */}
+                <div className="nv-dr-head">
+                  <div className="nv-dr-brand">
+                    <img src="/favicon.ico" alt="" />
+                    <span className="nv-dr-brand-txt">TerraSpotter</span>
                   </div>
-                </motion.div>
-              )}
-
-              {/* Nav list */}
-              <div className="nv-ov-list">
-                {NAV.map(({ to, label, idx }, i) => (
-                  <motion.button
-                    key={to}
-                    className={`nv-ov-item${on(to) ? " hi" : ""}`}
-                    onClick={() => go(to)}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.12 + i * 0.055, duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <span className="nv-ov-item-idx">{idx}</span>
-                    <span className="nv-ov-item-label">{label}</span>
-                  </motion.button>
-                ))}
-              </div>
-
-              {/* Footer actions */}
-              {user ? (
-                <div className="nv-ov-footer">
-                  <button className="nv-ov-profile-btn" onClick={() => go("/profile")}>
-                    My Profile
-                  </button>
-                  <button className="nv-ov-logout" onClick={logout}>
-                    Sign out
-                  </button>
+                  <button className="nv-dr-close" onClick={() => setDrawer(false)}>✕</button>
                 </div>
-              ) : (
-                <div className="nv-ov-auth">
-                  <button className="nv-ov-auth-ghost" onClick={() => go("/login")}>
-                    Sign in
-                  </button>
-                  <button className="nv-ov-auth-solid" onClick={() => go("/signup")}>
-                    Get started →
-                  </button>
+
+                {/* user card */}
+                {user && (
+                  <div className="nv-dr-user">
+                    <div className="nv-dr-avt">{ini}</div>
+                    <div>
+                      <div className="nv-dr-uname">{user.fname} {user.lname}</div>
+                      <span className="nv-dr-badge">
+                        {user.role === "ADMIN" ? "Admin" : "Member"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* scrollable body */}
+                <div className="nv-dr-body">
+
+                  <div className="nv-dr-lbl">Navigation</div>
+
+                  {NAV.map(({ to, label, icon }) => (
+                    <button
+                      key={to}
+                      className={`nv-dr-row${on(to) ? " hi" : ""}`}
+                      onClick={() => drawerGo(to)}
+                    >
+                      <span className="nv-dr-ico">{icon}</span>
+                      <span className="nv-dr-txt">{label}</span>
+                      {on(to) && <span className="nv-dr-dot" />}
+                    </button>
+                  ))}
+
+                  {user && (
+                    <>
+                      <div className="nv-dr-sep" />
+                      <div className="nv-dr-lbl">Account</div>
+
+                      <button className="nv-dr-row" onClick={() => drawerGo("/profile")}>
+                        <span className="nv-dr-ico">👤</span>
+                        <span className="nv-dr-txt">My Profile</span>
+                      </button>
+
+                      <div className="nv-dr-sep" />
+
+                      <button className="nv-dr-row danger" onClick={logout}>
+                        <span className="nv-dr-ico">🚪</span>
+                        <span className="nv-dr-txt">Sign out</span>
+                      </button>
+                    </>
+                  )}
+
+                  {!user && (
+                    <>
+                      <div className="nv-dr-sep" />
+                      <div className="nv-dr-auth">
+                        <button className="nv-dr-signin" onClick={() => drawerGo("/login")}>Sign in</button>
+                        <button className="nv-dr-go"     onClick={() => drawerGo("/signup")}>Get started →</button>
+                      </div>
+                    </>
+                  )}
+
                 </div>
-              )}
-            </motion.div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
 

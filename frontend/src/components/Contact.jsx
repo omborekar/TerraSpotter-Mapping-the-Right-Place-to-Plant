@@ -22,8 +22,8 @@ const faqs = [
 
 const contacts = [
   { icon: "✉", label: "Email us",  value: "terraspotter@gmail.com",    href: "mailto:terraspotter@gmail.com" },
-  { icon: "☎", label: "Call us",   value: "+91 87672 92374",           href: "tel:+918767292374" },
-  { icon: "⌖", label: "Based in",  value: "Pune, Maharashtra, India",  href: null },
+  { icon: "☎", label: "Call us",   value: "+91 87672 92374",           href: "tel:+91 87672 92374" },
+  { icon: "⌖", label: "Based in",  value: "Pune, Maharashtra, India", href: null },
 ];
 
 const containerVariants = {
@@ -48,7 +48,7 @@ function CountUp({ target, suffix = "" }) {
     const timer = setInterval(() => {
       start += increment;
       if (start >= num) { setDisplay(num.toLocaleString() + suffix); clearInterval(timer); }
-      else setDisplay(Math.floor(start).toLocaleString() + suffix);
+      else { setDisplay(Math.floor(start).toLocaleString() + suffix); }
     }, step);
     return () => clearInterval(timer);
   }, [target, suffix]);
@@ -69,13 +69,13 @@ export default function Contact() {
       .catch(() => setStatsError(true));
   }, []);
 
-  const statTiles = dbStats ? [
-    dbStats.users    != null ? { label: "Registered Users",  value: dbStats.users,    suffix: "+" } : null,
-    dbStats.hectares != null ? { label: "Hectares Mapped",   value: dbStats.hectares, suffix: "+" } : null,
-    dbStats.trees    != null ? { label: "Trees Planted",     value: dbStats.trees,    suffix: "+" } : null,
-    dbStats.verified != null ? { label: "Verified Sites",    value: dbStats.verified, suffix: "+" } : null,
-  ].filter(Boolean) : [];
-
+  // Map DB fields → display tiles. Only show tiles where data exists.
+const statTiles = dbStats ? [
+  dbStats.users    != null ? { label: "Registered Users",   value: dbStats.users,    suffix: "+" } : null,
+  dbStats.hectares != null ? { label: "Hectares Mapped",    value: dbStats.hectares, suffix: "+" } : null,
+  dbStats.trees    != null ? { label: "Trees Planted",      value: dbStats.trees,    suffix: "+" } : null,
+  dbStats.verified != null ? { label: "Verified Sites",     value: dbStats.verified, suffix: "+" } : null,
+].filter(Boolean) : [];
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubmit = async () => {
@@ -89,345 +89,188 @@ export default function Contact() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Epilogue:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-          --cream: #f5f0e8; --parchment: #ede7d9; --ink: #0e1a12; --ink2: #2e3a30;
-          --forest: #0d3320; --canopy: #1a4d2e; --leaf: #2d7a4a; --sprout: #4db87a;
-          --sage: #7aad89; --mist: #d4f0e0; --warm: #8c8678; --line: #d6cfc4;
-          --gold: #c9a84c; --gold-lt: #e8d5a3;
+          --forest:  #0b2e1a; --deep: #143d22; --mid: #1f5c35;
+          --leaf:    #2d8a55; --sprout: #3db06e; --mint: #d4f0e0;
+          --pale:    #edf7f2; --white: #ffffff; --ink: #111b14;
+          --body:    #3d5244; --muted: #7a9485; --line: #dceee4; --sand: #f9fbf9;
         }
-        body { font-family: 'Epilogue', sans-serif; background: var(--cream); color: var(--ink); }
-        @keyframes ct-shimmer { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
-        @keyframes ct-spin { to { transform: rotate(360deg); } }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--sand); color: var(--ink); }
 
-        .ct-root { max-width: 1280px; margin: 0 auto; padding: 0 64px 120px; }
+        .ct-page { max-width: 1140px; margin: 0 auto; padding: 0 36px 120px; }
+        .ct-spacer { height: 80px; }
 
-        /* ── HERO ── */
+        /* HERO */
         .ct-hero {
-          padding: 100px 0 80px;
-          display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 72px;
-          align-items: start; border-bottom: 1px solid var(--line);
-          margin-bottom: 80px;
+          padding: 64px 0 72px;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+          align-items: center; border-bottom: 1px solid var(--line); margin-bottom: 72px;
         }
         .ct-eyebrow {
-          font-family: 'Epilogue', sans-serif;
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.28em; color: var(--leaf);
-          display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+          display: inline-flex; align-items: center; gap: 8px;
+          background: var(--pale); border: 1px solid var(--line); color: var(--mid);
+          border-radius: 100px; padding: 6px 16px; font-size: 11px; font-weight: 700;
+          letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 24px;
         }
-        .ct-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--leaf); opacity: 0.5; }
-        .ct-hero-index {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 110px; font-weight: 300; line-height: 1;
-          color: rgba(13,51,32,0.05); letter-spacing: -0.05em;
-          margin-bottom: -40px; display: block; pointer-events: none;
-        }
+        .ct-eyebrow-dot { width: 6px; height: 6px; background: var(--sprout); border-radius: 50%; }
         .ct-hero h1 {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(42px, 6vw, 72px); font-weight: 600;
-          color: var(--ink); line-height: 1.0; letter-spacing: -0.03em;
-          margin-bottom: 24px;
+          font-family: 'Lora', serif; font-size: clamp(36px, 5vw, 56px); font-weight: 700;
+          color: var(--forest); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 18px;
         }
         .ct-hero h1 em { font-style: italic; color: var(--leaf); }
-        .ct-hero-rule { width: 40px; height: 1px; background: rgba(45,122,74,0.4); margin-bottom: 24px; }
-        .ct-hero-sub {
-          font-size: 14px; color: var(--warm); line-height: 1.85;
-          max-width: 420px; font-weight: 300;
-        }
+        .ct-hero-sub { font-size: 15px; color: var(--body); line-height: 1.75; max-width: 420px; }
 
         /* stats panel */
         .ct-stats-panel {
-          background: var(--forest);
-          border-radius: 2px; padding: 36px;
-          display: flex; flex-direction: column; gap: 24px;
-          position: relative; overflow: hidden;
+          background: var(--white); border: 1px solid var(--line); border-radius: 20px;
+          padding: 32px; box-shadow: 0 4px 24px rgba(11,46,26,0.06);
+          display: flex; flex-direction: column; gap: 20px;
         }
-        .ct-stats-panel::before {
-          content: '';
-          position: absolute; top: -60px; right: -60px;
-          width: 200px; height: 200px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(77,184,122,0.15), transparent 70%);
-          pointer-events: none;
+        .ct-stats-panel-label {
+          font-size: 10px; font-weight: 700; letter-spacing: 0.2em;
+          text-transform: uppercase; color: var(--muted);
         }
-        .ct-panel-label {
-          font-family: 'Epilogue', sans-serif;
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.25em; color: rgba(77,184,122,0.6);
-        }
-        .ct-skeleton-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+        /* shimmer skeleton */
+        .ct-skeleton-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .ct-skeleton-tile {
-          height: 88px; border-radius: 2px;
-          background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
-          background-size: 200% 100%; animation: ct-shimmer 1.4s infinite;
+          height: 80px; border-radius: 12px;
+          background: linear-gradient(90deg, var(--pale) 25%, #c8e8d4 50%, var(--pale) 75%);
+          background-size: 200% 100%; animation: shimmer 1.4s infinite;
         }
-        .ct-stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+        /* tiles */
+        .ct-stat-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .ct-stat-tile {
-          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 2px; padding: 20px 18px;
-          display: flex; flex-direction: column; gap: 6px;
-          transition: background 0.2s;
+          background: var(--pale); border: 1px solid var(--line); border-radius: 14px;
+          padding: 18px 16px; display: flex; flex-direction: column; gap: 5px;
+          transition: border-color 0.2s, transform 0.2s;
         }
-        .ct-stat-tile:hover { background: rgba(255,255,255,0.07); }
+        .ct-stat-tile:hover { border-color: var(--sprout); transform: translateY(-2px); }
         .ct-stat-val {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 36px; font-weight: 600; line-height: 1;
-          color: #fff; letter-spacing: -0.02em;
+          font-family: 'Lora', serif; font-size: 30px; font-weight: 700;
+          color: var(--forest); line-height: 1;
         }
-        .ct-stat-lbl {
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.18em; color: rgba(255,255,255,0.32);
-        }
-        .ct-stats-err { font-size: 12px; color: rgba(255,255,255,0.35); text-align: center; padding: 16px 0; }
+        .ct-stat-lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+        .ct-stats-error { font-size: 13px; color: var(--muted); text-align: center; padding: 20px 0; }
+
         .ct-join-note {
-          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 2px; padding: 18px 20px;
-          font-size: 12.5px; line-height: 1.7; color: rgba(255,255,255,0.55);
+          background: linear-gradient(135deg, var(--forest), var(--mid));
+          border-radius: 14px; padding: 20px 22px;
+          color: rgba(255,255,255,0.88); font-size: 13.5px; line-height: 1.65;
         }
-        .ct-join-note strong { color: var(--gold-lt); font-weight: 600; }
+        .ct-join-note strong { color: var(--mint); font-weight: 600; }
 
-        /* ── MAIN GRID ── */
+        /* MAIN GRID */
         .ct-main-grid {
-          display: grid; grid-template-columns: 1fr 360px;
-          gap: 32px; margin-bottom: 100px; align-items: start;
+          display: grid; grid-template-columns: 1fr 380px; gap: 28px;
+          margin-bottom: 80px; align-items: start;
         }
 
-        /* ── FORM ── */
+        /* FORM */
         .ct-form-card {
-          background: #fff; border: 1px solid var(--line); border-radius: 2px;
-          padding: 48px;
+          background: var(--white); border: 1px solid var(--line);
+          border-radius: 20px; padding: 44px;
+          box-shadow: 0 4px 24px rgba(11,46,26,0.06);
         }
-        .ct-form-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 32px; font-weight: 600; color: var(--ink);
-          letter-spacing: -0.02em; margin-bottom: 6px;
-        }
-        .ct-form-sub {
-          font-size: 13px; color: var(--warm); line-height: 1.7;
-          margin-bottom: 32px; font-weight: 300;
-        }
-        .ct-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .ct-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
-        .ct-label {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
-          text-transform: uppercase; color: var(--warm);
-        }
-        .ct-req { color: var(--leaf); margin-left: 2px; }
+        .ct-form-title { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; color: var(--forest); margin-bottom: 6px; }
+        .ct-form-sub { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+        .ct-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .ct-field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+        .ct-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: var(--body); }
+        .ct-req { color: var(--leaf); }
         .ct-input, .ct-select, .ct-textarea {
-          padding: 12px 16px; border: 1px solid var(--line); border-radius: 2px;
-          font-family: 'Epilogue', sans-serif; font-size: 13.5px;
-          background: var(--cream); color: var(--ink); outline: none; width: 100%;
+          padding: 12px 15px; border: 1.5px solid var(--line); border-radius: 10px;
+          font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+          background: var(--sand); color: var(--ink); outline: none; width: 100%;
           transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
         .ct-input:focus, .ct-select:focus, .ct-textarea:focus {
-          border-color: var(--leaf); background: #fff;
-          box-shadow: 0 0 0 3px rgba(45,122,74,0.08);
+          border-color: var(--sprout); background: var(--white);
+          box-shadow: 0 0 0 3.5px rgba(61,176,110,0.12);
         }
         .ct-select {
           appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c8678' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a9485' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
           background-repeat: no-repeat; background-position: right 14px center;
-          background-color: var(--cream); padding-right: 40px; cursor: pointer;
+          background-color: var(--sand); padding-right: 36px; cursor: pointer;
         }
-        .ct-textarea { resize: none; min-height: 120px; line-height: 1.65; }
+        .ct-textarea { resize: none; min-height: 120px; line-height: 1.6; }
         .ct-submit {
-          width: 100%; padding: 14px;
-          background: var(--forest); color: var(--cream);
-          border: none; border-radius: 2px;
-          font-family: 'Epilogue', sans-serif; font-size: 12px; font-weight: 700;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          cursor: pointer; margin-top: 6px;
-          transition: background 0.2s, transform 0.12s;
+          width: 100%; padding: 14px; background: var(--forest); color: white;
+          border: none; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px;
+          transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
         }
-        .ct-submit:hover:not(:disabled) { background: var(--canopy); transform: translateY(-1px); }
+        .ct-submit:hover:not(:disabled) { background: var(--deep); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(11,46,26,0.18); }
         .ct-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+        .ct-success { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 16px; gap: 14px; }
+        .ct-success-ring { width: 72px; height: 72px; border-radius: 50%; background: var(--pale); border: 2px solid var(--mint); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+        .ct-success h3 { font-family: 'Lora', serif; font-size: 22px; color: var(--forest); }
+        .ct-success p { font-size: 14px; color: var(--muted); line-height: 1.7; max-width: 300px; }
 
-        /* success */
-        .ct-success {
-          display: flex; flex-direction: column; align-items: center;
-          text-align: center; padding: 48px 24px; gap: 16px;
-        }
-        .ct-success-leaf { font-size: 56px; line-height: 1; }
-        .ct-success h3 {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 28px; font-weight: 600; color: var(--forest);
-          letter-spacing: -0.02em;
-        }
-        .ct-success p { font-size: 13px; color: var(--warm); line-height: 1.75; max-width: 300px; }
-
-        /* ── SIDEBAR ── */
+        /* SIDEBAR */
         .ct-sidebar { display: flex; flex-direction: column; gap: 16px; }
-        .ct-info-card {
-          background: #fff; border: 1px solid var(--line); border-radius: 2px;
-          padding: 28px 30px;
-        }
-        .ct-card-hd {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
-          text-transform: uppercase; color: var(--warm); margin-bottom: 20px;
-          display: flex; align-items: center; gap: 10px;
-        }
-        .ct-card-hd::after { content: ''; flex: 1; height: 1px; background: var(--line); }
-        .ct-contact-row {
-          display: flex; align-items: center; gap: 14px;
-          padding: 13px 0; border-bottom: 1px solid var(--line);
-        }
-        .ct-contact-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .ct-contact-icon {
-          width: 36px; height: 36px; border-radius: 2px;
-          background: var(--parchment); border: 1px solid var(--line);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 14px; color: var(--leaf); flex-shrink: 0;
-        }
-        .ct-contact-meta-lbl {
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.15em; color: var(--warm); margin-bottom: 3px;
-        }
-        .ct-contact-meta-val { font-size: 12.5px; color: var(--ink); font-weight: 500; }
-        .ct-contact-meta-val a { color: var(--leaf); text-decoration: none; }
-        .ct-contact-meta-val a:hover { text-decoration: underline; }
-
-        .ct-hours-card {
-          background: var(--forest); border-radius: 2px; padding: 28px 30px;
-        }
-        .ct-hours-hd {
-          font-family: 'Epilogue', sans-serif;
-          font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
-          text-transform: uppercase; color: rgba(255,255,255,0.5);
-          margin-bottom: 16px;
-        }
-        .ct-hours-row {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
-          font-size: 12.5px;
-        }
+        .ct-info-card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 28px; box-shadow: 0 2px 12px rgba(11,46,26,0.04); }
+        .ct-card-label { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+        .ct-contact-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+        .ct-contact-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .ct-contact-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--pale); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--leaf); flex-shrink: 0; }
+        .ct-contact-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 3px; }
+        .ct-contact-val { font-size: 13px; color: var(--ink); font-weight: 500; }
+        .ct-contact-val a { color: var(--leaf); text-decoration: none; }
+        .ct-contact-val a:hover { text-decoration: underline; }
+        .ct-hours-card { background: linear-gradient(145deg, var(--forest), var(--mid)); border-radius: 18px; padding: 28px; }
+        .ct-hours-head { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 16px; }
+        .ct-hours-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.09); font-size: 13px; }
         .ct-hours-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .ct-hours-day { color: rgba(255,255,255,0.38); }
-        .ct-hours-time { color: rgba(255,255,255,0.82); font-weight: 600; }
-        .ct-closed { color: rgba(255,255,255,0.25) !important; font-style: italic; }
+        .ct-hours-day { color: rgba(255,255,255,0.55); }
+        .ct-hours-time { color: rgba(255,255,255,0.92); font-weight: 600; }
+        .ct-closed { color: rgba(255,255,255,0.35) !important; font-style: italic; }
+        .ct-open-card { background: var(--pale); border: 1.5px solid var(--mint); border-radius: 18px; padding: 28px; }
+        .ct-open-card h4 { font-family: 'Lora', serif; font-size: 17px; color: var(--forest); margin-bottom: 10px; }
+        .ct-open-card p { font-size: 13px; color: var(--body); line-height: 1.7; }
 
-        .ct-open-card {
-          background: var(--parchment); border: 1px solid var(--line);
-          border-radius: 2px; padding: 24px 26px;
-          border-left: 3px solid var(--leaf);
-        }
-        .ct-open-card h4 {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 20px; font-weight: 600; color: var(--forest);
-          letter-spacing: -0.01em; margin-bottom: 8px;
-        }
-        .ct-open-card p { font-size: 12.5px; color: var(--warm); line-height: 1.75; }
+        /* FAQ */
+        .ct-faq-section { margin-bottom: 80px; }
+        .ct-faq-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 36px; flex-wrap: wrap; gap: 12px; }
+        .ct-faq-title { font-family: 'Lora', serif; font-size: clamp(28px, 4vw, 40px); font-weight: 700; color: var(--forest); line-height: 1.15; }
+        .ct-faq-sub { font-size: 14px; color: var(--muted); max-width: 320px; text-align: right; line-height: 1.6; }
+        .ct-faq-list { display: flex; flex-direction: column; gap: 10px; }
+        .ct-faq-item { background: var(--white); border: 1.5px solid var(--line); border-radius: 14px; overflow: hidden; transition: border-color 0.2s; }
+        .ct-faq-item.open { border-color: var(--sprout); }
+        .ct-faq-q { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: none; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--ink); cursor: pointer; text-align: left; gap: 16px; transition: background 0.15s; }
+        .ct-faq-q:hover { background: var(--pale); }
+        .ct-faq-chevron { width: 28px; height: 28px; border-radius: 50%; background: var(--pale); border: 1.5px solid var(--line); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; color: var(--leaf); font-weight: 700; transition: transform 0.25s, background 0.2s, color 0.2s, border-color 0.2s; }
+        .ct-faq-item.open .ct-faq-chevron { transform: rotate(45deg); background: var(--leaf); color: white; border-color: var(--leaf); }
+        .ct-faq-body { padding: 0 24px 20px; font-size: 14px; color: var(--body); line-height: 1.75; overflow: hidden; }
 
-        /* ── FAQ ── */
-        .ct-faq { margin-bottom: 100px; }
-        .ct-faq-header { margin-bottom: 48px; }
-        .ct-faq-index {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 100px; font-weight: 300; line-height: 1;
-          color: rgba(13,51,32,0.05); letter-spacing: -0.05em;
-          margin-bottom: -34px; display: block; pointer-events: none;
-        }
-        .ct-faq-eyebrow {
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.28em; color: var(--leaf);
-          display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
-        }
-        .ct-faq-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--leaf); opacity: 0.5; }
-        .ct-faq-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(32px, 4.5vw, 52px); font-weight: 600;
-          color: var(--ink); line-height: 1.05; letter-spacing: -0.03em;
-          max-width: 560px;
-        }
+        /* bottom cta */
+        .ct-bottom-cta { background: var(--forest); border-radius: 24px; padding: 56px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; position: relative; overflow: hidden; }
+        .ct-bottom-cta::before { content: ''; position: absolute; right: -80px; top: -80px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(61,176,110,0.15) 0%, transparent 70%); }
+        .ct-cta-text h3 { font-family: 'Lora', serif; font-size: 30px; color: var(--white); margin-bottom: 10px; }
+        .ct-cta-text p { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.65; max-width: 420px; }
+        .ct-cta-actions { display: flex; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+        .ct-cta-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: var(--sprout); color: var(--forest); font-size: 14px; font-weight: 700; border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+        .ct-cta-btn-primary:hover { background: var(--mint); transform: translateY(-2px); }
+        .ct-cta-btn-ghost { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 500; border-radius: 10px; text-decoration: none; background: rgba(255,255,255,0.05); transition: all 0.2s; }
+        .ct-cta-btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35); }
 
-        .ct-faq-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
-        .ct-faq-item { border-bottom: 1px solid var(--line); }
-        .ct-faq-item.open { border-bottom-color: var(--line); }
-        .ct-faq-q {
-          width: 100%; display: flex; align-items: center; justify-content: space-between;
-          padding: 22px 0; background: none; border: none;
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 19px; font-weight: 600;
-          color: var(--ink); cursor: pointer; text-align: left;
-          gap: 24px; transition: color 0.2s; letter-spacing: -0.01em;
-        }
-        .ct-faq-q:hover { color: var(--leaf); }
-        .ct-faq-arrow {
-          font-size: 18px; color: var(--leaf); flex-shrink: 0;
-          transition: transform 0.3s ease; line-height: 1;
-          width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-        }
-        .ct-faq-item.open .ct-faq-arrow { transform: rotate(45deg); }
-        .ct-faq-body {
-          overflow: hidden;
-          font-size: 13.5px; color: var(--warm); line-height: 1.8;
-          font-weight: 300;
-        }
-        .ct-faq-body-inner { padding: 0 0 22px 0; }
-
-        /* ── BOTTOM CTA ── */
-        .ct-bottom-cta {
-          background: var(--forest);
-          border-radius: 2px; padding: 64px;
-          display: flex; align-items: center; justify-content: space-between;
-          gap: 32px; flex-wrap: wrap; position: relative; overflow: hidden;
-        }
-        .ct-bottom-cta::before {
-          content: '';
-          position: absolute; right: -100px; top: -100px;
-          width: 320px; height: 320px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(77,184,122,0.12), transparent 70%);
-          pointer-events: none;
-        }
-        .ct-bottom-cta::after {
-          content: '';
-          position: absolute; left: -60px; bottom: -60px;
-          width: 220px; height: 220px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%);
-          pointer-events: none;
-        }
-        .ct-cta-text { position: relative; z-index: 1; }
-        .ct-cta-text h3 {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 36px; font-weight: 600; color: var(--cream);
-          letter-spacing: -0.02em; margin-bottom: 10px; line-height: 1.1;
-        }
-        .ct-cta-text p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.75; max-width: 400px; }
-        .ct-cta-btns { display: flex; gap: 10px; flex-wrap: wrap; flex-shrink: 0; position: relative; z-index: 1; }
-        .ct-cta-btn-p {
-          padding: 13px 28px; background: var(--sprout); color: var(--forest);
-          font-family: 'Epilogue', sans-serif; font-size: 11px; font-weight: 700;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          border-radius: 2px; text-decoration: none; transition: background 0.2s, transform 0.12s;
-          display: inline-flex; align-items: center;
-        }
-        .ct-cta-btn-p:hover { background: var(--gold-lt); transform: translateY(-1px); }
-        .ct-cta-btn-g {
-          padding: 13px 24px;
-          border: 1px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.6);
-          font-family: 'Epilogue', sans-serif; font-size: 11px; font-weight: 500;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          border-radius: 2px; text-decoration: none; background: transparent;
-          transition: background 0.2s, border-color 0.2s;
-          display: inline-flex; align-items: center;
-        }
-        .ct-cta-btn-g:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.3); }
-
-        /* ── RESPONSIVE ── */
-        @media(max-width:1024px) {
-          .ct-root { padding-left: 36px; padding-right: 36px; }
-        }
-        @media(max-width:900px) {
-          .ct-root { padding-left: 24px; padding-right: 24px; }
-          .ct-hero { grid-template-columns: 1fr; gap: 40px; padding-top: 72px; padding-bottom: 56px; }
+        @media (max-width: 900px) {
+          .ct-page { padding: 0 20px 80px; }
+          .ct-hero { grid-template-columns: 1fr; gap: 36px; padding: 48px 0 56px; }
           .ct-main-grid { grid-template-columns: 1fr; }
-          .ct-form-card { padding: 32px 28px; }
-          .ct-bottom-cta { padding: 44px 32px; }
+          .ct-form-card { padding: 28px; }
+          .ct-faq-sub { text-align: left; }
+          .ct-bottom-cta { padding: 40px 28px; }
         }
-        @media(max-width:600px) {
-          .ct-root { padding: 0 18px 80px; }
+        @media (max-width: 560px) {
           .ct-form-row { grid-template-columns: 1fr; }
-          .ct-hero h1 { font-size: 40px; }
-          .ct-bottom-cta { padding: 36px 24px; }
+          .ct-hero h1 { font-size: 34px; }
         }
       `}</style>
 
@@ -436,21 +279,18 @@ export default function Contact() {
         <meta name="description" content="Contact TerraSpotter — reach out, FAQs, and support." />
       </Helmet>
 
-      <div className="ct-root">
-        {/* spacer for fixed nav */}
-        <div style={{ height: 72 }} />
+      <div className="ct-page">
+        <div className="ct-spacer" />
 
-        {/* ── HERO ── */}
+        {/* hero */}
         <motion.div className="ct-hero" variants={containerVariants} initial="hidden" animate="visible">
           <div>
-            <motion.div variants={itemVariants}>
-              <div className="ct-eyebrow">Community Platform</div>
+            <motion.div className="ct-eyebrow" variants={itemVariants}>
+              <span className="ct-eyebrow-dot" /> Community Platform
             </motion.div>
-            <motion.span className="ct-hero-index" variants={itemVariants}>02</motion.span>
             <motion.h1 variants={itemVariants}>
               Together, we<br />grow <em>forests</em>
             </motion.h1>
-            <motion.div className="ct-hero-rule" variants={itemVariants} />
             <motion.p className="ct-hero-sub" variants={itemVariants}>
               TerraSpotter is powered entirely by its users — landowners, planters, and nature lovers like you.
               Anyone can sign up, submit land, and join a plantation drive. No gatekeeping, just green action.
@@ -458,21 +298,28 @@ export default function Contact() {
           </div>
 
           <motion.div className="ct-stats-panel" variants={itemVariants}>
-            <div className="ct-panel-label">Our community — live from everywhere</div>
+            <div className="ct-stats-panel-label">Our community — live from Everywhere</div>
 
+            {/* Loading skeleton */}
             {!dbStats && !statsError && (
-              <div className="ct-skeleton-grid">
-                {[0, 1, 2, 3].map(i => <div key={i} className="ct-skeleton-tile" />)}
+              <div className="ct-skeleton-row">
+                {[0,1,2,3].map(i => <div key={i} className="ct-skeleton-tile" />)}
               </div>
             )}
 
-            {statsError && <div className="ct-stats-err">Could not load live stats right now.</div>}
+            {/* Error */}
+            {statsError && (
+              <div className="ct-stats-error">Could not load live stats right now.</div>
+            )}
 
+            {/* Live tiles */}
             {dbStats && statTiles.length > 0 && (
-              <div className="ct-stat-grid">
+              <div className="ct-stat-tiles">
                 {statTiles.map((s, i) => (
                   <div key={i} className="ct-stat-tile">
-                    <div className="ct-stat-val"><CountUp target={s.value} suffix={s.suffix} /></div>
+                    <div className="ct-stat-val">
+                      <CountUp target={s.value} suffix={s.suffix} />
+                    </div>
                     <div className="ct-stat-lbl">{s.label}</div>
                   </div>
                 ))}
@@ -485,18 +332,13 @@ export default function Contact() {
           </motion.div>
         </motion.div>
 
-        {/* ── FORM + SIDEBAR ── */}
-        <motion.div
-          className="ct-main-grid"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-        >
+        {/* form + sidebar */}
+        <motion.div className="ct-main-grid" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
+
           <motion.div className="ct-form-card" variants={itemVariants}>
             {sent ? (
               <div className="ct-success">
-                <div className="ct-success-leaf">🌿</div>
+                <div className="ct-success-ring">🌿</div>
                 <h3>Message received!</h3>
                 <p>Thanks for reaching out. A community member will get back to you within 24 hours.</p>
               </div>
@@ -549,13 +391,13 @@ export default function Contact() {
 
           <motion.div className="ct-sidebar" variants={itemVariants}>
             <div className="ct-info-card">
-              <div className="ct-card-hd">Reach us directly</div>
+              <div className="ct-card-label">Reach us directly</div>
               {contacts.map((c, i) => (
-                <div key={i} className="ct-contact-row">
+                <div key={i} className="ct-contact-item">
                   <div className="ct-contact-icon">{c.icon}</div>
                   <div>
-                    <div className="ct-contact-meta-lbl">{c.label}</div>
-                    <div className="ct-contact-meta-val">
+                    <div className="ct-contact-lbl">{c.label}</div>
+                    <div className="ct-contact-val">
                       {c.href ? <a href={c.href}>{c.value}</a> : c.value}
                     </div>
                   </div>
@@ -564,7 +406,7 @@ export default function Contact() {
             </div>
 
             <div className="ct-hours-card">
-              <div className="ct-hours-hd">When we respond</div>
+              <div className="ct-hours-head">⏱ When we respond</div>
               {[
                 { day: "Monday – Friday", time: "9 AM – 6 PM" },
                 { day: "Saturday",        time: "10 AM – 3 PM" },
@@ -579,48 +421,32 @@ export default function Contact() {
 
             <div className="ct-open-card">
               <h4>🌳 Open to Everyone</h4>
-              <p>Sign up and you can submit land, volunteer at events, and propose plantation drives — all from one account. The community runs itself.</p>
+              <p>Sign up as a user and you can submit land, volunteer at events, and propose plantation drives — all from one account. The community runs itself.</p>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* ── FAQ ── */}
-        <motion.div
-          className="ct-faq"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          variants={containerVariants}
-        >
-          <motion.div className="ct-faq-header" variants={itemVariants}>
-            <span className="ct-faq-index">03</span>
-            <div className="ct-faq-eyebrow">Common questions</div>
-            <h2 className="ct-faq-title">
-              From the community
-            </h2>
+        {/* faq */}
+        <motion.div className="ct-faq-section" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={containerVariants}>
+          <motion.div className="ct-faq-head" variants={itemVariants}>
+            <h2 className="ct-faq-title">Common questions<br />from the community</h2>
+            <p className="ct-faq-sub">Can't find what you need? Send us a message above.</p>
           </motion.div>
-
           <div className="ct-faq-list">
             {faqs.map((f, i) => (
-              <motion.div
-                key={i}
-                className={`ct-faq-item${openFaq === i ? " open" : ""}`}
-                variants={itemVariants}
-              >
+              <motion.div key={i} className={`ct-faq-item${openFaq === i ? " open" : ""}`} variants={itemVariants}>
                 <button className="ct-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
                   <span>{f.q}</span>
-                  <span className="ct-faq-arrow">+</span>
+                  <span className="ct-faq-chevron">+</span>
                 </button>
                 <AnimatePresence initial={false}>
                   {openFaq === i && (
-                    <motion.div
-                      className="ct-faq-body"
+                    <motion.div className="ct-faq-body"
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      <div className="ct-faq-body-inner">{f.a}</div>
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
+                      {f.a}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -629,21 +455,17 @@ export default function Contact() {
           </div>
         </motion.div>
 
-        {/* ── BOTTOM CTA ── */}
-        <motion.div
-          className="ct-bottom-cta"
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
+        {/* bottom cta */}
+        <motion.div className="ct-bottom-cta"
+          initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
           <div className="ct-cta-text">
             <h3>Ready to make your mark?</h3>
             <p>Submit a barren plot, join a planting event, or propose a drive in your area. One account is all you need.</p>
           </div>
-          <div className="ct-cta-btns">
-            <a href="/main" className="ct-cta-btn-p">Submit Land →</a>
-            <a href="/browse" className="ct-cta-btn-g">Browse Sites</a>
+          <div className="ct-cta-actions">
+            <a href="/main" className="ct-cta-btn-primary">Submit Land →</a>
+            <a href="/browse" className="ct-cta-btn-ghost">Browse Sites</a>
           </div>
         </motion.div>
       </div>
