@@ -1,16 +1,4 @@
-/*
- Project: TerraSpotter Platform
- Author: Om Borekar
- Year: 2026
- Description: Route guard component requiring user authentication.
- */
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import LoadingSpinner from "./ui/LoadingSpinner";
-
-const BASE_URL = import.meta.env.VITE_API_URL;
-
-const ProtectedRoute = ({ children }) => {
+ const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
 
@@ -46,12 +34,16 @@ const ProtectedRoute = ({ children }) => {
     checkAuth();
   }, []);
 
-  // 🌱 ENHANCED LOADING UI (no logic change)
   if (loading) {
     return <LoadingSpinner text="Loading Workplace..." />;
   }
 
-  return isAuth ? children : <Navigate to="/login" replace />;
-};
+  if (!isAuth) {
+    sessionStorage.clear();
+    localStorage.clear();
+    window.location.href = "/login"; // 💀 full reload
+    return null;
+  }
 
-export default ProtectedRoute;
+  return children;
+};
