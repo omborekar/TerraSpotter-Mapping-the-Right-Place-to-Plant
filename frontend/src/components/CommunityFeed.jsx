@@ -2,29 +2,22 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Global community feed showing recent growth updates across all plantation sites.
+ Description: Global community feed showing completed plantations.
 */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   TreePine, TrendingUp, Heart, Sprout, Droplets, Sun, AlertTriangle,
-  MapPin, Clock, ChevronRight, Users, BarChart3, Activity
+  MapPin, Clock, ChevronRight, Users, BarChart3, Activity, Star, Camera,
+  Navigation, CheckCircle, Crosshair, X
 } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-/* ─── Health helpers ─── */
-const HEALTH_MAP = {
-  Thriving:   { icon: <Sun size={12} />,            color: "#16a34a", bg: "rgba(22,163,74,0.10)" },
-  Healthy:    { icon: <Sprout size={12} />,          color: "#65a30d", bg: "rgba(101,163,13,0.10)" },
-  Struggling: { icon: <Droplets size={12} />,        color: "#d97706", bg: "rgba(217,119,6,0.10)" },
-  Critical:   { icon: <AlertTriangle size={12} />,   color: "#dc2626", bg: "rgba(220,38,38,0.10)" },
-};
-function getHealth(s) { return HEALTH_MAP[s] || HEALTH_MAP.Healthy; }
-
 /* ─── Time-ago ─── */
 function timeAgo(dateStr) {
+  if (!dateStr) return "Some time ago";
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "Just now";
@@ -34,6 +27,19 @@ function timeAgo(dateStr) {
   const days = Math.floor(hrs / 24);
   if (days < 30) return `${days}d ago`;
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+/* ─── Distance Helpers ─── */
+function getDistance(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
 }
 
 /* ─── Skeleton ─── */
@@ -46,6 +52,7 @@ function Bone({ style = {} }) {
     }} />
   );
 }
+
 function BoneDark({ style = {} }) {
   return (
     <div style={{
@@ -59,38 +66,76 @@ function BoneDark({ style = {} }) {
 /* ─── Main ─── */
 export default function CommunityFeed() {
   const navigate = useNavigate();
-  const [feed, setFeed]       = useState([]);
+  const [plantations, setPlantations] = useState([]);
   const [stats, setStats]     = useState(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter]   = useState("all");
+  const [filter, setFilter]   = useState("recent"); // recent, popular, nearest
+  const [userLoc, setUserLoc] = useState(null);
+  const [locLoading, setLocLoading] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedLandId, setSelectedLandId] = useState(null);
+  const [selectedCompletionId, setSelectedCompletionId] = useState(null);
 
   useEffect(() => { fetchAll(); }, []);
 
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [feedRes, statsRes] = await Promise.all([
-        fetch(`${BASE_URL}/api/growth/feed`, { credentials: "include" }),
-        fetch(`${BASE_URL}/api/growth/stats`, { credentials: "include" }),
-      ]);
-      setFeed(await feedRes.json());
-      setStats(await statsRes.json());
-    } catch (err) { console.error("Failed to fetch community feed:", err); }
+        const [planRes, statsRes] = await Promise.all([
+            fetch(`${BASE_URL}/api/plantations/completed`, { credentials: "include" }),
+            fetch(`${BASE_URL}/api/growth/stats`, { credentials: "include" })
+        ]);
+        if (planRes.ok) setPlantations(await planRes.json());
+        if (statsRes.ok) setStats(await statsRes.json());
+    } catch (err) { console.error("Failed to fetch community data:", err); }
     finally { setLoading(false); }
   };
 
-  const filtered = feed.filter(u => {
-    if (filter === "attention") return u.healthStatus === "Struggling" || u.healthStatus === "Critical";
-    return true;
-  }).sort((a, b) => {
-    if (filter === "recent") return new Date(b.createdAt) - new Date(a.createdAt);
+  const handleClosest = () => {
+    if (userLoc) {
+        setFilter("nearest");
+        return;
+    }
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition(pos => {
+        setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setFilter("nearest");
+        setLocLoading(false);
+    }, err => {
+        console.error(err);
+        setLocLoading(false);
+        alert("Location access denied or unavailable.");
+    });
+  };
+
+  // Sort logic
+  const sorted = [...plantations].sort((a, b) => {
+    if (filter === "recent") return new Date(b.completedAt) - new Date(a.completedAt);
+    if (filter === "popular") return (b.reviews?.length || 0) - (a.reviews?.length || 0);
+    if (filter === "nearest" && userLoc) {
+        const da = getDistance(userLoc.lat, userLoc.lng, a.centroidLat, a.centroidLng);
+        const db = getDistance(userLoc.lat, userLoc.lng, b.centroidLat, b.centroidLng);
+        return da - db;
+    }
     return 0;
   });
+
+  const handleOpenReview = (landId, completionId, e) => {
+      e.stopPropagation();
+      setSelectedLandId(landId);
+      setSelectedCompletionId(completionId);
+      setShowReviewModal(true);
+  };
+
+  const handleOpenGrowth = (landId, e) => {
+      e.stopPropagation();
+      navigate(`/lands/${landId}/growth`);
+  };
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400\u0026family=Epilogue:wght@300;400;500;600;700\u0026display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400\\&family=Epilogue:wght@300;400;500;600;700\\&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
         :root {
           --cf-cream:#f5f0e8; --cf-parchment:#ede7d9; --cf-ink:#1a1a14; --cf-ink2:#2e2e24;
@@ -100,6 +145,7 @@ export default function CommunityFeed() {
         }
         @keyframes cf-shimmer{to{background-position:-200% 0;}}
         @keyframes cf-float{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,-20px) scale(1.05);}}
+        @keyframes cf-spin { to { transform: rotate(360deg); } }
 
         .cf-root{background:var(--cf-cream);min-height:100vh;font-family:'Epilogue',sans-serif;color:var(--cf-ink);}
 
@@ -136,14 +182,16 @@ export default function CommunityFeed() {
           justify-content:space-between;height:58px;gap:24px;flex-wrap:wrap;
         }
         .cf-nav-count{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--cf-warm);}
-        .cf-fpills{display:flex;gap:2px;}
+        .cf-fpills{display:flex;gap:4px;}
         .cf-fpill{
+          display:inline-flex;align-items:center;gap:6px;
           padding:6px 20px;border-radius:100px;font-family:'Epilogue',sans-serif;
           font-size:11px;font-weight:600;letter-spacing:.06em;border:1px solid transparent;
           cursor:pointer;transition:all .2s;background:transparent;color:var(--cf-warm);
         }
         .cf-fpill:hover{color:var(--cf-ink);}
         .cf-fpill.active{background:var(--cf-forest);color:var(--cf-cream);border-color:var(--cf-forest);}
+        .cf-spin { animation: cf-spin 1s linear infinite; }
 
         /* ── CONTENT ── */
         .cf-content{max-width:1340px;margin:0 auto;padding:64px 56px 100px;}
@@ -173,15 +221,16 @@ export default function CommunityFeed() {
           display:flex;flex-direction:column;align-items:center;justify-content:center;
           gap:8px;color:var(--cf-warm);font-size:11px;aspect-ratio:16/9;background:var(--cf-parchment);
         }
-        .cf-card-health{
-          position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:5px;
-          padding:5px 12px;border-radius:100px;font-size:10px;font-weight:600;
-          backdrop-filter:blur(8px);letter-spacing:.05em;
-        }
         .cf-card-time{
-          position:absolute;bottom:12px;left:12px;
+          position:absolute;top:12px;right:12px;
           background:rgba(26,26,20,.72);backdrop-filter:blur(6px);
           color:#fff;font-size:10px;font-weight:600;letter-spacing:.08em;
+          padding:5px 12px;border-radius:100px;display:flex;align-items:center;gap:5px;
+        }
+        .cf-card-dist{
+          position:absolute;bottom:12px;left:12px;
+          background:rgba(255,255,255,.9);backdrop-filter:blur(6px);
+          color:var(--cf-ink);font-size:10px;font-weight:700;letter-spacing:.08em;
           padding:5px 12px;border-radius:100px;display:flex;align-items:center;gap:5px;
         }
 
@@ -204,17 +253,24 @@ export default function CommunityFeed() {
         .cf-card-stat-val{font-weight:700;color:var(--cf-ink);}
         .cf-card-stat-icon{opacity:.5;}
 
-        .cf-card-footer{
-          padding:12px 24px 16px;display:flex;align-items:center;justify-content:space-between;
-          border-top:1px solid var(--cf-line);
+        .cf-card-actions{
+          padding:12px 24px 16px;display:flex;flex-wrap:wrap;gap:10px;
+          border-top:1px solid var(--cf-line);background:#fcfbf9;
         }
-        .cf-card-user{font-size:11px;color:var(--cf-warm);display:flex;align-items:center;gap:5px;}
-        .cf-card-arrow{
-          display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;
-          letter-spacing:.12em;text-transform:uppercase;color:var(--cf-leaf);
-          opacity:0;transform:translateX(-4px);transition:all .2s;
+        .cf-btn-outline{
+          flex:1;padding:10px;border:1px solid var(--cf-line);border-radius:8px;
+          background:#fff;font-family:'Epilogue',sans-serif;font-size:11px;font-weight:600;
+          color:var(--cf-ink);text-align:center;cursor:pointer;transition:all .2s;
+          display:flex;align-items:center;justify-content:center;gap:6px;
         }
-        .cf-card:hover .cf-card-arrow{opacity:1;transform:translateX(0);}
+        .cf-btn-outline:hover{border-color:var(--cf-leaf);color:var(--cf-leaf);}
+        .cf-btn-solid{
+          flex:1;padding:10px;border:none;border-radius:8px;
+          background:var(--cf-forest);font-family:'Epilogue',sans-serif;font-size:11px;font-weight:600;
+          color:var(--cf-cream);text-align:center;cursor:pointer;transition:all .2s;
+          display:flex;align-items:center;justify-content:center;gap:6px;
+        }
+        .cf-btn-solid:hover{background:var(--cf-moss);}
 
         /* ── EMPTY ── */
         .cf-empty{text-align:center;padding:100px 24px;grid-column:1/-1;}
@@ -222,6 +278,45 @@ export default function CommunityFeed() {
           font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;
           color:var(--cf-ink2);margin:18px 0 10px;
         }
+        
+        /* ── REVIEW MODAL ── */
+        .cf-rmodal-overlay {
+          position:fixed;inset:0;background:rgba(26,26,20,0.84);backdrop-filter:blur(8px);
+          z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;
+        }
+        .cf-rmodal {
+          background:var(--cf-cream);border-radius:12px;max-width:540px;width:100%;
+          position:relative;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.2);
+        }
+        .cf-rmodal-body { padding:40px; }
+        .cf-rmodal-title {
+          font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;
+          color:var(--cf-ink);margin-bottom:24px;letter-spacing:-.02em;line-height:1.1;
+        }
+        .cf-rmodal-close {
+          position:absolute;top:16px;right:16px;background:none;border:none;
+          color:var(--cf-warm);cursor:pointer;transition:color .2s;
+        }
+        .cf-rmodal-close:hover { color:var(--cf-ink); }
+        .cf-flabel {
+          display:block;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+          color:var(--cf-warm);margin-bottom:12px;
+        }
+        .cf-star-row { display:flex;gap:8px;margin-bottom:24px; }
+        .cf-star { cursor:pointer;transition:transform .15s; }
+        .cf-star:hover { transform:scale(1.1); }
+        .cf-textarea {
+          width:100%;min-height:100px;padding:14px;border:1px solid var(--cf-line);
+          border-radius:8px;font-family:'Epilogue',sans-serif;font-size:14px;
+          background:#fff;outline:none;resize:vertical;margin-bottom:24px;
+        }
+        .cf-textarea:focus { border-color:var(--cf-forest); }
+        .cf-btn-submit-review {
+          width:100%;padding:14px;border:none;background:var(--cf-forest);color:#fff;
+          border-radius:8px;font-family:'Epilogue',sans-serif;font-size:13px;font-weight:600;
+          cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+        }
+        .cf-btn-submit-review:disabled { opacity:.6;cursor:not-allowed; }
 
         /* responsive */
         @media(max-width:960px){
@@ -265,8 +360,8 @@ export default function CommunityFeed() {
               ) : (
                 <>
                   {[
+                    { val: plantations.length || 0, lbl: "Completed Plantations", icon: <CheckCircle size={16} /> },
                     { val: stats?.totalUpdates || 0, lbl: "Growth Updates", icon: <Activity size={16} /> },
-                    { val: stats?.sitesTracked || 0,  lbl: "Sites Tracked", icon: <BarChart3 size={16} /> },
                     { val: `${stats?.avgSurvivalRate || 0}%`, lbl: "Avg Survival Rate", icon: <Heart size={16} /> },
                   ].map((s, i) => (
                     <motion.div
@@ -288,29 +383,25 @@ export default function CommunityFeed() {
         <div className="cf-nav">
           <div className="cf-nav-inner">
             <span className="cf-nav-count">
-              {loading ? "Loading…" : `${filtered.length} Update${filtered.length !== 1 ? "s" : ""}`}
+              {loading ? "Loading…" : `${sorted.length} Plantation${sorted.length !== 1 ? "s" : ""}`}
             </span>
             <div className="cf-fpills">
-              {[
-                { key: "all", label: "All" },
-                { key: "recent", label: "Recent" },
-                { key: "attention", label: "⚠ Needs Attention" },
-              ].map(({ key, label }) => (
-                <button
-                  key={key}
-                  className={`cf-fpill${filter === key ? " active" : ""}`}
-                  onClick={() => setFilter(key)}
-                >
-                  {label}
-                </button>
-              ))}
+              <button className={`cf-fpill${filter === "recent" ? " active" : ""}`} onClick={() => setFilter("recent")}>
+                  Recent
+              </button>
+              <button className={`cf-fpill${filter === "popular" ? " active" : ""}`} onClick={() => setFilter("popular")}>
+                  Popular
+              </button>
+              <button className={`cf-fpill${filter === "nearest" ? " active" : ""}`} onClick={handleClosest}>
+                  {locLoading ? <Navigation size={12} className="cf-spin" /> : <Crosshair size={12} />} Nearest to me
+              </button>
             </div>
           </div>
         </div>
 
         {/* ── CONTENT ── */}
         <div className="cf-content">
-          <div className="cf-section-label">Community Growth Feed · {new Date().getFullYear()}</div>
+          <div className="cf-section-label">Community Plantations Feed · {new Date().getFullYear()}</div>
 
           {loading ? (
             <div className="cf-grid">
@@ -326,13 +417,13 @@ export default function CommunityFeed() {
                 </div>
               ))}
             </div>
-          ) : filtered.length === 0 ? (
+          ) : sorted.length === 0 ? (
             <div className="cf-grid">
               <div className="cf-empty">
                 <Sprout size={52} strokeWidth={1} />
-                <div className="cf-empty-title">No growth updates yet</div>
+                <div className="cf-empty-title">No completed plantations yet</div>
                 <p style={{ fontSize: 13, color: "var(--cf-warm)" }}>
-                  Visit a completed plantation site and submit the first growth update.
+                  There are no completed plantations available to track or review.
                 </p>
               </div>
             </div>
@@ -342,22 +433,50 @@ export default function CommunityFeed() {
               initial="hidden" animate="visible"
               variants={{ hidden: {}, visible: { transition: { staggerChildren: .06 } } }}
             >
-              {filtered.map((u, idx) => (
-                <FeedCard key={u.id || idx} update={u} onClick={() => navigate(`/lands/${u.landId}/growth`)} />
-              ))}
+              {sorted.map((u, idx) => {
+                  let distanceStr = null;
+                  if (userLoc && u.centroidLat && u.centroidLng) {
+                      const dist = getDistance(userLoc.lat, userLoc.lng, u.centroidLat, u.centroidLng);
+                      distanceStr = dist < 1 ? `${Math.round(dist * 1000)} m` : `${dist.toFixed(1)} km`;
+                  }
+                  
+                  return (
+                    <FeedCard 
+                        key={u.id || idx} 
+                        update={u} 
+                        distStr={distanceStr}
+                        onReview={(e) => handleOpenReview(u.landId, u.id, e)}
+                        onGrowth={(e) => handleOpenGrowth(u.landId, e)}
+                        onClick={() => navigate(`/lands/${u.landId}`)} 
+                    />
+                  );
+              })}
             </motion.div>
           )}
         </div>
       </div>
+
+      {/* ── REVIEW MODAL ── */}
+      <AnimatePresence>
+        {showReviewModal && (
+            <CommunityReviewModal 
+                completionId={selectedCompletionId} 
+                onClose={() => setShowReviewModal(false)} 
+                onSuccess={() => { setShowReviewModal(false); fetchAll(); }}
+            />
+        )}
+      </AnimatePresence>
     </>
   );
 }
 
 /* ─── Feed Card ─── */
-function FeedCard({ update, onClick }) {
-  const h = getHealth(update.healthStatus);
-  const images = update.images?.map(img => typeof img === "string" ? img : img.imageUrl) || [];
+function FeedCard({ update, distStr, onClick, onReview, onGrowth }) {
+  const images = update.images || [];
   const thumbSrc = images[0] || null;
+  const avgRating = update.reviews?.length
+    ? (update.reviews.reduce((s, r) => s + r.rating, 0) / update.reviews.length).toFixed(1)
+    : null;
 
   return (
     <motion.div
@@ -371,57 +490,122 @@ function FeedCard({ update, onClick }) {
       {/* Image */}
       <div className="cf-card-img">
         {thumbSrc ? (
-          <img src={thumbSrc} alt={update.landTitle} onError={e => { e.target.src = "https://placehold.co/400x225?text=🌿"; }} />
+          <img src={thumbSrc} alt={update.title} onError={e => { e.target.src = "https://placehold.co/400x225?text=🌿"; }} />
         ) : (
           <div className="cf-card-no-img">
             <TreePine size={32} strokeWidth={1} />
             <span>No photos</span>
           </div>
         )}
-        <div className="cf-card-health" style={{ background: h.bg, color: h.color }}>
-          {h.icon} {update.healthStatus}
-        </div>
         <div className="cf-card-time">
-          <Clock size={10} /> {timeAgo(update.createdAt)}
+          <Clock size={10} /> {timeAgo(update.completedAt)}
         </div>
+        {distStr && (
+            <div className="cf-card-dist">
+                <MapPin size={10} /> {distStr}
+            </div>
+        )}
       </div>
 
       {/* Body */}
       <div className="cf-card-body">
-        <div className="cf-card-site">{update.landTitle || "Plantation Site"}</div>
+        <div className="cf-card-site">{update.title || "Plantation Site"}</div>
         <div className="cf-card-loc">
           <MapPin size={11} strokeWidth={1.5} />
-          {update.landLocation || "Location unknown"}
+          {update.location || "Location unknown"}
         </div>
         {update.notes && <p className="cf-card-notes">{update.notes}</p>}
 
         <div className="cf-card-stats">
           <div className="cf-card-stat">
-            <TrendingUp size={12} className="cf-card-stat-icon" />
-            <span className="cf-card-stat-val">{update.averageHeightCm || "—"}</span> cm
+            <TreePine size={12} className="cf-card-stat-icon" />
+            <span className="cf-card-stat-val">{(update.treesPlanted || 0).toLocaleString()}</span> trees
           </div>
           <div className="cf-card-stat">
-            <Heart size={12} className="cf-card-stat-icon" />
-            <span className="cf-card-stat-val">{update.survivalRate ?? "—"}%</span> survival
+            <Users size={12} className="cf-card-stat-icon" />
+            <span className="cf-card-stat-val">{update.teamName || "Community"}</span>
           </div>
-          {update.landTreesPlanted > 0 && (
-            <div className="cf-card-stat">
-              <TreePine size={12} className="cf-card-stat-icon" />
-              <span className="cf-card-stat-val">{update.landTreesPlanted}</span> trees
-            </div>
-          )}
+          <div className="cf-card-stat">
+            <Star size={12} className="cf-card-stat-icon" />
+            <span className="cf-card-stat-val">{avgRating || "No reviews"}</span>
+          </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="cf-card-footer">
-        <div className="cf-card-user">
-          <Users size={11} /> {update.userName || "Community member"}
-        </div>
-        <div className="cf-card-arrow">
-          View Site <ChevronRight size={12} />
-        </div>
+      {/* Actions */}
+      <div className="cf-card-actions">
+          <button className="cf-btn-outline" onClick={onReview}>
+              <Star size={13} /> Add Review
+          </button>
+          <button className="cf-btn-solid" onClick={onGrowth}>
+              <TrendingUp size={13} /> Track Growth
+          </button>
       </div>
     </motion.div>
   );
+}
+
+/* ─── Simple Community Review Modal ─── */
+function CommunityReviewModal({ completionId, onClose, onSuccess }) {
+    const [rating, setRating] = useState(0);
+    const [hovered, setHovered] = useState(0);
+    const [comment, setComment] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async () => {
+        if (!rating) return alert("Please select a rating!");
+        setLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append("rating", rating);
+            formData.append("comment", comment);
+            
+            const res = await fetch(`${BASE_URL}/api/plantations/${completionId}/review`, {
+                method: "POST", body: formData, credentials: "include"
+            });
+            if (!res.ok) throw new Error("Failed to submit review");
+            onSuccess();
+        } catch (err) {
+            console.error(err);
+            alert("Error submitting review");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <motion.div className="cf-rmodal-overlay" onClick={e => e.target === e.currentTarget && onClose()} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div className="cf-rmodal" initial={{ scale: .9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: .9, y: 20 }}>
+                <button className="cf-rmodal-close" onClick={onClose}><X size={20}/></button>
+                <div className="cf-rmodal-body">
+                    <h2 className="cf-rmodal-title">Add a Review</h2>
+                    
+                    <label className="cf-flabel">Overall Rating</label>
+                    <div className="cf-star-row">
+                        {[1,2,3,4,5].map(v => (
+                            <Star 
+                                key={v} size={28} className="cf-star"
+                                fill={(hovered || rating) >= v ? "var(--cf-gold)" : "transparent"}
+                                stroke={(hovered || rating) >= v ? "var(--cf-gold)" : "var(--cf-line)"}
+                                onMouseEnter={() => setHovered(v)}
+                                onMouseLeave={() => setHovered(0)}
+                                onClick={() => setRating(v)}
+                            />
+                        ))}
+                    </div>
+
+                    <label className="cf-flabel">Your Experience / Observations (Optional)</label>
+                    <textarea 
+                        className="cf-textarea" 
+                        placeholder="How is the plantation doing? Was it a good effort by the community?"
+                        value={comment} onChange={e => setComment(e.target.value)}
+                    />
+
+                    <button className="cf-btn-submit-review" onClick={handleSubmit} disabled={loading || !rating}>
+                        {loading ? <div className="cf-spin"><Activity size={16}/></div> : "Submit Review"}
+                    </button>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
 }

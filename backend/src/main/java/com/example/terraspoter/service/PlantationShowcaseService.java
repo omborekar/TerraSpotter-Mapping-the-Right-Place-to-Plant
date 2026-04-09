@@ -37,8 +37,11 @@ public class PlantationShowcaseService {
 
             // land info
             landRepo.findById(c.getLandId()).ifPresent(land -> {
+                dto.setLandId(land.getId());
                 dto.setTitle(land.getTitle());
                 dto.setLocation(land.getNearbyLandmark());
+                dto.setCentroidLat(land.getCentroidLat());
+                dto.setCentroidLng(land.getCentroidLng());
             });
 
             // team name from user

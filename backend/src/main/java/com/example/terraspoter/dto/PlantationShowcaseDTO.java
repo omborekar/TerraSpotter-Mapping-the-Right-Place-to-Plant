@@ -14,8 +14,11 @@ import java.util.List;
 public class PlantationShowcaseDTO {
 
     private Long id;
+    private Long landId;
     private String title;
     private String location;
+    private Double centroidLat;
+    private Double centroidLng;
 
     private Integer treesPlanted;
     private Integer moreCapacity;
