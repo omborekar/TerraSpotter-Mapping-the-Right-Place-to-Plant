@@ -171,12 +171,16 @@ const StepBadge = ({ n, active, done }) => (
 );
 
 // ─── Sidebar content (shared desktop + mobile) ────────────────
-const SidebarContent = ({ compact = false }) => {
+const SidebarContent = ({ compact = false, dbStats }) => {
+  const formatNum = (num) => {
+    if (!num) return "0";
+    return num > 999 ? (num/1000).toFixed(1) + 'k' : String(num);
+  };
   const stats = [
-    { num:"2.4k", label:"Lands Mapped"  },
-    { num:"18k",  label:"Trees Planted" },
-    { num:"340",  label:"Volunteers"    },
-    { num:"62t",  label:"CO₂ Captured"  },
+    { num: dbStats ? formatNum(dbStats.totalLands) : "...", label:"Lands Mapped"  },
+    { num: dbStats ? formatNum(dbStats.treesPlanted) : "...",  label:"Trees Planted" },
+    { num: dbStats ? formatNum(dbStats.volunteers) : "...",  label:"Volunteers"    },
+    { num: dbStats ? (dbStats.treesPlanted * 0.021).toFixed(1) + 't' : "...",  label:"CO₂ Captured"  },
   ];
   const impact = [
     ["Micro-climate restoration",  "Even small plantations reduce surface temperature by 2–4°C in surrounding areas."],
@@ -263,6 +267,7 @@ const SidebarContent = ({ compact = false }) => {
 // ─── Main ─────────────────────────────────────────────────────
 const Main = () => {
   const [user,       setUser]       = useState(null);
+  const [dbStats,    setDbStats]    = useState(null);
   const [loading,    setLoading]    = useState(true);
   const [step,       setStep]       = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -288,10 +293,13 @@ const Main = () => {
   const [previews, setPreviews] = useState([]);
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true })
-      .then(r => setUser(r.data))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+    Promise.all([
+      axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true }).catch(() => null),
+      axios.get(`${BASE_URL}/api/stats`).catch(() => null)
+    ]).then(([authRes, statsRes]) => {
+      if (authRes && authRes.data) setUser(authRes.data);
+      if (statsRes && statsRes.data) setDbStats(statsRes.data);
+    }).finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -460,7 +468,7 @@ const Main = () => {
           }}>
           <div className="pointer-events-none absolute inset-0 opacity-[0.04]"
             style={{ backgroundImage:"linear-gradient(rgba(255,255,255,.7) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.7) 1px,transparent 1px)", backgroundSize:"48px 48px" }} />
-          <SidebarContent />
+          <SidebarContent dbStats={dbStats} />
         </aside>
 
         {/* ── MOBILE INFO BANNER (top, before form) ─── */}
@@ -488,10 +496,10 @@ const Main = () => {
           {/* Stats — 4 cols on mobile */}
           <div className="grid grid-cols-4 gap-2 relative z-10 mb-5">
             {[
-              { num:"2.4k", label:"Lands"    },
-              { num:"18k",  label:"Trees"    },
-              { num:"340",  label:"Volunteers"},
-              { num:"62t",  label:"CO₂"      },
+              { num: dbStats ? (dbStats.totalLands > 999 ? (dbStats.totalLands/1000).toFixed(1)+'k' : dbStats.totalLands || 0) : "...", label:"Lands"    },
+              { num: dbStats ? (dbStats.treesPlanted > 999 ? (dbStats.treesPlanted/1000).toFixed(1)+'k' : dbStats.treesPlanted || 0) : "...",  label:"Trees"    },
+              { num: dbStats ? (dbStats.volunteers > 999 ? (dbStats.volunteers/1000).toFixed(1)+'k' : dbStats.volunteers || 0) : "...",  label:"Volunteers"},
+              { num: dbStats ? (dbStats.treesPlanted * 0.021).toFixed(1)+'t' : "...",  label:"CO₂"      },
             ].map(s => (
               <div key={s.label}
                 className="bg-white/[0.06] rounded-xl p-3 border border-white/[0.09] text-center">

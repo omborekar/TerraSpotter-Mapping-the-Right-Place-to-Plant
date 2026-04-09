@@ -31,10 +31,25 @@ public class StatsService {
     public Map<String, Object> getStats() {
         Map<String, Object> stats = new LinkedHashMap<>();
 
-        stats.put("totalLands",    landRepository.count());
-        stats.put("approvedLands", landRepository.countByStatus("APPROVED"));
-        stats.put("treesPlanted",  plantationCompletionRepository.totalTreesPlanted());
-        stats.put("volunteers",    userRepository.count());
+        long usersCount = userRepository.count();
+        long totalLands = landRepository.count();
+        long verifiedLands = landRepository.countByStatus("APPROVED");
+        Long treesPlanted = plantationCompletionRepository.totalTreesPlanted();
+        
+        Double totalAreaSqm = landRepository.sumTotalAreaSqm();
+        long hectares = totalAreaSqm != null ? Math.round(totalAreaSqm / 10000.0) : 0;
+
+        // Keys for Main.jsx and Contact.jsx
+        stats.put("totalLands",    totalLands);
+        stats.put("approvedLands", verifiedLands);
+        stats.put("treesPlanted",  treesPlanted != null ? treesPlanted : 0);
+        stats.put("volunteers",    usersCount);
+        
+        // Explicit keys expected by Contact.jsx
+        stats.put("users",         usersCount);
+        stats.put("hectares",      hectares);
+        stats.put("trees",         treesPlanted != null ? treesPlanted : 0);
+        stats.put("verified",      verifiedLands);
 
         return stats;
     }

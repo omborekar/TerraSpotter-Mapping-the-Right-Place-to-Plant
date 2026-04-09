@@ -24,6 +24,9 @@ public interface LandRepository extends JpaRepository<Land, Long> {
     @Query("SELECT SUM(l.areaSqm) FROM Land l WHERE l.status = :status")
     Double sumAreaSqmByStatus(@Param("status") String status);
 
+    @Query("SELECT SUM(l.areaSqm) FROM Land l")
+    Double sumTotalAreaSqm();
+
     @Query("SELECT COUNT(l) FROM Land l")
     long countLand();
 
