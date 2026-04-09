@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/plantations")
@@ -24,11 +25,11 @@ import java.util.Map;
         origins = "https://terraspotterfrontend-qtmta2ofv-omborekar1406-9636s-projects.vercel.app",
         allowCredentials = "true"
 )
+@RequiredArgsConstructor
 public class PlantationController {
 
     // ── your existing service variable name kept exactly as-is ────────────
-    @Autowired
-    private PlantationShowcaseService service;
+    private final PlantationShowcaseService service;
 
     // ─────────────────────────────────────────────────────────────────────
     // EXISTING — unchanged

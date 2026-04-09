@@ -23,13 +23,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/lands")
+@RequiredArgsConstructor
 public class LandController {
 
-    @Autowired private LandService                  landService;
-    @Autowired private LandRecommendationRepository recommendationRepository;
+    private final LandService                  landService;
+    private final LandRecommendationRepository recommendationRepository;
 
     // Get all lands
     @GetMapping
@@ -184,8 +186,7 @@ public class LandController {
                     .body(Map.of("error", "Not logged in"));
         return ResponseEntity.ok(landService.getLandsByUser(userId));
     }
-    @Autowired
-    private LandRepository landRepository;
+    private final LandRepository landRepository;
     @GetMapping("/pending")
     public List<Land> getPendingLands() {
         List<Land> lands = landRepository.findByStatus("PENDING");

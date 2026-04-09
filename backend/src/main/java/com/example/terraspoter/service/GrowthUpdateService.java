@@ -20,15 +20,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class GrowthUpdateService {
 
-    @Autowired private GrowthUpdateRepository updateRepo;
-    @Autowired private LandRepository landRepo;
-    @Autowired private UserRepository userRepo;
-    @Autowired private PlantationCompletionRepository completionRepo;
-    @Autowired private CloudinaryService cloudinaryService;
+    private final GrowthUpdateRepository updateRepo;
+    private final LandRepository landRepo;
+    private final UserRepository userRepo;
+    private final PlantationCompletionRepository completionRepo;
+    private final CloudinaryService cloudinaryService;
 
     /**
      * Get all growth updates for a specific land, enriched with land info.

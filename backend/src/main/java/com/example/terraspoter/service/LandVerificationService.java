@@ -10,12 +10,13 @@ import com.example.terraspoter.model.Land;
 import com.example.terraspoter.repository.LandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class LandVerificationService {
 
-    @Autowired
-    private LandRepository landRepository;
+    private final LandRepository landRepository;
 
     public String verifyLand(Long landId, Long userId, String vote) {
 

@@ -14,15 +14,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class PlantationShowcaseService {
 
 
-    @Autowired private PlantationCompletionRepository completionRepo;
-    @Autowired private PlantationCompletionImageRepository imageRepo;
-    @Autowired private LandRepository landRepo;
-    @Autowired private UserRepository userRepo;
+    private final PlantationCompletionRepository completionRepo;
+    private final PlantationCompletionImageRepository imageRepo;
+    private final LandRepository landRepo;
+    private final UserRepository userRepo;
 
 
     public List<PlantationShowcaseDTO> getCompletedPlantations() {

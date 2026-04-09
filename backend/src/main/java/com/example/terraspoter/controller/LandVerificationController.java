@@ -12,13 +12,14 @@ import com.example.terraspoter.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/lands")
+@RequiredArgsConstructor
 public class LandVerificationController {
 
-    @Autowired
-    private LandVerificationService service;
+    private final LandVerificationService service;
 
     @PostMapping("/{id:\\d+}/verify")
     public ResponseEntity<?> verifyLand(

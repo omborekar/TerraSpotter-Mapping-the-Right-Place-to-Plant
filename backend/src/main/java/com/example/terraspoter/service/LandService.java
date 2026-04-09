@@ -31,8 +31,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class LandService {
 
     private static final Logger logger = Logger.getLogger(LandService.class.getName());
@@ -46,16 +48,16 @@ public class LandService {
     private static final String OPEN_METEO_FORECAST = "https://api.open-meteo.com/v1/forecast";
     private static final String OPEN_METEO_ARCHIVE  = "https://archive-api.open-meteo.com/v1/archive";
 
-    @Autowired private LandRepository                      landRepository;
-    @Autowired private LandImageRepository                 landImageRepository;
-    @Autowired private LandRecommendationRepository        recommendationRepository;
-    @Autowired private PlantationStartRepository           plantationStartRepository;
-    @Autowired private PlantationCompletionRepository      completionRepository;
-    @Autowired private PlantationCompletionImageRepository completionImageRepository;
-    @Autowired private LandReviewRepository                reviewRepository;
-    @Autowired private UserRepository                      userRepository;
-    @Autowired private ObjectMapper                        objectMapper;
-    @Autowired private CloudinaryService                   cloudinaryService;   // ← NEW
+    private final LandRepository                      landRepository;
+    private final LandImageRepository                 landImageRepository;
+    private final LandRecommendationRepository        recommendationRepository;
+    private final PlantationStartRepository           plantationStartRepository;
+    private final PlantationCompletionRepository      completionRepository;
+    private final PlantationCompletionImageRepository completionImageRepository;
+    private final LandReviewRepository                reviewRepository;
+    private final UserRepository                      userRepository;
+    private final ObjectMapper                        objectMapper;
+    private final CloudinaryService                   cloudinaryService;   // ← NEW
 
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(8))
