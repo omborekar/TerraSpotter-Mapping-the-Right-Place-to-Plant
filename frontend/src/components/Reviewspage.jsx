@@ -85,7 +85,7 @@ function WriteReview({ landId, onPosted }) {
     if (form.rating === 0) { setError("Please select a star rating."); return; }
     setError(""); setSubmitting(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/lands/${landId}/reviews`, {   // ← fixed URL
+      const res = await fetch(`${BASE_URL}/api/lands/${landId}/reviews`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

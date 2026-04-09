@@ -84,6 +84,7 @@ export default function Navbar() {
     { to: "/Main",               label: "Submit",  icon: "📍" },
     { to: "/browse",             label: "Browse",  icon: "🗺️" },
     { to: "/plantationShowcase", label: "History", icon: "📚" },
+    { to: "/community",          label: "Community", icon: "🌱" },
     { to: "/about",              label: "About",   icon: "ℹ️"  },
     { to: "/contact",            label: "Contact", icon: "📞" },
     ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: "Admin", icon: "⚙️" }] : []),

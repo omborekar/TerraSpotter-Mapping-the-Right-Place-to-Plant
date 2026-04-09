@@ -24,6 +24,8 @@ import About from "./components/About";
 import Contact from "./components/Contact";
 import PlantationShowcase from "./components/PlantationShowcase";
 import AdminPendingLands from "./components/AdminPendingLands";
+import GrowthTracker from "./components/GrowthTracker";
+import CommunityFeed from "./components/CommunityFeed";
 
 import "./App.css";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
@@ -35,7 +37,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 FETCH USER FROM COOKIE SESSION
+  // Fetch authenticated user from cookie session on app load
   useEffect(() => {
     const fetchSession = async () => {
       try {
@@ -56,7 +58,7 @@ function App() {
     fetchSession();
   }, []);
 
-  // ⏳ Prevent early render
+  // Show spinner while session check is in progress
   if (loading) {
     return <LoadingSpinner text="Loading..."></LoadingSpinner>;
   }
@@ -80,12 +82,14 @@ function App() {
         {/* LAND */}
         <Route path="/lands/:id" element={<SiteDetail />} />
         <Route path="/lands/:id/reviews" element={<ReviewsPage />} />
+        <Route path="/lands/:id/growth" element={<GrowthTracker />} />
 
         {/* PROTECTED */}
         <Route path="/main" element={<ProtectedRoute><Main /></ProtectedRoute>} />
         <Route path="/browse" element={<ProtectedRoute><Browse /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/plantationShowcase" element={<ProtectedRoute><PlantationShowcase /></ProtectedRoute>} />
+        <Route path="/community" element={<ProtectedRoute><CommunityFeed /></ProtectedRoute>} />
 
         {/* ADMIN */}
         <Route

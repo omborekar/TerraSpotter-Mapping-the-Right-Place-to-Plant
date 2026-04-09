@@ -387,7 +387,7 @@ export default function SiteDetail() {
         .sd-info-label { font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--smoke); }
         .sd-info-value { font-size:14px;color:var(--ink);font-weight:500; }
 
-        {/* REVIEWS TAB */}
+        /* Reviews tab styles */
         .rv-header { display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px; }
         .rv-header-title { font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--forest); }
         .rv-see-all-link {
@@ -413,7 +413,7 @@ export default function SiteDetail() {
         .rv-empty-state { text-align:center;padding:32px 16px;color:var(--smoke);font-size:13.5px; }
         .rv-empty-state span { font-size:32px;display:block;margin-bottom:8px;opacity:.4; }
 
-        {/* Write review inline */}
+        /* Write review inline styles */
         .wr-divider { border:none;border-top:1.5px solid var(--line);margin:24px 0; }
         .wr-box { background:var(--sand);border-radius:12px;border:1px solid var(--line);padding:22px 22px 18px; }
         .wr-title { font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--forest);margin-bottom:3px; }

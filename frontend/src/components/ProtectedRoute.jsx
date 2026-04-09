@@ -1,4 +1,16 @@
- const ProtectedRoute = ({ children }) => {
+/*
+ Project: TerraSpotter Platform
+ Author: Om Borekar
+ Year: 2026
+ Description: Route guard that verifies session before rendering protected pages.
+*/
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "./ui/LoadingSpinner";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+
+const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
 
@@ -41,9 +53,11 @@
   if (!isAuth) {
     sessionStorage.clear();
     localStorage.clear();
-    window.location.href = "/login"; // 💀 full reload
+    window.location.href = "/login"; // redirect to login on failed auth
     return null;
   }
 
   return children;
 };
+
+export default ProtectedRoute;

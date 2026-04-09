@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: User profile page — Tailwind UI, fixed chart X-axis sorting.
+ Description: User profile page with activity charts, calendar, and land submissions table.
 */
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -82,9 +82,7 @@ const Profile = () => {
       .catch(() => {});
   }, []);
 
-  // ── activity stats — FIXED X-AXIS SORT ───────────────────
-  // BUG WAS: sorting by label string "Day 3" vs "Day 30" alphabetically
-  // FIX: store numeric sortKey separately and sort by that instead
+  // Build chart data, using a numeric sortKey to correctly order dates
   const stats = React.useMemo(() => {
     const map = {};
 
@@ -97,7 +95,6 @@ const Profile = () => {
         : `${d.getFullYear()}-${String(d.getMonth()).padStart(2,"0")}`;
 
       if (!map[key]) map[key] = {
-        // numeric sortKey so "3" sorts before "30"
         sortKey: filter === "monthly"
           ? d.getFullYear() * 10000 + d.getMonth() * 100 + d.getDate()
           : d.getFullYear() * 100 + d.getMonth(),
@@ -130,11 +127,11 @@ const Profile = () => {
       map[key].planted += (c.treesPlanted || 0);
     });
 
-    // sort by numeric sortKey — "3 Apr" correctly before "30 Apr"
+    // Sort by numeric key to ensure correct chronological order
     return Object.values(map).sort((a, b) => a.sortKey - b.sortKey);
   }, [lands, completions, filter]);
 
-  // ── save profile ─────────────────────────────────────────
+  // Save edited profile fields
   const handleSave = async () => {
     setSaving(true);
     try {
