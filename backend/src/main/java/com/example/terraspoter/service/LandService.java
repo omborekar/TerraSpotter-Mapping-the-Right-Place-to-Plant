@@ -58,6 +58,7 @@ public class LandService {
     private final UserRepository                      userRepository;
     private final ObjectMapper                        objectMapper;
     private final CloudinaryService                   cloudinaryService;   // ← NEW
+    private final BrevoEmailService                   emailService;
 
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(8))
@@ -116,6 +117,12 @@ public class LandService {
         Land land = buildLandFromPayload(payload, userId);
         Land saved = landRepository.save(land);
         fetchAndSaveRecommendations(saved);
+        
+        // Send Email
+        userRepository.findById(userId).ifPresent(u -> {
+            emailService.sendLandReportedEmail(u.getEmail(), u.getFname(), saved.getTitle());
+        });
+        
         return saved;
     }
 
@@ -161,7 +168,14 @@ public class LandService {
 
         land.setLandStatus("Under Plantation");
         land.setPlantationUserId(userId);
-        return landRepository.save(land);
+        Land updatedLand = landRepository.save(land);
+
+        // Send Email
+        userRepository.findById(userId).ifPresent(u -> {
+            emailService.sendPlantationStartedEmail(u.getEmail(), u.getFname(), updatedLand.getTitle());
+        });
+
+        return updatedLand;
     }
 
     // PLANTATION COMPLETE — Cloudinary for proof images
@@ -205,7 +219,14 @@ public class LandService {
         // reset land for next round
         land.setLandStatus("Vacant");
         land.setPlantationUserId(null);
-        return landRepository.save(land);
+        Land updatedLand = landRepository.save(land);
+
+        // Send Email
+        userRepository.findById(userId).ifPresent(u -> {
+            emailService.sendPlantationCompletedEmail(u.getEmail(), u.getFname(), updatedLand.getTitle(), treesPlanted);
+        });
+
+        return updatedLand;
     }
 
     // Reviews

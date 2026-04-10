@@ -253,6 +253,33 @@ public class BrevoEmailService {
                 buildPasswordResetHtml(firstName, otp));
     }
 
+    public void sendLandReportedEmail(String toEmail, String firstName, String landTitle) {
+        send(toEmail, firstName,
+                "Land Reported Successfully 🌱",
+                buildNotificationHtml(firstName, "Land Reported Successfully", 
+                "Great job! You have successfully reported the land: <strong>" + esc(landTitle) + "</strong>. " +
+                "Our AI is currently analysing it to provide the best plant recommendations. " +
+                "We'll review the submission shortly."));
+    }
+
+    public void sendPlantationStartedEmail(String toEmail, String firstName, String landTitle) {
+        send(toEmail, firstName,
+                "Plantation Initiated! 🌿",
+                buildNotificationHtml(firstName, "Plantation Initiated", 
+                "You have successfully initiated a plantation on: <strong>" + esc(landTitle) + "</strong>. " +
+                "Thank you for taking a step towards making the earth greener! " +
+                "Don't forget to mark it as completed once you finish the plantation."));
+    }
+
+    public void sendPlantationCompletedEmail(String toEmail, String firstName, String landTitle, int treesPlanted) {
+        send(toEmail, firstName,
+                "Plantation Completed! 🌳",
+                buildNotificationHtml(firstName, "Plantation Completed", 
+                "Amazing work! You have successfully completed the plantation on <strong>" + esc(landTitle) + "</strong>. " +
+                "You planted <strong>" + treesPlanted + "</strong> tree(s). " +
+                "The community thanks you for your contribution! Keep tracking your growth in the community feed."));
+    }
+
     // ── PRIVATE TEMPLATE (add at bottom of class) ─────────────────
 
     private String buildPasswordResetHtml(String name, String otp) {
@@ -311,6 +338,49 @@ public class BrevoEmailService {
 
                         "<p style='font-size:13px;color:#9ca3af;line-height:1.7;margin:0;'>" +
                         "If you didn't request a password reset, your account is safe — just ignore this email.</p>" +
+                        "</td></tr>" +
+
+                        // Footer
+                        "<tr><td style='background:#f9fbf9;border-top:1px solid #dde5e0;" +
+                        "padding:20px 40px;text-align:center;'>" +
+                        "<p style='margin:0;font-size:12px;color:#a0adb4;line-height:1.6;'>" +
+                        "© 2025 TerraSpotter &nbsp;·&nbsp; Afforestation Intelligence Platform<br>" +
+                        "Automated message — please do not reply.</p>" +
+                        "</td></tr>" +
+
+                        "</table></td></tr></table></body></html>";
+    }
+
+    private String buildNotificationHtml(String name, String header, String messageBody) {
+        return
+                "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>" +
+                        "<meta name='viewport' content='width=device-width,initial-scale=1'></head>" +
+                        "<body style='margin:0;padding:0;background:#f5f1eb;" +
+                        "font-family:Helvetica Neue,Arial,sans-serif;'>" +
+                        "<table width='100%' cellpadding='0' cellspacing='0' style='background:#f5f1eb;padding:40px 0;'>" +
+                        "<tr><td align='center'>" +
+                        "<table width='560' cellpadding='0' cellspacing='0' style='background:#ffffff;" +
+                        "border-radius:18px;overflow:hidden;box-shadow:0 4px 32px rgba(13,51,32,0.10);'>" +
+
+                        // Header — Green theme
+                        "<tr><td style='background:linear-gradient(135deg,#0d3320 0%,#1a5c38 100%);" +
+                        "padding:36px 40px;text-align:center;'>" +
+                        "<div style='display:inline-block;'>" +
+                        "<span style='display:inline-block;width:10px;height:10px;border-radius:50%;" +
+                        "background:#4db87a;margin-right:8px;vertical-align:middle;'></span>" +
+                        "<span style='font-size:22px;font-weight:600;color:#ffffff;" +
+                        "font-family:Georgia,serif;vertical-align:middle;'>TerraSpotter</span>" +
+                        "</div>" +
+                        "<p style='margin:12px 0 0;font-size:15px;color:rgba(255,255,255,0.85);font-weight:500;'>" +
+                        esc(header) + "</p>" +
+                        "</td></tr>" +
+
+                        // Body
+                        "<tr><td style='padding:40px 40px 32px;'>" +
+                        "<h1 style='margin:0 0 10px;font-size:24px;font-weight:600;color:#0d3320;" +
+                        "font-family:Georgia,serif;'>Hi " + esc(name) + " 👋</h1>" +
+                        "<p style='margin:0 0 28px;font-size:15px;color:#6b7a72;line-height:1.65;'>" +
+                        messageBody + "</p>" +
                         "</td></tr>" +
 
                         // Footer
