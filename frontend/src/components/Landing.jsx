@@ -2,586 +2,539 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Landing page React component (hero, features, stats, CTA).
+ Description: Landing page — Verdant Editorial redesign. Cormorant Garant + Outfit fonts.
 */
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-const Landing = () => {
-  const navigate = useNavigate();
-  const canvasRef = useRef(null);
+// ─── Animated counter ────────────────────────────────────────
+function Counter({ target, suffix = "" }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
 
-  /* subtle animated dot grid on canvas */
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let frame;
-    let t = 0;
+    if (!inView || !target) return;
+    const num = parseFloat(target);
+    const dur = 1800;
+    const steps = 60;
+    const inc = num / steps;
+    let cur = 0;
+    const t = setInterval(() => {
+      cur = Math.min(cur + inc, num);
+      setCount(Number.isInteger(num) ? Math.floor(cur) : parseFloat(cur.toFixed(1)));
+      if (cur >= num) clearInterval(t);
+    }, dur / steps);
+    return () => clearInterval(t);
+  }, [inView, target]);
 
-    const resize = () => {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
+  return (
+    <span ref={ref}>
+      {target
+        ? count >= 1000
+          ? (count / 1000).toFixed(1).replace(".0", "") + "k"
+          : count
+        : "—"}
+      {suffix}
+    </span>
+  );
+}
 
-    const draw = () => {
-      const { width, height } = canvas;
-      ctx.clearRect(0, 0, width, height);
-      const gap = 36;
-      const cols = Math.ceil(width  / gap);
-      const rows = Math.ceil(height / gap);
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const x = c * gap + gap / 2;
-          const y = r * gap + gap / 2;
-          const dist = Math.sqrt((x - width * .6) ** 2 + (y - height * .5) ** 2);
-          const pulse = Math.sin(dist / 60 - t * 1.2) * .5 + .5;
-          const alpha = pulse * 0.18;
-          ctx.beginPath();
-          ctx.arc(x, y, 1.4, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(77,184,122,${alpha})`;
-          ctx.fill();
-        }
-      }
-      t += 0.016;
-      frame = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => { cancelAnimationFrame(frame); window.removeEventListener("resize", resize); };
+// ─── Fade-in wrapper ──────────────────────────────────────────
+function FadeIn({ children, delay = 0, y = 24, className = "" }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0, y }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// ─── Main Landing ─────────────────────────────────────────────
+export default function Landing() {
+  const [stats, setStats] = useState(null);
+  const [navOpen, setNavOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios.get(`${BASE_URL}/api/stats`).then(r => setStats(r.data)).catch(() => { });
   }, []);
 
-  const stagger = (i) => ({ initial:{ opacity:0, y:24 }, animate:{ opacity:1, y:0 }, transition:{ duration:.55, delay: i * .1, ease:"easeOut" } });
+  // Lock body scroll when mobile nav open
+  useEffect(() => {
+    document.body.style.overflow = navOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [navOpen]);
+
+  const navLinks = [
+    { to: "/browse", label: "Browse" },
+    { to: "/plantationShowcase", label: "Showcase" },
+    { to: "/community", label: "Community" },
+    { to: "/about", label: "About" },
+    { to: "/contact", label: "Contact" },
+  ];
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,600;1,9..144,400;1,9..144,600&family=DM+Sans:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-        :root {
-          --forest:#0d3320; --canopy:#1a5c38; --leaf:#2d8a55; --sprout:#4db87a;
-          --mist:#e8f5ee; --sand:#f5f1eb; --cream:#faf8f4;
-          --ink:#0f1a14; --smoke:#6b7a72; --line:#dde5e0; --white:#ffffff;
-        }
-        body { font-family:'DM Sans',sans-serif; background:var(--sand); }
-
-        /* hero */
-        .ln-hero {
-          min-height: 100vh;
-          background: var(--forest);
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          overflow: hidden;
-        }
-        .ln-canvas {
-          position: absolute; inset: 0; width: 100%; height: 100%;
-          pointer-events: none;
-        }
-
-        /* diagonal cut at bottom */
-        .ln-hero::after {
-          content: '';
-          position: absolute; bottom: -2px; left: 0; right: 0;
-          height: 120px;
-          background: var(--sand);
-          clip-path: polygon(0 100%, 100% 0, 100% 100%);
-        }
-
-        .ln-hero-inner {
-          max-width: 1180px; margin: 0 auto;
-          padding: 0 48px;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 60px;
-          align-items: center;
-          position: relative; z-index: 1;
-        }
-
-        /* left */
-        .ln-eyebrow {
-          display: inline-flex; align-items: center; gap: 8px;
-          font-size: 11.5px; font-weight: 600; text-transform: uppercase;
-          letter-spacing: 2px; color: var(--sprout); margin-bottom: 24px;
-        }
-        .ln-eyebrow-dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: var(--sprout); animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
-
-        .ln-h1 {
-          font-family: 'Fraunces', serif;
-          font-size: clamp(48px, 6vw, 72px);
-          font-weight: 600;
-          letter-spacing: -1px;
-          line-height: 1.06;
-          color: white;
-          margin-bottom: 8px;
-        }
-        .ln-h1 em { font-style: italic; color: var(--sprout); }
-
-        .ln-sub {
-          font-size: 17px; color: rgba(255,255,255,.55);
-          line-height: 1.75; margin-bottom: 40px; max-width: 460px;
-        }
-
-        .ln-cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
-        .ln-btn-primary {
-          padding: 14px 30px; border-radius: 8px;
-          background: var(--sprout); color: var(--forest);
-          font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
-          border: none; cursor: pointer; transition: background .15s, transform .1s;
-          letter-spacing: .2px;
-        }
-        .ln-btn-primary:hover { background: #5dcf8a; }
-        .ln-btn-primary:active { transform: scale(.98); }
-        .ln-btn-ghost {
-          padding: 14px 28px; border-radius: 8px;
-          background: rgba(255,255,255,.08); color: rgba(255,255,255,.75);
-          font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
-          border: 1.5px solid rgba(255,255,255,.15); cursor: pointer;
-          transition: background .15s, border-color .15s;
-        }
-        .ln-btn-ghost:hover { background: rgba(255,255,255,.13); border-color: rgba(255,255,255,.3); }
-
-        /* right visual */
-        .ln-visual {
-          display: flex; flex-direction: column; gap: 14px;
-        }
-        .ln-card-main {
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.1);
-          border-radius: 16px; padding: 24px 26px;
-          backdrop-filter: blur(8px);
-        }
-        .ln-card-main-label {
-          font-size: 11px; font-weight: 600; text-transform: uppercase;
-          letter-spacing: 1.5px; color: var(--sprout); margin-bottom: 14px;
-        }
-        .ln-map-mock {
-          height: 180px; border-radius: 10px;
-          background: linear-gradient(135deg, rgba(13,51,32,.8), rgba(45,138,85,.3));
-          border: 1px solid rgba(77,184,122,.2);
-          position: relative; overflow: hidden;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .ln-map-grid {
-          position: absolute; inset: 0;
-          background-image:
-            linear-gradient(rgba(77,184,122,.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(77,184,122,.08) 1px, transparent 1px);
-          background-size: 28px 28px;
-        }
-        .ln-map-pin {
-          position: absolute;
-          width: 10px; height: 10px; border-radius: 50%;
-          background: var(--sprout); box-shadow: 0 0 0 4px rgba(77,184,122,.25);
-        }
-        .ln-map-pin.p1 { top: 35%; left: 28%; }
-        .ln-map-pin.p2 { top: 55%; left: 58%; }
-        .ln-map-pin.p3 { top: 28%; left: 65%; }
-        .ln-map-pin.p4 { top: 65%; left: 38%; }
-
-        .ln-card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .ln-mini-card {
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.08);
-          border-radius: 12px; padding: 16px 18px;
-        }
-        .ln-mini-num {
-          font-family: 'Fraunces', serif; font-size: 26px;
-          color: var(--sprout); line-height: 1;
-        }
-        .ln-mini-lbl {
-          font-size: 11px; text-transform: uppercase;
-          letter-spacing: 1px; color: rgba(255,255,255,.35); margin-top: 4px;
-        }
-
-        /* stats bar */
-        .ln-stats-bar {
-          background: var(--forest);
-          border-bottom: 1px solid rgba(255,255,255,.06);
-          position: relative; z-index: 1;
-        }
-        .ln-stats-inner {
-          max-width: 1180px; margin: 0 auto; padding: 32px 48px;
-          display: grid; grid-template-columns: repeat(4, 1fr);
-          gap: 0; border-top: 1px solid rgba(255,255,255,.07);
-        }
-        .ln-stat-item {
-          padding: 0 32px; border-right: 1px solid rgba(255,255,255,.07);
-          display: flex; flex-direction: column; gap: 4px;
-        }
-        .ln-stat-item:first-child { padding-left: 0; }
-        .ln-stat-item:last-child  { border-right: none; }
-        .ln-stat-n {
-          font-family: 'Fraunces', serif; font-size: 36px;
-          color: var(--sprout); line-height: 1; letter-spacing: -1px;
-        }
-        .ln-stat-l { font-size: 12.5px; color: rgba(255,255,255,.4); }
-
-        /* features */
-        .ln-features {
-          max-width: 1180px; margin: 0 auto;
-          padding: 100px 48px 80px;
-        }
-        .ln-features-head { margin-bottom: 64px; }
-        .ln-features-eyebrow {
-          font-size: 11.5px; font-weight: 600; text-transform: uppercase;
-          letter-spacing: 2px; color: var(--leaf); margin-bottom: 14px;
-        }
-        .ln-features-h2 {
-          font-family: 'Fraunces', serif;
-          font-size: clamp(32px, 4vw, 48px); font-weight: 600;
-          letter-spacing: -.5px; color: var(--forest); line-height: 1.12;
-          max-width: 520px;
-        }
-        .ln-features-h2 em { font-style: italic; color: var(--leaf); }
-
-        .ln-features-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-        }
-        .ln-feature-card {
-          background: var(--white); border: 1px solid var(--line);
-          border-radius: 16px; padding: 32px 28px;
-          display: flex; flex-direction: column; gap: 14px;
-          transition: box-shadow .2s, transform .2s;
-        }
-        .ln-feature-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 48px rgba(13,51,32,.1);
-        }
-        .ln-feature-icon {
-          width: 48px; height: 48px; border-radius: 12px;
-          background: var(--mist); display: flex;
-          align-items: center; justify-content: center; font-size: 22px;
-        }
-        .ln-feature-h3 {
-          font-size: 17px; font-weight: 600; color: var(--forest);
-        }
-        .ln-feature-p {
-          font-size: 14px; color: var(--smoke); line-height: 1.7;
-        }
-        .ln-feature-link {
-          font-size: 13px; font-weight: 600; color: var(--leaf);
-          background: none; border: none; cursor: pointer;
-          padding: 0; font-family: 'DM Sans', sans-serif;
-          margin-top: auto; text-align: left; transition: color .15s;
-        }
-        .ln-feature-link:hover { color: var(--forest); }
-
-        /* how it works */
-        .ln-how {
-          background: var(--forest);
-          padding: 100px 0;
-          position: relative; overflow: hidden;
-        }
-        .ln-how::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: radial-gradient(ellipse at 80% 50%, rgba(77,184,122,.12), transparent 60%);
-          pointer-events: none;
-        }
-        .ln-how-inner {
-          max-width: 1180px; margin: 0 auto; padding: 0 48px;
-          position: relative; z-index: 1;
-        }
-        .ln-how-eyebrow {
-          font-size: 11.5px; font-weight: 600; text-transform: uppercase;
-          letter-spacing: 2px; color: var(--sprout); margin-bottom: 14px;
-        }
-        .ln-how-h2 {
-          font-family: 'Fraunces', serif; font-size: clamp(30px, 4vw, 44px);
-          font-weight: 600; color: white; letter-spacing: -.4px;
-          margin-bottom: 64px; max-width: 480px;
-        }
-        .ln-how-h2 em { font-style: italic; color: var(--sprout); }
-
-        .ln-steps {
-          display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
-          position: relative;
-        }
-        .ln-steps::before {
-          content: '';
-          position: absolute; top: 20px; left: 10%; right: 10%;
-          height: 1px; background: rgba(255,255,255,.1);
-        }
-        .ln-step { padding: 0 20px 0 0; }
-        .ln-step-num {
-          width: 40px; height: 40px; border-radius: 50%;
-          background: rgba(77,184,122,.15); border: 1.5px solid rgba(77,184,122,.3);
-          display: flex; align-items: center; justify-content: center;
-          font-family: 'Fraunces', serif; font-size: 16px;
-          color: var(--sprout); margin-bottom: 20px;
-          position: relative; z-index: 1;
-        }
-        .ln-step h4 { font-size: 15px; font-weight: 600; color: white; margin-bottom: 8px; }
-        .ln-step p  { font-size: 13.5px; color: rgba(255,255,255,.5); line-height: 1.65; }
-
-        /* cta banner */
-        .ln-cta-section {
-          max-width: 1180px; margin: 0 auto; padding: 100px 48px 120px;
-          display: flex; flex-direction: column; align-items: center; text-align: center;
-        }
-        .ln-cta-h2 {
-          font-family: 'Fraunces', serif;
-          font-size: clamp(36px, 5vw, 60px); font-weight: 600;
-          letter-spacing: -.5px; color: var(--forest); line-height: 1.1;
-          margin-bottom: 20px; max-width: 640px;
-        }
-        .ln-cta-h2 em { font-style: italic; color: var(--leaf); }
-        .ln-cta-sub {
-          font-size: 16px; color: var(--smoke); margin-bottom: 40px; max-width: 480px; line-height: 1.7;
-        }
-        .ln-cta-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        .ln-cta-primary {
-          padding: 15px 36px; border-radius: 8px;
-          background: var(--forest); color: white;
-          font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
-          border: none; cursor: pointer; transition: background .15s, transform .1s;
-        }
-        .ln-cta-primary:hover { background: var(--canopy); }
-        .ln-cta-primary:active { transform: scale(.98); }
-        .ln-cta-secondary {
-          padding: 15px 32px; border-radius: 8px;
-          background: white; color: var(--forest);
-          font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
-          border: 1.5px solid var(--line); cursor: pointer; transition: border-color .15s;
-        }
-        .ln-cta-secondary:hover { border-color: var(--forest); }
-
-        /* footer */
-        .ln-footer {
-          background: var(--forest); border-top: 1px solid rgba(255,255,255,.06);
-          padding: 32px 48px;
-          display: flex; align-items: center; justify-content: space-between;
-          max-width: 100%; font-size: 13px; color: rgba(255,255,255,.3);
-          font-family: 'DM Sans', sans-serif;
-        }
-        .ln-footer-brand {
-          font-family: 'Fraunces', serif; font-size: 18px;
-          color: white; display: flex; align-items: center; gap: 8px;
-        }
-        .ln-footer-pip {
-          width: 7px; height: 7px; border-radius: 50%; background: var(--sprout);
-        }
-
-        @media(max-width:900px){
-          .ln-hero-inner { grid-template-columns:1fr; padding: 0 24px; }
-          .ln-visual { display: none; }
-          .ln-stats-inner { grid-template-columns:1fr 1fr; gap:24px; padding:32px 24px; }
-          .ln-stat-item { border-right:none; padding:0; }
-          .ln-features, .ln-how-inner, .ln-cta-section { padding-left:24px; padding-right:24px; }
-          .ln-features-grid { grid-template-columns:1fr; }
-          .ln-steps { grid-template-columns:1fr 1fr; gap:32px; }
-          .ln-steps::before { display:none; }
-          .ln-footer { flex-direction:column; gap:12px; text-align:center; padding:24px; }
-        }
-      `}</style>
-
       <Helmet>
-        <title>TerraSpotter — Landing</title>
-        <meta name="description" content="TerraSpotter — map land, grow forests, and track impact." />
+        <title>TerraSpotter — Land for Green Futures</title>
+        <meta name="description" content="Map barren land. Connect with volunteers. Build India's green future." />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
       </Helmet>
 
-      {/* hero */}
-      <section className="ln-hero">
-        <canvas ref={canvasRef} className="ln-canvas" />
+      <div className="font-['Outfit',sans-serif] bg-[#0b1d10] text-white overflow-x-hidden">
 
-        <div className="ln-hero-inner">
-          {/* left */}
-          <div>
-            <motion.div {...stagger(0)}>
-              <div className="ln-eyebrow">
-                <span className="ln-eyebrow-dot" />
-                Sustainable Infrastructure Platform
+        {/* ════════════ HERO ════════════ */}
+        <section className="relative min-h-screen flex flex-col">
+
+          {/* Background layers */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0b1d10] via-[#0e2514] to-[#071408]" />
+          <div className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full bg-[#163d25] opacity-30 blur-[160px]" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-[#0e3318] opacity-40 blur-[130px]" />
+          <div className="absolute top-[30%] left-[40%] w-[400px] h-[400px] rounded-full bg-[#4db87a] opacity-[0.04] blur-[90px]" />
+
+          {/* Grid texture */}
+          <div className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: "linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px)",
+              backgroundSize: "56px 56px",
+            }}
+          />
+
+          {/* ── NAV ── */}
+          <nav className="relative z-20 flex items-center justify-between px-6 sm:px-10 xl:px-16 py-6">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3 no-underline shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-base shadow-[0_0_20px_rgba(77,184,122,0.35)]">
+                🌿
               </div>
+              <span className="font-['Cormorant_Garant',serif] font-semibold text-xl text-white tracking-wide">
+                TerraSpotter
+              </span>
+            </Link>
+
+            {/* Desktop nav */}
+            <div className="hidden lg:flex items-center gap-8">
+              {navLinks.map(l => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  className="text-[13.5px] text-white/50 font-medium no-underline hover:text-white transition-colors duration-200"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Desktop CTA */}
+            <div className="hidden lg:flex items-center gap-3">
+              <Link
+                to="/login"
+                className="text-[13.5px] text-white/60 font-medium no-underline hover:text-white transition-colors px-4 py-2"
+              >
+                Sign in
+              </Link>
+              <Link
+                to="/signup"
+                className="text-[13.5px] font-semibold text-[#0c1e11] no-underline px-5 py-2.5 rounded-xl bg-[#4db87a] hover:bg-[#5dcf8a] transition-all duration-200 shadow-[0_4px_16px_rgba(77,184,122,0.3)] active:scale-[0.97]"
+              >
+                Get started →
+              </Link>
+            </div>
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setNavOpen(o => !o)}
+              className="lg:hidden w-10 h-10 rounded-xl border border-white/15 bg-white/[0.06] flex flex-col items-center justify-center gap-[5px] cursor-pointer"
+            >
+              <span className={`w-4 h-[1.5px] bg-white rounded-sm transition-all duration-200 ${navOpen ? "translate-y-[6.5px] rotate-45" : ""}`} />
+              <span className={`w-4 h-[1.5px] bg-white rounded-sm transition-all duration-200 ${navOpen ? "opacity-0 scale-x-0" : ""}`} />
+              <span className={`w-4 h-[1.5px] bg-white rounded-sm transition-all duration-200 ${navOpen ? "-translate-y-[6.5px] -rotate-45" : ""}`} />
+            </button>
+          </nav>
+
+          {/* Mobile drawer */}
+          <AnimatePresence>
+            {navOpen && (
+              <>
+                <motion.div
+                  className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm lg:hidden"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  onClick={() => setNavOpen(false)}
+                />
+                <motion.div
+                  className="fixed top-0 right-0 bottom-0 w-[80vw] max-w-[300px] z-40 bg-[#0e2514] border-l border-white/[0.08] flex flex-col px-6 py-8 gap-2 lg:hidden"
+                  initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
+                  transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-sm">🌿</div>
+                    <span className="font-['Cormorant_Garant',serif] font-semibold text-white">TerraSpotter</span>
+                    <button onClick={() => setNavOpen(false)} className="ml-auto text-white/40 hover:text-white text-lg cursor-pointer">✕</button>
+                  </div>
+                  {navLinks.map(l => (
+                    <Link
+                      key={l.to}
+                      to={l.to}
+                      onClick={() => setNavOpen(false)}
+                      className="text-[15px] text-white/60 font-medium no-underline py-3 px-3 rounded-xl hover:text-white hover:bg-white/[0.06] transition-all"
+                    >
+                      {l.label}
+                    </Link>
+                  ))}
+                  <div className="mt-auto flex flex-col gap-2 pt-6 border-t border-white/[0.08]">
+                    <Link to="/login" onClick={() => setNavOpen(false)} className="text-center py-3 rounded-xl border border-white/15 text-white/70 text-sm font-medium no-underline hover:text-white hover:bg-white/[0.06] transition-all">Sign in</Link>
+                    <Link to="/signup" onClick={() => setNavOpen(false)} className="text-center py-3 rounded-xl bg-[#4db87a] text-[#0c1e11] text-sm font-semibold no-underline hover:bg-[#5dcf8a] transition-all">Get started →</Link>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+
+          {/* ── HERO CONTENT ── */}
+          <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 pt-12 pb-20 sm:pb-28">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-[#4db87a]/20 bg-[#4db87a]/8 text-[#4db87a] text-[12px] font-semibold tracking-[2px] uppercase mb-8"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4db87a] animate-pulse" />
+              India's Land-to-Forest Platform
             </motion.div>
 
-            <motion.h1 className="ln-h1" {...stagger(1)}>
-              Map land.<br /><em>Grow forests.</em><br />Track impact.
+            <motion.h1
+              className="font-['Cormorant_Garant',serif] text-[58px] sm:text-[76px] md:text-[88px] xl:text-[104px] font-semibold text-white leading-[0.88] tracking-[-2px] max-w-[900px] mx-auto"
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Map it.{" "}
+              <em className="not-italic text-[#4db87a]">Green it.</em>
+              <br />
+              Legacy built.
             </motion.h1>
 
-            <motion.p className="ln-sub" {...stagger(2)}>
-              TerraSpotter connects land, people, and intelligence to enable
-              scalable, transparent afforestation — from boundary to canopy.
+            <motion.p
+              className="text-white/45 text-[15px] sm:text-[17px] leading-[1.85] font-light max-w-[520px] mt-8 mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.7 }}
+            >
+              Submit barren land with polygon mapping. Get matched with volunteers. Watch India's green cover grow — one verified parcel at a time.
             </motion.p>
 
-            <motion.div className="ln-cta-row" {...stagger(3)}>
-              <button className="ln-btn-primary" onClick={() => navigate("/signup")}>
-                Start mapping →
-              </button>
-              <button className="ln-btn-ghost" onClick={() => navigate("/browse")}>
-                Browse lands
-              </button>
+            <motion.div
+              className="flex flex-col sm:flex-row items-center justify-center gap-3.5"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.38, duration: 0.6 }}
+            >
+              <Link
+                to="/Main"
+                className="px-8 py-4 rounded-xl bg-[#4db87a] text-[#0c1e11] text-[15px] font-semibold no-underline hover:bg-[#5dcf8a] transition-all duration-200 shadow-[0_6px_28px_rgba(77,184,122,0.35)] active:scale-[0.97] whitespace-nowrap"
+              >
+                Submit land parcel →
+              </Link>
+              <Link
+                to="/browse"
+                className="px-8 py-4 rounded-xl border border-white/15 text-white/70 text-[15px] font-medium no-underline hover:text-white hover:border-white/35 hover:bg-white/[0.06] transition-all duration-200 whitespace-nowrap"
+              >
+                Browse all lands
+              </Link>
+            </motion.div>
+
+            {/* Scroll indicator */}
+            <motion.div
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2 }}
+            >
+              <span className="text-[11px] tracking-[2px] uppercase font-medium">Scroll</span>
+              <div className="w-px h-12 bg-gradient-to-b from-white/20 to-transparent" />
             </motion.div>
           </div>
+        </section>
 
-          {/* right visual */}
-          <motion.div className="ln-visual"
-            initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }}
-            transition={{ duration:.7, delay:.2 }}>
-            <div className="ln-card-main">
-              <div className="ln-card-main-label">Live land map</div>
-              <div className="ln-map-mock">
-                <div className="ln-map-grid" />
-                <div className="ln-map-pin p1" />
-                <div className="ln-map-pin p2" />
-                <div className="ln-map-pin p3" />
-                <div className="ln-map-pin p4" />
-              </div>
-            </div>
-            <div className="ln-card-row">
-              <div className="ln-mini-card">
-                <div className="ln-mini-num">2.4k</div>
-                <div className="ln-mini-lbl">Lands mapped</div>
-              </div>
-              <div className="ln-mini-card">
-                <div className="ln-mini-num">18k</div>
-                <div className="ln-mini-lbl">Trees planted</div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+        {/* ════════════ STATS BAND ════════════ */}
+        <section className="relative bg-[#f7f4ee] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#f2ede3] to-[#f7f4ee]" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#4db87a]/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#4db87a]/20 to-transparent" />
 
-      {/* stats bar */}
-      <div className="ln-stats-bar">
-        <div className="ln-stats-inner">
-          {[
-            { n:"2,400+", l:"Land parcels mapped" },
-            { n:"18,000", l:"Trees planted" },
-            { n:"62 t",   l:"CO₂ captured" },
-            { n:"340",    l:"Active volunteers" },
-          ].map((s,i) => (
-            <motion.div key={i} className="ln-stat-item"
-              initial={{ opacity:0, y:12 }} whileInView={{ opacity:1, y:0 }}
-              viewport={{ once:true }} transition={{ duration:.4, delay:i*.08 }}>
-              <div className="ln-stat-n">{s.n}</div>
-              <div className="ln-stat-l">{s.l}</div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* features */}
-      <div style={{ background:"var(--sand)" }}>
-        <section className="ln-features">
-          <motion.div className="ln-features-head"
-            initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }}
-            viewport={{ once:true }} transition={{ duration:.5 }}>
-            <div className="ln-features-eyebrow">What we do</div>
-            <h2 className="ln-features-h2">
-              Everything a plantation<br />initiative <em>actually needs</em>
-            </h2>
-          </motion.div>
-
-          <div className="ln-features-grid">
+          <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-16 sm:py-20 grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0">
             {[
-              {
-                icon:"🗺️",
-                title:"Verified land discovery",
-                desc:"Identify and validate plantation-ready land using geo-tagged submissions, polygon mapping, and community review.",
-                cta:"Browse lands",
-                path:"/browse",
-              },
-              {
-                icon:"🌿",
-                title:"AI species recommendations",
-                desc:"Optimal tree species and planting density based on soil type, local rainfall, temperature range, and land condition.",
-                cta:"Learn more",
-                path:"/browse",
-              },
-              {
-                icon:"📊",
-                title:"Transparent impact tracking",
-                desc:"Track plantations over time with boundary maps, photo logs, volunteer contributions, and CO₂ estimates.",
-                cta:"See how",
-                path:"/browse",
-              },
-            ].map((f,i) => (
-              <motion.div key={i} className="ln-feature-card"
-                initial={{ opacity:0, y:16 }} whileInView={{ opacity:1, y:0 }}
-                viewport={{ once:true }} transition={{ duration:.45, delay:i*.1 }}>
-                <div className="ln-feature-icon">{f.icon}</div>
-                <h3 className="ln-feature-h3">{f.title}</h3>
-                <p className="ln-feature-p">{f.desc}</p>
-                <button className="ln-feature-link" onClick={() => navigate(f.path)}>
-                  {f.cta} →
-                </button>
-              </motion.div>
+              { label: "Lands mapped", value: stats?.totalLands, suffix: "" },
+              { label: "Verified sites", value: stats?.approvedLands, suffix: "" },
+              { label: "Trees planted", value: stats?.treesPlanted, suffix: "" },
+              { label: "Active volunteers", value: stats?.volunteers, suffix: "" },
+            ].map((s, i) => (
+              <FadeIn key={s.label} delay={i * 0.08} className="flex flex-col items-center lg:items-start text-center lg:text-left lg:px-10 lg:border-l lg:first:border-l-0 lg:border-[#e0d8cf]">
+                <div className="font-['Cormorant_Garant',serif] text-[52px] sm:text-[60px] font-semibold text-[#0c1e11] leading-none mb-2 tracking-[-1px]">
+                  <Counter target={s.value} suffix={s.suffix} />
+                </div>
+                <div className="text-[11.5px] text-[#8a7d6e] uppercase tracking-[1.8px] font-semibold">{s.label}</div>
+              </FadeIn>
             ))}
           </div>
         </section>
+
+        {/* ════════════ HOW IT WORKS ════════════ */}
+        <section className="relative bg-[#0b1d10] py-24 sm:py-32 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0b1d10] via-[#0d2213] to-[#0b1d10]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[#163d25] opacity-20 blur-[160px]" />
+
+          <div className="relative z-10 max-w-[1100px] mx-auto px-6 sm:px-10">
+            <FadeIn className="text-center mb-16 sm:mb-20">
+              <div className="inline-flex items-center gap-2 mb-5">
+                <div className="w-8 h-px bg-[#4db87a]/40" />
+                <span className="text-[#4db87a] text-[11px] font-semibold tracking-[3px] uppercase">
+                  The process
+                </span>
+                <div className="w-8 h-px bg-[#4db87a]/40" />
+              </div>
+              <h2 className="font-['Cormorant_Garant',serif] text-[50px] sm:text-[60px] font-semibold text-white leading-[0.95] tracking-[-0.8px]">
+                From empty land<br />
+                to <em className="not-italic text-[#4db87a]">living forest</em>
+              </h2>
+            </FadeIn>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-3xl overflow-hidden border border-white/[0.06]">
+              {[
+                {
+                  step: "01",
+                  icon: "🗺️",
+                  title: "Map the land",
+                  desc: "Draw a polygon boundary on our interactive map. Mark the exact parcel, add photos and ownership details.",
+                },
+                {
+                  step: "02",
+                  icon: "🔍",
+                  title: "Verification",
+                  desc: "Our team cross-checks your submission via satellite imagery, soil data, and climate APIs.",
+                },
+                {
+                  step: "03",
+                  icon: "🌱",
+                  title: "Species matching",
+                  desc: "Native tree species are recommended based on soil type, rainfall patterns, and local ecology.",
+                },
+                {
+                  step: "04",
+                  icon: "🤝",
+                  title: "Volunteer match",
+                  desc: "Verified land gets matched with local NGOs, government bodies, and community volunteers.",
+                },
+              ].map((s, i) => (
+                <FadeIn key={s.step} delay={i * 0.1} className="bg-[#0f2916] p-7 xl:p-9 flex flex-col gap-5 hover:bg-[#122e1a] transition-colors duration-300 group">
+                  <div className="flex items-center justify-between">
+                    <span className="font-['Cormorant_Garant',serif] text-[13px] font-semibold text-white/20 tracking-[2px]">
+                      {s.step}
+                    </span>
+                    <span className="w-10 h-10 rounded-xl bg-[#163d25] border border-[#4db87a]/15 flex items-center justify-center text-lg group-hover:border-[#4db87a]/35 transition-colors">
+                      {s.icon}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-['Cormorant_Garant',serif] text-[22px] font-semibold text-white mb-2 leading-tight">{s.title}</h3>
+                    <p className="text-white/40 text-[13.5px] leading-[1.75] font-light">{s.desc}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ════════════ IMPACT HIGHLIGHT ════════════ */}
+        <section className="relative bg-[#f2ede3] py-24 sm:py-32 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#ede8dc] via-[#f2ede3] to-[#f5f0e7]" />
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-bl-[200px] bg-[#d8ecdf] opacity-60" />
+
+          <div className="relative z-10 max-w-[1100px] mx-auto px-6 sm:px-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+              {/* Left text */}
+              <FadeIn>
+                <div className="flex items-center gap-2 mb-7">
+                  <div className="w-6 h-px bg-[#2d8a55]" />
+                  <span className="text-[#2d8a55] text-[11px] font-semibold tracking-[3px] uppercase">
+                    Environmental impact
+                  </span>
+                </div>
+                <h2 className="font-['Cormorant_Garant',serif] text-[50px] sm:text-[58px] font-semibold text-[#0c1e11] leading-[0.93] tracking-[-0.8px] mb-7">
+                  Small plots.<br />
+                  <em className="not-italic text-[#2d8a55]">Massive impact.</em>
+                </h2>
+                <p className="text-[#6b5e4e] text-[15px] leading-[1.85] font-light mb-10 max-w-[400px]">
+                  Even a 500m² barren patch, when planted with native species, can reduce local surface temperature by 2–4°C, recharge groundwater, and capture carbon for decades.
+                </p>
+                <Link
+                  to="/plantationShowcase"
+                  className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#0c1e11] no-underline border-b-2 border-[#4db87a] pb-0.5 hover:text-[#2d8a55] transition-colors"
+                >
+                  View the showcase →
+                </Link>
+              </FadeIn>
+
+              {/* Right: feature cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  { icon: "🌡️", title: "2–4°C cooler", desc: "Plantation sites reduce surrounding surface temperature within 6 months." },
+                  { icon: "💧", title: "Groundwater up", desc: "Native roots improve aquifer recharge rates in barren and rocky terrain." },
+                  { icon: "🌬️", title: "CO₂ captured", desc: "Each verified tree sequesters ~21kg CO₂ annually — for decades." },
+                  { icon: "🦋", title: "Biodiversity", desc: "Native species selections support local pollinators and bird habitats." },
+                ].map((f, i) => (
+                  <FadeIn key={f.title} delay={i * 0.08}>
+                    <div className="p-6 rounded-2xl bg-white border border-[#e8e2d8] hover:border-[#4db87a]/30 hover:shadow-[0_8px_32px_rgba(77,184,122,0.1)] transition-all duration-300 group h-full">
+                      <span className="text-2xl mb-4 block">{f.icon}</span>
+                      <h4 className="font-['Cormorant_Garant',serif] text-[20px] font-semibold text-[#0c1e11] mb-2 group-hover:text-[#2d8a55] transition-colors">{f.title}</h4>
+                      <p className="text-[#8a7d6e] text-[13px] leading-[1.7] font-light">{f.desc}</p>
+                    </div>
+                  </FadeIn>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ════════════ COMMUNITY CTA ════════════ */}
+        <section className="relative bg-[#0b1d10] py-24 sm:py-32 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0b1d10] to-[#0f2916]" />
+          <div className="absolute inset-0 opacity-[0.025]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+          <div className="absolute top-[-5%] right-[-5%] w-[600px] h-[600px] rounded-full bg-[#163d25] opacity-25 blur-[150px]" />
+          <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-[#0e3318] opacity-35 blur-[130px]" />
+
+          <div className="relative z-10 max-w-[780px] mx-auto px-6 text-center">
+            <FadeIn>
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-[#4db87a]/20 bg-[#4db87a]/8 text-[#4db87a] text-[11.5px] font-semibold tracking-[2px] uppercase mb-9">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4db87a] animate-pulse" />
+                Join the community
+              </div>
+              <h2 className="font-['Cormorant_Garant',serif] text-[52px] sm:text-[68px] xl:text-[76px] font-semibold text-white leading-[0.9] tracking-[-1.2px] mb-7">
+                Own land?<br />
+                <em className="not-italic text-[#4db87a]">Make it count.</em>
+              </h2>
+              <p className="text-white/45 text-[16px] leading-[1.85] font-light mb-12 max-w-[500px] mx-auto">
+                Whether it's a roadside strip or a vacant plot — every boundary you draw brings India one step closer to its green future.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link
+                  to="/signup"
+                  className="px-9 py-4 rounded-xl bg-[#4db87a] text-[#0c1e11] text-[15.5px] font-semibold no-underline hover:bg-[#5dcf8a] transition-all duration-200 shadow-[0_6px_32px_rgba(77,184,122,0.4)] active:scale-[0.97] whitespace-nowrap"
+                >
+                  Create free account →
+                </Link>
+                <Link
+                  to="/community"
+                  className="px-9 py-4 rounded-xl border border-white/15 text-white/65 text-[15.5px] font-medium no-underline hover:text-white hover:border-white/35 hover:bg-white/[0.05] transition-all duration-200 whitespace-nowrap"
+                >
+                  Explore community
+                </Link>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* ════════════ FOOTER ════════════ */}
+        <footer className="relative bg-[#071408] border-t border-white/[0.07]">
+          <div className="max-w-[1100px] mx-auto px-6 sm:px-10 py-14 sm:py-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+
+              {/* Brand */}
+              <div className="sm:col-span-2 lg:col-span-1">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-base shadow-[0_0_16px_rgba(77,184,122,0.3)]">
+                    🌿
+                  </div>
+                  <span className="font-['Cormorant_Garant',serif] font-semibold text-xl text-white">TerraSpotter</span>
+                </div>
+                <p className="text-white/30 text-[13px] leading-[1.8] font-light max-w-[220px]">
+                  Transforming India's unused land into green ecosystems, one verified parcel at a time.
+                </p>
+              </div>
+
+              {/* Platform links */}
+              <div>
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-[2px] mb-5">Platform</h4>
+                <div className="flex flex-col gap-3">
+                  {[
+                    ["/Main", "Submit Land"],
+                    ["/browse", "Browse Lands"],
+                    ["/plantationShowcase", "Showcase"],
+                    ["/community", "Community"],
+                  ].map(([to, label]) => (
+                    <Link key={to} to={to} className="text-[13.5px] text-white/40 no-underline hover:text-white/80 transition-colors font-light">
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Company */}
+              <div>
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-[2px] mb-5">Company</h4>
+                <div className="flex flex-col gap-3">
+                  {[
+                    ["/about", "About us"],
+                    ["/contact", "Contact"],
+                  ].map(([to, label]) => (
+                    <Link key={to} to={to} className="text-[13.5px] text-white/40 no-underline hover:text-white/80 transition-colors font-light">
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Account */}
+              <div>
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-[2px] mb-5">Account</h4>
+                <div className="flex flex-col gap-3">
+                  {[
+                    ["/login", "Sign in"],
+                    ["/signup", "Create account"],
+                  ].map(([to, label]) => (
+                    <Link key={to} to={to} className="text-[13.5px] text-white/40 no-underline hover:text-white/80 transition-colors font-light">
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/[0.07]">
+              <p className="text-white/18 text-[12px] font-light tracking-wide">
+                © 2026 TerraSpotter · Built by Om Borekar · India 🇮🇳
+              </p>
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4db87a] animate-pulse" />
+                <span className="text-[#4db87a]/60 text-[11.5px] font-medium">Live platform</span>
+              </div>
+            </div>
+          </div>
+        </footer>
+
       </div>
-
-      {/* how it works */}
-      <section className="ln-how">
-        <div className="ln-how-inner">
-          <motion.div initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }}
-            viewport={{ once:true }} transition={{ duration:.5 }}>
-            <div className="ln-how-eyebrow">Process</div>
-            <h2 className="ln-how-h2">From empty land<br />to <em>living forest</em></h2>
-          </motion.div>
-
-          <div className="ln-steps">
-            {[
-              { n:"1", title:"Submit land", desc:"Draw the boundary on the map, upload photos, and fill in land details." },
-              { n:"2", title:"Get recommendations", desc:"AI fetches soil and climate data, recommends native species and planting density." },
-              { n:"3", title:"Match with teams", desc:"Land is matched with local volunteers, NGOs, or institutions ready to plant." },
-              { n:"4", title:"Track growth", desc:"Ongoing photo verification and satellite comparison track canopy growth over time." },
-            ].map((s,i) => (
-              <motion.div key={i} className="ln-step"
-                initial={{ opacity:0, y:16 }} whileInView={{ opacity:1, y:0 }}
-                viewport={{ once:true }} transition={{ duration:.45, delay:i*.1 }}>
-                <div className="ln-step-num">{s.n}</div>
-                <h4>{s.title}</h4>
-                <p>{s.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* cta */}
-      <section style={{ background:"var(--sand)" }}>
-        <motion.div className="ln-cta-section"
-          initial={{ opacity:0, y:24 }} whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }} transition={{ duration:.55 }}>
-          <h2 className="ln-cta-h2">
-            Every boundary you draw<br />becomes a <em>forest tomorrow</em>
-          </h2>
-          <p className="ln-cta-sub">
-            Join researchers, NGOs, students, and volunteers building
-            verifiable green impact across India — one parcel at a time.
-          </p>
-          <div className="ln-cta-btns">
-            <button className="ln-cta-primary" onClick={() => navigate("/signup")}>
-              Create free account →
-            </button>
-            <button className="ln-cta-secondary" onClick={() => navigate("/browse")}>
-              Explore lands
-            </button>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* footer */}
-      <footer className="ln-footer">
-        <div className="ln-footer-brand">
-          <span className="ln-footer-pip" /> TerraSpotter
-        </div>
-        <span>Built for communities committed to sustainable afforestation.</span>
-        <span>© {new Date().getFullYear()}</span>
-      </footer>
     </>
   );
-};
-
-export default Landing;
+}

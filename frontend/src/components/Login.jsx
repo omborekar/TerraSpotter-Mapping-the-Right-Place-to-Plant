@@ -2,13 +2,13 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Login page — Tailwind CSS only, nature theme, with forgot password link.
+ Description: Login page — Verdant Editorial redesign. Cormorant Garant + Outfit fonts.
 */
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -16,18 +16,18 @@ axios.defaults.withCredentials = true;
 function fmt(n) {
   if (n === null || n === undefined) return "—";
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(".0", "") + "M";
-  if (n >= 1_000)     return (n / 1_000).toFixed(1).replace(".0", "") + "k";
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(".0", "") + "k";
   return String(n);
 }
 
 export default function Login() {
-  const [form,    setForm]    = useState({ email: "", password: "" });
-  const [errors,  setErrors]  = useState({});
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [showPw,  setShowPw]  = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const navigate = useNavigate();
 
-  const [stats,      setStats]      = useState(null);
+  const [stats, setStats] = useState(null);
   const [statsError, setStatsError] = useState(false);
 
   useEffect(() => {
@@ -60,217 +60,250 @@ export default function Login() {
     }
   };
 
-  const statTiles = stats
+  const statItems = stats
     ? [
-        { num: fmt(stats.totalLands),    lbl: "Lands mapped",  icon: "🗺️" },
-        { num: fmt(stats.approvedLands), lbl: "Verified sites", icon: "✅" },
-        { num: fmt(stats.treesPlanted),  lbl: "Trees planted",  icon: "🌳" },
-        { num: fmt(stats.volunteers),    lbl: "Volunteers",     icon: "🤝" },
-      ]
-    : Array(4).fill(null);
+      { value: fmt(stats.totalLands), label: "Lands mapped" },
+      { value: fmt(stats.approvedLands), label: "Verified sites" },
+      { value: fmt(stats.treesPlanted), label: "Trees planted" },
+      { value: fmt(stats.volunteers), label: "Volunteers" },
+    ]
+    : null;
 
   return (
     <>
       <Helmet>
-        <title>TerraSpotter — Login</title>
+        <title>TerraSpotter — Sign In</title>
         <meta name="description" content="Sign in to your TerraSpotter account." />
         <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </Helmet>
 
-      <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 font-['DM_Sans',sans-serif]">
+      <div className="min-h-screen flex font-['Outfit',sans-serif] bg-[#0b1d10]">
 
-        {/* ── LEFT PANEL ── */}
+        {/* ─── LEFT PANEL ─── */}
         <motion.div
-          className="hidden lg:flex flex-col justify-between bg-[#163d25] relative overflow-hidden p-14"
-          initial={{ opacity: 0, x: -24 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+          className="hidden lg:flex flex-col justify-between w-[52%] xl:w-[55%] relative overflow-hidden px-16 py-14"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          {/* Layered radial atmosphere */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute bottom-0 left-0 w-[480px] h-[480px] rounded-full bg-[rgba(92,184,122,0.20)] blur-3xl -translate-x-1/4 translate-y-1/4" />
-            <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-[rgba(22,61,37,0.55)] blur-2xl" />
-            <div className="absolute top-1/2 left-1/2 w-72 h-72 rounded-full bg-[rgba(37,102,56,0.12)] blur-3xl -translate-x-1/2 -translate-y-1/2" />
-            {/* Subtle organic grid texture */}
-            <div
-              className="absolute inset-0 opacity-[0.04]"
-              style={{
-                backgroundImage:
-                  "linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px)",
-                backgroundSize: "48px 48px",
-              }}
-            />
-          </div>
+          {/* Background layers */}
+          <div className="absolute inset-0 bg-[#0b1d10]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0b1d10] via-[#0f2916] to-[#071408]" />
 
-          {/* Brand */}
-          <div className="relative z-10">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2.5 no-underline font-['Playfair_Display',serif] font-bold text-[22px] text-white tracking-tight"
-            >
-              <span className="w-8 h-8 rounded-[9px] bg-gradient-to-br from-[#256638] to-[#5cb87a] flex items-center justify-center text-[15px] shadow-lg shadow-[rgba(58,140,87,0.28)] shrink-0">
-                🌿
-              </span>
-              TerraSpotter
-            </Link>
-          </div>
+          {/* Glow blobs */}
+          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-[#1a4d28] opacity-40 blur-[120px]" />
+          <div className="absolute bottom-[-15%] left-[-10%] w-[600px] h-[600px] rounded-full bg-[#0e3318] opacity-60 blur-[130px]" />
+          <div className="absolute top-[40%] left-[30%] w-[300px] h-[300px] rounded-full bg-[#4db87a] opacity-[0.04] blur-[80px]" />
 
-          {/* Headline + desc */}
-          <div className="relative z-10">
-            <h1 className="font-['Playfair_Display',serif] text-[44px] leading-[1.10] tracking-[-0.6px] text-white mb-5">
-              Every plot of land<br />
-              deserves a <em className="not-italic text-[#5cb87a]">future</em>
-            </h1>
-            <p className="text-[14.5px] text-white/55 leading-[1.80] max-w-[330px]">
-              Turning unused, barren, and roadside land into verified green ecosystems —
-              one boundary at a time.
-            </p>
-
-            {/* LIVE STATS */}
-            <div className="grid grid-cols-2 gap-3 mt-13 mt-12">
-              {statTiles.map((tile, i) =>
-                tile === null ? (
-                  <div
-                    key={i}
-                    className="bg-white/5 border border-white/[0.09] rounded-2xl p-[18px_20px] min-h-[82px] relative overflow-hidden"
-                  >
-                    {/* shimmer skeleton */}
-                    <div
-                      className="h-6 rounded-md mb-2 w-[52%] animate-pulse bg-white/10"
-                      style={{ animationDelay: `${i * 0.08}s` }}
-                    />
-                    <div
-                      className="h-2.5 rounded w-[72%] animate-pulse bg-white/[0.07]"
-                      style={{ animationDelay: `${i * 0.08 + 0.06}s` }}
-                    />
-                  </div>
-                ) : (
-                  <motion.div
-                    key={tile.lbl}
-                    className="group bg-white/5 border border-white/[0.09] rounded-2xl p-[18px_20px] min-h-[82px] relative overflow-hidden hover:bg-white/[0.09] hover:border-[rgba(92,184,122,0.25)] transition-all duration-200 cursor-default"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: i * 0.07 }}
-                  >
-                    {/* top shimmer line on hover */}
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(92,184,122,0.5)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                    <div className="text-[13px] mb-2 opacity-70">{tile.icon}</div>
-                    <div className="font-['Playfair_Display',serif] text-[28px] text-[#5cb87a] leading-none tracking-[-0.5px]">
-                      {tile.num}
-                    </div>
-                    <div className="text-[10.5px] text-white/38 uppercase tracking-[1.1px] mt-1.5 font-medium">
-                      {tile.lbl}
-                    </div>
-                  </motion.div>
-                )
-              )}
-            </div>
-          </div>
-
-          <div className="relative z-10 text-[12px] text-white/25 leading-[1.7] tracking-[0.01em]">
-            Built for institutions, NGOs, and communities<br />
-            committed to sustainable afforestation.
-          </div>
-        </motion.div>
-
-        {/* ── RIGHT PANEL ── */}
-        <motion.div
-          className="flex items-center justify-center bg-[#fdfbf8] px-6 py-16 lg:px-[68px] relative"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.52, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {/* Warm grain overlay */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-[0.018]"
+          {/* Dot grid texture */}
+          <div className="absolute inset-0 opacity-[0.035]"
             style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
-              backgroundSize: "200px 200px",
+              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
             }}
           />
 
-          <div className="w-full max-w-[380px] relative z-10">
+          {/* Vertical rule */}
+          <div className="absolute right-0 top-[10%] bottom-[10%] w-px bg-gradient-to-b from-transparent via-[#4db87a]/20 to-transparent" />
 
-            {/* Eyebrow */}
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[1.4px] text-[#3a8c57] mb-3">
-              <span className="w-[5px] h-[5px] rounded-full bg-[#5cb87a] inline-block" />
-              Secure Sign-in
-            </div>
+          {/* Brand */}
+          <div className="relative z-10">
+            <Link to="/" className="inline-flex items-center gap-3 no-underline group">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-base shadow-[0_0_20px_rgba(77,184,122,0.4)]">
+                🌿
+              </div>
+              <span className="font-['Cormorant_Garant',serif] font-semibold text-xl text-white/80 tracking-wide group-hover:text-white transition-colors">
+                TerraSpotter
+              </span>
+            </Link>
+          </div>
 
-            <h1 className="font-['Playfair_Display',serif] text-[34px] font-bold text-[#163d25] tracking-[-0.4px] mb-1.5 leading-tight">
-              Welcome back
-            </h1>
-            <p className="text-[14px] text-[#6b6457] mb-9 leading-relaxed">
-              Sign in to your TerraSpotter workspace
-            </p>
+          {/* Hero text */}
+          <div className="relative z-10 max-w-[440px]">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-center gap-2 mb-8">
+                <div className="w-8 h-px bg-[#4db87a]/60" />
+                <span className="text-[#4db87a] text-[11px] font-semibold tracking-[3px] uppercase">
+                  Land for Green Futures
+                </span>
+              </div>
 
-            {/* API error */}
-            {errors.api && (
-              <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200/70 rounded-[9px] text-[13px] text-[#b03a2e] font-medium mb-5">
-                ⚠ {errors.api}
+              <h1 className="font-['Cormorant_Garant',serif] text-[68px] xl:text-[76px] font-semibold text-white leading-[0.92] tracking-[-1px] mb-8">
+                Every barren<br />
+                plot deserves<br />
+                <em className="not-italic text-[#4db87a]">to breathe.</em>
+              </h1>
+
+              <p className="text-white/40 text-[15px] leading-[1.85] font-light max-w-[340px]">
+                We transform unused, barren and roadside land into verified green ecosystems — driven by community, data, and purpose.
+              </p>
+            </motion.div>
+
+            {/* Stats grid */}
+            {statItems ? (
+              <motion.div
+                className="grid grid-cols-2 gap-3 mt-12"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45, duration: 0.7 }}
+              >
+                {statItems.map((s, i) => (
+                  <motion.div
+                    key={s.label}
+                    className="border border-white/[0.07] rounded-2xl p-5 bg-white/[0.03] hover:bg-white/[0.06] hover:border-[#4db87a]/20 transition-all duration-300 group"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + i * 0.06 }}
+                  >
+                    <div className="font-['Cormorant_Garant',serif] text-[36px] font-semibold text-[#4db87a] leading-none mb-2 group-hover:text-[#6dd49a] transition-colors">
+                      {s.value}
+                    </div>
+                    <div className="text-white/30 text-[10.5px] uppercase tracking-[1.4px] font-medium">
+                      {s.label}
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 mt-12">
+                {[0, 1, 2, 3].map(i => (
+                  <div key={i} className="border border-white/[0.07] rounded-2xl p-5 bg-white/[0.03] animate-pulse">
+                    <div className="h-8 w-16 rounded-lg bg-white/[0.08] mb-2" />
+                    <div className="h-2.5 w-20 rounded bg-white/[0.05]" />
+                  </div>
+                ))}
               </div>
             )}
+          </div>
 
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+          {/* Bottom caption */}
+          <div className="relative z-10">
+            <p className="text-white/18 text-xs leading-relaxed tracking-wide">
+              Built for NGOs, institutions &amp; communities<br />committed to sustainable afforestation.
+            </p>
+          </div>
+        </motion.div>
 
-              {/* Email */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11.5px] font-semibold text-[#4a3f36] uppercase tracking-[0.8px]">
+        {/* ─── RIGHT PANEL ─── */}
+        <motion.div
+          className="flex-1 flex items-center justify-center bg-[#f7f4ee] px-6 py-16 lg:px-14 xl:px-20 relative"
+          initial={{ opacity: 0, x: 24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Subtle warm texture overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#f7f4ee] via-[#f4f0e8] to-[#f7f4ee]" />
+
+          {/* Decorative corner element */}
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-bl-[120px] bg-[#e8f5ee] opacity-60" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-tr-[100px] bg-[#e8f5ee] opacity-40" />
+
+          <div className="w-full max-w-[400px] relative z-10">
+
+            {/* Mobile brand */}
+            <div className="lg:hidden mb-10 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-base">
+                🌿
+              </div>
+              <span className="font-['Cormorant_Garant',serif] font-semibold text-xl text-[#0b1d10]">TerraSpotter</span>
+            </div>
+
+            {/* Heading */}
+            <div className="mb-10">
+              <span className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a] mb-4">
+                <span className="w-4 h-px bg-[#4db87a]" />
+                Secure Sign-in
+              </span>
+              <h2 className="font-['Cormorant_Garant',serif] text-[42px] font-semibold text-[#0c1e11] leading-[1.05] tracking-[-0.5px]">
+                Welcome<br />back
+              </h2>
+              <p className="text-[#7a6d5e] text-sm mt-3 font-light leading-relaxed">
+                Sign in to your TerraSpotter workspace to continue your work.
+              </p>
+            </div>
+
+            {/* API error */}
+            <AnimatePresence>
+              {errors.api && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="flex items-center gap-3 px-4 py-3.5 bg-red-50 border border-red-200/80 rounded-xl text-[13px] text-red-700 font-medium mb-6"
+                >
+                  <span className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center text-[10px] shrink-0">!</span>
+                  {errors.api}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+
+              {/* Email field */}
+              <div className="flex flex-col gap-2">
+                <label className="text-[11px] font-semibold text-[#3d3128] uppercase tracking-[1.2px]">
                   Email address
                 </label>
-                <input
-                  className={`w-full px-[15px] py-3 border-[1.5px] rounded-[9px] font-['DM_Sans',sans-serif] text-[14px] text-[#111] outline-none bg-white placeholder:text-[#a89e93] transition-all duration-200 focus:border-[#3a8c57] focus:ring-2 focus:ring-[rgba(58,140,87,0.18)] focus:bg-[#fdfffe] ${errors.email ? "border-[#b03a2e] bg-[#fdf3f2] ring-2 ring-[rgba(176,58,46,0.08)]" : "border-[#e8e2da]"}`}
-                  type="email"
-                  name="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={handleChange}
-                  autoComplete="email"
-                />
+                <div className="relative">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    value={form.email}
+                    onChange={handleChange}
+                    autoComplete="email"
+                    className="w-full h-12 pl-4 pr-4 bg-white border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] outline-none placeholder:text-[#b5ac9e] font-['Outfit',sans-serif] transition-all duration-200 focus:border-[#4db87a] focus:ring-4 focus:ring-[#4db87a]/10 focus:bg-white hover:border-[#c8bfb4]"
+                  />
+                </div>
                 {errors.email && (
-                  <span className="text-[12px] text-[#b03a2e] font-medium">{errors.email}</span>
+                  <p className="text-[12px] text-red-600 font-medium">{errors.email}</p>
                 )}
               </div>
 
-              {/* Password */}
-              <div className="flex flex-col gap-1.5">
+              {/* Password field */}
+              <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-[11.5px] font-semibold text-[#4a3f36] uppercase tracking-[0.8px]">
+                  <label className="text-[11px] font-semibold text-[#3d3128] uppercase tracking-[1.2px]">
                     Password
                   </label>
-                  {/* ── FORGOT PASSWORD LINK ── */}
                   <Link
                     to="/forgot-password"
-                    className="text-[12px] font-medium text-[#3a8c57] hover:text-[#163d25] transition-colors no-underline"
+                    className="text-[12.5px] text-[#4db87a] font-medium no-underline hover:text-[#2d8a55] transition-colors"
                   >
                     Forgot password?
                   </Link>
                 </div>
-                <div className="relative flex items-center">
+                <div className="relative">
                   <input
-                    className={`w-full px-[15px] py-3 pr-[46px] border-[1.5px] rounded-[9px] font-['DM_Sans',sans-serif] text-[14px] text-[#111] outline-none bg-white placeholder:text-[#a89e93] transition-all duration-200 focus:border-[#3a8c57] focus:ring-2 focus:ring-[rgba(58,140,87,0.18)] focus:bg-[#fdfffe] ${errors.password ? "border-[#b03a2e] bg-[#fdf3f2] ring-2 ring-[rgba(176,58,46,0.08)]" : "border-[#e8e2da]"}`}
                     type={showPw ? "text" : "password"}
                     name="password"
                     placeholder="••••••••"
                     value={form.password}
                     onChange={handleChange}
                     autoComplete="current-password"
+                    className={`w-full h-12 pl-4 pr-12 bg-white border-[1.5px] rounded-xl text-sm text-[#0c1e11] outline-none placeholder:text-[#b5ac9e] font-['Outfit',sans-serif] transition-all duration-200 focus:ring-4 hover:border-[#c8bfb4] ${errors.password
+                        ? "border-red-300 focus:border-red-400 focus:ring-red-100 bg-red-50/30"
+                        : "border-[#e0d8cf] focus:border-[#4db87a] focus:ring-[#4db87a]/10"
+                      }`}
                   />
                   <button
                     type="button"
-                    className="absolute right-[13px] bg-transparent border-none cursor-pointer text-[15px] text-[#a89e93] hover:text-[#163d25] transition-colors p-0 leading-none"
                     onClick={() => setShowPw(v => !v)}
                     tabIndex={-1}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#b5ac9e] hover:text-[#3d3128] transition-colors text-sm w-6 h-6 flex items-center justify-center cursor-pointer"
                   >
                     {showPw ? "🙈" : "👁"}
                   </button>
                 </div>
                 {errors.password && (
-                  <span className="text-[12px] text-[#b03a2e] font-medium">{errors.password}</span>
+                  <p className="text-[12px] text-red-600 font-medium">{errors.password}</p>
                 )}
               </div>
 
@@ -278,36 +311,50 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-[13.5px] mt-2 bg-gradient-to-br from-[#256638] to-[#163d25] text-white border-none rounded-[9px] font-['DM_Sans',sans-serif] text-[14.5px] font-semibold cursor-pointer flex items-center justify-center gap-2 tracking-[0.02em] shadow-[0_3px_14px_rgba(58,140,87,0.28),inset_0_1px_0_rgba(255,255,255,0.10)] hover:brightness-110 hover:shadow-[0_5px_20px_rgba(58,140,87,0.28)] active:scale-[0.985] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="h-12 mt-2 w-full rounded-xl bg-[#0c1e11] text-white text-[14.5px] font-semibold tracking-[0.2px] flex items-center justify-center gap-2.5 cursor-pointer transition-all duration-200 hover:bg-[#163d25] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(12,30,17,0.25)] hover:shadow-[0_6px_24px_rgba(12,30,17,0.3)]"
               >
                 {loading ? (
                   <>
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Signing in…
+                    <span>Signing in…</span>
                   </>
                 ) : (
-                  "Sign in →"
+                  <>
+                    <span>Sign in</span>
+                    <span className="text-[#4db87a]">→</span>
+                  </>
                 )}
               </button>
             </form>
 
             {/* Divider */}
-            <div className="flex items-center gap-3.5 my-6 text-[12px] text-[#a89e93] font-medium tracking-[0.05em] uppercase">
-              <div className="flex-1 h-px bg-[#e8e2da]" />
-              or
-              <div className="flex-1 h-px bg-[#e8e2da]" />
+            <div className="flex items-center gap-4 my-8">
+              <div className="flex-1 h-px bg-[#e0d8cf]" />
+              <span className="text-[11px] text-[#b5ac9e] uppercase tracking-[1px] font-medium">or</span>
+              <div className="flex-1 h-px bg-[#e0d8cf]" />
             </div>
 
-            {/* Sign-up row */}
-            <p className="text-center text-[13.5px] text-[#6b6457]">
-              Don't have an account?{" "}
-              <Link
-                to="/signup"
-                className="text-[#3a8c57] font-semibold no-underline hover:text-[#163d25] transition-colors"
-              >
-                Create one free →
-              </Link>
-            </p>
+            {/* Signup link */}
+            <div className="text-center">
+              <p className="text-[13.5px] text-[#7a6d5e]">
+                New to TerraSpotter?{" "}
+                <Link
+                  to="/signup"
+                  className="text-[#0c1e11] font-semibold no-underline hover:text-[#4db87a] transition-colors"
+                >
+                  Create your account →
+                </Link>
+              </p>
+            </div>
+
+            {/* Trust badges */}
+            <div className="flex items-center justify-center gap-5 mt-10 pt-8 border-t border-[#e0d8cf]">
+              {["🔒 Secure", "🇮🇳 India-first", "🌿 NGO-trusted"].map(badge => (
+                <span key={badge} className="text-[11.5px] text-[#b5ac9e] font-medium">
+                  {badge}
+                </span>
+              ))}
+            </div>
 
           </div>
         </motion.div>

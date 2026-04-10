@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Browse lands listing — Tailwind, grid/list toggle, skeleton loaders, responsive.
+ Description: Browse lands — Verdant Editorial redesign. Cormorant Garant + Outfit fonts.
 */
 import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
@@ -17,15 +17,15 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
 // ─── utils ────────────────────────────────────────────────────
 const distanceKm = (lat1, lon1, lat2, lon2) => {
-  const R = 6371, dLat = ((lat2-lat1)*Math.PI)/180, dLon = ((lon2-lon1)*Math.PI)/180;
-  const a = Math.sin(dLat/2)**2 + Math.cos((lat1*Math.PI)/180)*Math.cos((lat2*Math.PI)/180)*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const R = 6371, dLat = ((lat2 - lat1) * Math.PI) / 180, dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
 const MapClickHandler = ({ onMapClick }) => {
@@ -33,62 +33,75 @@ const MapClickHandler = ({ onMapClick }) => {
   return null;
 };
 
-const statusStyle = (s) => {
+const statusConfig = (s) => {
   const map = {
-    "Vacant":                  "bg-emerald-50 text-emerald-800 border-emerald-200",
-    "Barren":                  "bg-amber-50 text-amber-800 border-amber-200",
-    "Roadside Strip":          "bg-sky-50 text-sky-800 border-sky-200",
-    "Roadside":                "bg-sky-50 text-sky-800 border-sky-200",
-    "Open Ground":             "bg-green-50 text-green-800 border-green-200",
-    "Agricultural (unused)":   "bg-yellow-50 text-yellow-800 border-yellow-200",
-    "Industrial Wasteland":    "bg-red-50 text-red-800 border-red-200",
+    "Vacant": { dot: "bg-emerald-400", chip: "bg-emerald-50 text-emerald-800 border-emerald-200/80" },
+    "Barren": { dot: "bg-amber-400", chip: "bg-amber-50 text-amber-800 border-amber-200/80" },
+    "Roadside Strip": { dot: "bg-sky-400", chip: "bg-sky-50 text-sky-800 border-sky-200/80" },
+    "Roadside": { dot: "bg-sky-400", chip: "bg-sky-50 text-sky-800 border-sky-200/80" },
+    "Open Ground": { dot: "bg-green-400", chip: "bg-green-50 text-green-800 border-green-200/80" },
+    "Agricultural (unused)": { dot: "bg-yellow-400", chip: "bg-yellow-50 text-yellow-800 border-yellow-200/80" },
+    "Industrial Wasteland": { dot: "bg-red-400", chip: "bg-red-50 text-red-800 border-red-200/80" },
   };
-  return map[s] || "bg-slate-50 text-slate-700 border-slate-200";
+  return map[s] || { dot: "bg-slate-400", chip: "bg-slate-50 text-slate-700 border-slate-200/80" };
 };
 
-// ─── Skeleton card ────────────────────────────────────────────
-const CardSkeleton = ({ list = false }) => (
-  <div className={`bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm
-    ${list ? "flex flex-row" : "flex flex-col"}`}>
-    <div className={`bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 animate-pulse
-      ${list ? "w-48 sm:w-64 shrink-0" : "h-44"}`} />
-    <div className={`p-5 flex flex-col gap-3 flex-1`}>
-      <div className="h-4 w-3/5 rounded-lg bg-slate-100 animate-pulse" />
-      <div className="h-3 w-2/5 rounded-lg bg-slate-100 animate-pulse" />
+// ─── Skeleton ────────────────────────────────────────────────
+const Shimmer = ({ className = "" }) => (
+  <div className={`rounded-xl bg-gradient-to-r from-[#f0ebe2] via-[#e8e2d8] to-[#f0ebe2] animate-pulse ${className}`} />
+);
+
+const GridSkeleton = () => (
+  <div className="bg-white rounded-2xl border border-[#ede8de] overflow-hidden flex flex-col shadow-sm">
+    <Shimmer className="h-48 rounded-none rounded-t-2xl" />
+    <div className="p-5 flex flex-col gap-3">
+      <Shimmer className="h-4 w-3/5" />
+      <Shimmer className="h-3 w-2/5" />
       <div className="flex gap-2 mt-1">
-        <div className="h-7 w-20 rounded-xl bg-slate-100 animate-pulse" />
-        <div className="h-7 w-16 rounded-xl bg-slate-100 animate-pulse" />
+        <Shimmer className="h-6 w-20 rounded-full" />
+        <Shimmer className="h-6 w-16 rounded-full" />
       </div>
-      <div className="flex gap-2 mt-auto pt-2">
-        <div className="h-9 w-5 flex-1 rounded-xl bg-slate-100 animate-pulse" />
+      <Shimmer className="h-10 w-full mt-2 rounded-xl" />
+    </div>
+  </div>
+);
+
+const ListSkeleton = () => (
+  <div className="bg-white rounded-2xl border border-[#ede8de] overflow-hidden flex flex-row shadow-sm">
+    <Shimmer className="w-52 shrink-0 rounded-none rounded-l-2xl h-[140px]" />
+    <div className="p-5 flex flex-col gap-3 flex-1">
+      <Shimmer className="h-4 w-2/5" />
+      <Shimmer className="h-3 w-1/3" />
+      <div className="flex gap-2 mt-1">
+        <Shimmer className="h-6 w-20 rounded-full" />
+        <Shimmer className="h-6 w-16 rounded-full" />
       </div>
+      <Shimmer className="h-10 w-40 mt-auto rounded-xl" />
     </div>
   </div>
 );
 
 // ─── Image strip ─────────────────────────────────────────────
 const ImageStrip = ({ landId, onOpenGallery, compact = false }) => {
-  const [images, setImages]     = useState([]);
+  const [images, setImages] = useState([]);
   const [imgLoading, setImgLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/lands/${landId}/images`, { credentials:"include" })
+    fetch(`${BASE_URL}/api/lands/${landId}/images`, { credentials: "include" })
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setImages(data); })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setImgLoading(false));
   }, [landId]);
 
-  if (imgLoading) return (
-    <div className={`bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 animate-pulse
-      ${compact ? "h-36 sm:h-full" : "h-44"} w-full`} />
-  );
+  const h = compact ? "h-36 sm:h-full" : "h-48";
+
+  if (imgLoading) return <Shimmer className={`${h} w-full rounded-none`} />;
 
   if (images.length === 0) return (
-    <div className={`flex flex-col items-center justify-center gap-2
-      bg-[#f0ede8] ${compact ? "h-36 sm:h-full" : "h-44"} w-full`}>
-      <span className="text-3xl opacity-40">🌿</span>
-      <p className="text-xs text-slate-400">No photos yet</p>
+    <div className={`flex flex-col items-center justify-center gap-2 bg-[#f2ede3] ${h} w-full`}>
+      <span className="text-3xl opacity-30">🌿</span>
+      <p className="text-xs text-[#b5ac9e] font-['Outfit',sans-serif]">No photos yet</p>
     </div>
   );
 
@@ -98,124 +111,124 @@ const ImageStrip = ({ landId, onOpenGallery, compact = false }) => {
   return (
     <div
       onClick={() => onOpenGallery(images)}
-      className={`relative flex items-end overflow-hidden cursor-pointer bg-[#f0ede8] group
-        ${compact ? "h-36 sm:h-full" : "h-44"} w-full p-3`}>
-      {/* background — last image fills */}
+      className={`relative overflow-hidden cursor-pointer bg-[#f2ede3] group ${h} w-full`}
+    >
       <img
         src={shown[0]?.imageUrl}
         alt=""
-        className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-50 transition-opacity duration-200"
-        onError={e => { e.target.style.display="none"; }}
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        onError={e => { e.target.style.display = "none"; }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-      {/* thumbnails row */}
-      <div className="relative z-10 flex items-end gap-0">
+      {/* Thumbnail row */}
+      <div className="absolute bottom-3 left-3 flex items-end gap-0 z-10">
         {shown.map((img, i) => (
-          <div key={img.id}
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 border-white shadow-lg shrink-0"
-            style={{ marginLeft: i === 0 ? 0 : -10, zIndex: shown.length - i }}>
+          <div
+            key={img.id}
+            className="w-11 h-11 rounded-lg overflow-hidden border-2 border-white shadow-md shrink-0"
+            style={{ marginLeft: i === 0 ? 0 : -6, zIndex: shown.length - i }}
+          >
             <img src={img.imageUrl} alt="" className="w-full h-full object-cover"
-              onError={e => { e.target.src="https://via.placeholder.com/64x64/e8f5ee/0d3320?text=🌿"; }} />
+              onError={e => { e.target.style.display = "none"; }} />
           </div>
         ))}
         {extra > 0 && (
-          <div className="w-9 h-9 rounded-full bg-[#0d3320] text-white flex items-center justify-center
-                         text-xs font-bold ml-1.5 border-2 border-white shadow-lg shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#0b1d10]/80 text-white flex items-center justify-center text-[10px] font-bold ml-1 border-2 border-white shadow-md shrink-0 font-['Outfit',sans-serif]">
             +{extra}
           </div>
         )}
       </div>
 
-      {/* view all pill */}
-      <span className="absolute bottom-3 right-3 z-10 bg-[#0d3320]/85 text-white text-[11px] font-semibold
-                       px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      {/* Hover pill */}
+      <span className="absolute bottom-3 right-3 z-10 bg-[#0b1d10]/75 backdrop-blur-sm text-white text-[11px] font-semibold px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 font-['Outfit',sans-serif]">
         View all →
       </span>
     </div>
   );
 };
 
-// ─── Grid card ────────────────────────────────────────────────
+// ─── Grid Card ────────────────────────────────────────────────
 const GridCard = ({ land, onOpenGallery, onNavigate }) => {
+  const cfg = statusConfig(land.landStatus);
   const approxTrees = land.areaSqm ? Math.floor(land.areaSqm / 20) : null;
 
   return (
-    <div
-      className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col
-                 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 cursor-pointer group">
-      {/* image */}
+    <div className="bg-white rounded-2xl border border-[#ede8de] shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(12,30,17,0.1)] transition-all duration-300 group">
+      {/* Image */}
       <div className="relative">
         <ImageStrip landId={land.id} onOpenGallery={onOpenGallery} />
-        <span className={`absolute top-2.5 left-2.5 z-10 text-[11px] font-semibold px-2.5 py-1
-                         rounded-full border ${statusStyle(land.landStatus)}`}>
+        <span className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border font-['Outfit',sans-serif] ${cfg.chip}`}>
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`} />
           {land.landStatus || "Unspecified"}
         </span>
       </div>
 
-      {/* body */}
-      <div className="p-4 sm:p-5 flex flex-col gap-3 flex-1">
+      {/* Body */}
+      <div className="p-5 flex flex-col gap-4 flex-1">
         <div>
-          <h3 className="text-[15px] font-semibold text-[#111] leading-snug line-clamp-1">
+          <h3 className="font-['Cormorant_Garant',serif] text-[19px] font-semibold text-[#0c1e11] leading-snug line-clamp-1">
             {land.title || "Unnamed Land"}
           </h3>
           {land.centroidLat && land.centroidLng && (
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-[11.5px] text-[#b5ac9e] mt-1 font-['Outfit',sans-serif]">
               📍 {land.centroidLat.toFixed(4)}, {land.centroidLng.toFixed(4)}
             </p>
           )}
         </div>
 
-        {/* metrics */}
-        <div className="bg-[#f7f3ee] rounded-xl p-3 flex flex-col gap-2">
-          <div className="flex gap-5">
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm">📐</span>
-              <span className="text-sm font-semibold text-[#0d3320]">
-                {land.areaSqm ? Number(land.areaSqm).toLocaleString() : "—"}
+        {/* Metrics */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-[#f7f3ec] rounded-xl px-3 py-2.5 flex flex-col">
+            <span className="text-[10px] text-[#b5ac9e] uppercase tracking-[1.2px] font-semibold font-['Outfit',sans-serif] mb-0.5">Area</span>
+            <span className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11] leading-tight">
+              {land.areaSqm ? Number(land.areaSqm).toLocaleString() : "—"}
+              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif] font-normal ml-1">m²</span>
+            </span>
+          </div>
+          {approxTrees ? (
+            <div className="bg-[#f7f3ec] rounded-xl px-3 py-2.5 flex flex-col">
+              <span className="text-[10px] text-[#b5ac9e] uppercase tracking-[1.2px] font-semibold font-['Outfit',sans-serif] mb-0.5">~Trees</span>
+              <span className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#2d8a55] leading-tight">
+                {approxTrees}
+                <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif] font-normal ml-1">est.</span>
               </span>
-              <span className="text-xs text-slate-400">m²</span>
             </div>
-            {approxTrees && (
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm">🌱</span>
-                <span className="text-sm font-semibold text-[#0d3320]">~{approxTrees}</span>
-                <span className="text-xs text-slate-400">trees</span>
-              </div>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {land.waterAvailable && (
-              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-500">
-                💧 {land.waterAvailable}
-              </span>
-            )}
-            {land.ownershipType && (
-              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-500">
-                🏛 {land.ownershipType}
-              </span>
-            )}
-            {land.permissionStatus && (
-              <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border
-                ${land.permissionStatus?.toLowerCase().includes("yes")
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                  : "bg-white border-slate-200 text-slate-500"}`}>
-                {land.permissionStatus?.toLowerCase().includes("yes") ? "✅" : "⏳"} {land.permissionStatus}
-              </span>
-            )}
-          </div>
+          ) : <div />}
+        </div>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1.5">
+          {land.waterAvailable && (
+            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#f7f3ec] border border-[#ede8de] text-[#8a7d6e] font-['Outfit',sans-serif]">
+              💧 {land.waterAvailable}
+            </span>
+          )}
+          {land.ownershipType && (
+            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#f7f3ec] border border-[#ede8de] text-[#8a7d6e] font-['Outfit',sans-serif]">
+              🏛 {land.ownershipType}
+            </span>
+          )}
+          {land.permissionStatus?.toLowerCase().includes("yes") && (
+            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 font-['Outfit',sans-serif]">
+              ✅ Permitted
+            </span>
+          )}
         </div>
 
         {land.notes && (
-          <p className="text-xs text-slate-400 italic leading-relaxed line-clamp-2">"{land.notes}"</p>
+          <p className="text-[12px] text-[#b5ac9e] italic leading-relaxed line-clamp-2 font-['Outfit',sans-serif]">
+            "{land.notes}"
+          </p>
         )}
 
-        <div className="mt-auto pt-1">
+        <div className="mt-auto">
           <button
             onClick={() => onNavigate(land.id)}
-            className="w-full py-2.5 rounded-xl bg-[#0d3320] text-white text-sm font-semibold
-                       hover:bg-[#1a5c38] transition-colors duration-150 cursor-pointer">
-            View site & plant here →
+            className="w-full py-3 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold font-['Outfit',sans-serif] hover:bg-[#163d25] transition-colors duration-200 cursor-pointer flex items-center justify-center gap-2 group-hover:bg-[#163d25]"
+          >
+            View site
+            <span className="text-[#4db87a]">→</span>
           </button>
         </div>
       </div>
@@ -223,84 +236,83 @@ const GridCard = ({ land, onOpenGallery, onNavigate }) => {
   );
 };
 
-// ─── List card ────────────────────────────────────────────────
+// ─── List Card ────────────────────────────────────────────────
 const ListCard = ({ land, onOpenGallery, onNavigate }) => {
+  const cfg = statusConfig(land.landStatus);
   const approxTrees = land.areaSqm ? Math.floor(land.areaSqm / 20) : null;
 
   return (
-    <div
-      className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col sm:flex-row
-                 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group">
-      {/* image — fixed width on sm+ */}
-      <div className="relative sm:w-52 md:w-64 shrink-0">
+    <div className="bg-white rounded-2xl border border-[#ede8de] shadow-sm overflow-hidden flex flex-col sm:flex-row hover:shadow-[0_8px_32px_rgba(12,30,17,0.08)] hover:-translate-y-0.5 transition-all duration-300 group">
+      {/* Image */}
+      <div className="relative sm:w-52 md:w-60 shrink-0">
         <ImageStrip landId={land.id} onOpenGallery={onOpenGallery} compact />
-        <span className={`absolute top-2.5 left-2.5 z-10 text-[11px] font-semibold px-2.5 py-1
-                         rounded-full border ${statusStyle(land.landStatus)}`}>
+        <span className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border font-['Outfit',sans-serif] ${cfg.chip}`}>
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`} />
           {land.landStatus || "Unspecified"}
         </span>
       </div>
 
-      {/* body */}
-      <div className="p-4 sm:p-5 flex flex-col gap-2.5 flex-1 min-w-0">
+      {/* Body */}
+      <div className="p-5 flex flex-col gap-3 flex-1 min-w-0">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="text-[15px] font-semibold text-[#111] leading-snug truncate">
+            <h3 className="font-['Cormorant_Garant',serif] text-[19px] font-semibold text-[#0c1e11] leading-snug truncate">
               {land.title || "Unnamed Land"}
             </h3>
             {land.centroidLat && land.centroidLng && (
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-[11.5px] text-[#b5ac9e] mt-0.5 font-['Outfit',sans-serif]">
                 📍 {land.centroidLat.toFixed(4)}, {land.centroidLng.toFixed(4)}
               </p>
             )}
           </div>
         </div>
 
-        {/* metrics row */}
-        <div className="flex flex-wrap gap-3 items-center">
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm">📐</span>
-            <span className="text-sm font-semibold text-[#0d3320]">
-              {land.areaSqm ? Number(land.areaSqm).toLocaleString() : "—"}
-            </span>
-            <span className="text-xs text-slate-400">m²</span>
-          </div>
-          {approxTrees && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm">🌱</span>
-              <span className="text-sm font-semibold text-[#0d3320]">~{approxTrees}</span>
-              <span className="text-xs text-slate-400">trees</span>
+        <div className="flex flex-wrap items-center gap-2.5">
+          {land.areaSqm && (
+            <div className="flex items-baseline gap-1">
+              <span className="font-['Cormorant_Garant',serif] text-[17px] font-semibold text-[#0c1e11]">
+                {Number(land.areaSqm).toLocaleString()}
+              </span>
+              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">m²</span>
             </div>
           )}
+          {approxTrees && (
+            <>
+              <span className="w-px h-3 bg-[#e0d8cf]" />
+              <div className="flex items-baseline gap-1">
+                <span className="font-['Cormorant_Garant',serif] text-[17px] font-semibold text-[#2d8a55]">~{approxTrees}</span>
+                <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">trees</span>
+              </div>
+            </>
+          )}
           {land.waterAvailable && (
-            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#f7f3ee] border border-slate-200 text-slate-500">
-              💧 {land.waterAvailable}
-            </span>
+            <>
+              <span className="w-px h-3 bg-[#e0d8cf]" />
+              <span className="text-[11.5px] text-[#8a7d6e] font-['Outfit',sans-serif]">💧 {land.waterAvailable}</span>
+            </>
           )}
           {land.ownershipType && (
-            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#f7f3ee] border border-slate-200 text-slate-500 hidden sm:inline-flex">
-              🏛 {land.ownershipType}
-            </span>
+            <span className="text-[11.5px] text-[#8a7d6e] font-['Outfit',sans-serif] hidden md:inline">🏛 {land.ownershipType}</span>
           )}
-          {land.permissionStatus && (
-            <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border hidden md:inline-flex
-              ${land.permissionStatus?.toLowerCase().includes("yes")
-                ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                : "bg-[#f7f3ee] border-slate-200 text-slate-500"}`}>
-              {land.permissionStatus?.toLowerCase().includes("yes") ? "✅" : "⏳"} {land.permissionStatus}
+          {land.permissionStatus?.toLowerCase().includes("yes") && (
+            <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 font-['Outfit',sans-serif] hidden sm:inline-flex">
+              ✅ Permitted
             </span>
           )}
         </div>
 
         {land.notes && (
-          <p className="text-xs text-slate-400 italic leading-relaxed line-clamp-1 hidden sm:block">"{land.notes}"</p>
+          <p className="text-[12px] text-[#b5ac9e] italic leading-relaxed line-clamp-1 font-['Outfit',sans-serif] hidden sm:block">
+            "{land.notes}"
+          </p>
         )}
 
-        <div className="mt-auto pt-1 flex gap-2">
+        <div className="mt-auto">
           <button
             onClick={() => onNavigate(land.id)}
-            className="flex-1 py-2.5 rounded-xl bg-[#0d3320] text-white text-sm font-semibold
-                       hover:bg-[#1a5c38] transition-colors duration-150 cursor-pointer text-center">
-            View site & plant here →
+            className="py-2.5 px-5 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold font-['Outfit',sans-serif] hover:bg-[#163d25] transition-colors duration-200 cursor-pointer inline-flex items-center gap-2"
+          >
+            View site <span className="text-[#4db87a]">→</span>
           </button>
         </div>
       </div>
@@ -311,23 +323,23 @@ const ListCard = ({ land, onOpenGallery, onNavigate }) => {
 // ─── Main ─────────────────────────────────────────────────────
 const Browse = () => {
   const navigate = useNavigate();
-  const [lands,        setLands]        = useState([]);
-  const [loading,      setLoading]      = useState(true);
-  const [search,       setSearch]       = useState("");
+  const [lands, setLands] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
-  const [viewMode,     setViewMode]     = useState("grid"); // "grid" | "list"
-  const [mapOpen,      setMapOpen]      = useState(false);
-  const [pinLocation,  setPinLocation]  = useState(null);
-  const [pinRadius,    setPinRadius]    = useState(50);
-  const [gallery,      setGallery]      = useState(null);
-  const [galleryIdx,   setGalleryIdx]   = useState(0);
+  const [viewMode, setViewMode] = useState("grid");
+  const [mapOpen, setMapOpen] = useState(false);
+  const [pinLocation, setPinLocation] = useState(null);
+  const [pinRadius, setPinRadius] = useState(50);
+  const [gallery, setGallery] = useState(null);
+  const [galleryIdx, setGalleryIdx] = useState(0);
   const mapRef = useRef(null);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/lands`, { credentials:"include" })
+    fetch(`${BASE_URL}/api/lands`, { credentials: "include" })
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setLands(data); })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
@@ -335,13 +347,12 @@ const Browse = () => {
     if (mapOpen && mapRef.current) setTimeout(() => mapRef.current.invalidateSize(), 300);
   }, [mapOpen]);
 
-  // keyboard nav for gallery
   useEffect(() => {
     if (!gallery) return;
     const handler = (e) => {
-      if (e.key === "ArrowRight") setGalleryIdx(i => Math.min(i+1, gallery.length-1));
-      if (e.key === "ArrowLeft")  setGalleryIdx(i => Math.max(i-1, 0));
-      if (e.key === "Escape")     setGallery(null);
+      if (e.key === "ArrowRight") setGalleryIdx(i => Math.min(i + 1, gallery.length - 1));
+      if (e.key === "ArrowLeft") setGalleryIdx(i => Math.max(i - 1, 0));
+      if (e.key === "Escape") setGallery(null);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -352,17 +363,12 @@ const Browse = () => {
     setMapOpen(false);
   };
 
-  const openGallery = (images, startIdx = 0) => {
-    setGallery(images);
-    setGalleryIdx(startIdx);
-  };
-
   const filtered = lands.filter(land => {
     const q = search.toLowerCase();
     const keyMatch =
-      (land.title       || "").toLowerCase().includes(q) ||
-      (land.ownerName   || "").toLowerCase().includes(q) ||
-      (land.landStatus  || "").toLowerCase().includes(q);
+      (land.title || "").toLowerCase().includes(q) ||
+      (land.ownerName || "").toLowerCase().includes(q) ||
+      (land.landStatus || "").toLowerCase().includes(q);
     const filterMatch = activeFilter ? land.landStatus === activeFilter : true;
     const pinMatch = pinLocation && land.centroidLat && land.centroidLng
       ? distanceKm(pinLocation.lat, pinLocation.lng, land.centroidLat, land.centroidLng) <= pinRadius
@@ -374,254 +380,303 @@ const Browse = () => {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
-        body { font-family:'DM Sans',sans-serif; background:#f7f3ee; }
-        .line-clamp-1 { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
-        .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        input[type=range] { accent-color:#2d8a55; }
-      `}</style>
-
       <Helmet>
         <title>TerraSpotter — Browse Sites</title>
         <meta name="description" content="Browse plantation sites available for afforestation." />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
       </Helmet>
 
-      <div className="min-h-screen bg-[#f7f3ee]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 sm:py-12">
+      <div className="min-h-screen bg-[#f7f3ec] font-['Outfit',sans-serif]">
 
-          {/* ── HEADER ──────────────────────────────── */}
-          <motion.div
-            initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.45 }}
-            className="mb-8">
-            <h1 style={{ fontFamily:"'DM Serif Display',serif" }}
-              className="text-3xl sm:text-4xl lg:text-5xl text-[#0d3320] leading-tight tracking-tight mb-2">
-              Browse Plantation Sites
-            </h1>
-            <p className="text-sm sm:text-base text-slate-500 leading-relaxed">
-              Explore verified land parcels available for afforestation across the region.
-            </p>
-          </motion.div>
+        {/* ── PAGE HEADER ──────────────────────────── */}
+        <div className="bg-[#0c1e11] relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0c1e11] via-[#0f2916] to-[#081410]" />
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#163d25] opacity-30 blur-[100px]" />
+          <div className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
 
-          {/* ── CONTROLS ────────────────────────────── */}
-          <motion.div
-            initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4, delay:0.05 }}
-            className="flex flex-col gap-3 mb-6">
-
-            {/* search row */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* search box */}
-              <div className="flex-1 flex items-center gap-2.5 bg-white border border-slate-200
-                              rounded-xl px-4 py-3 shadow-sm focus-within:border-emerald-400
-                              focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
-                <span className="text-slate-400 shrink-0">🔍</span>
-                <input
-                  type="text"
-                  placeholder="Search by name, status, or owner…"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="flex-1 outline-none text-sm text-[#111] bg-transparent placeholder:text-slate-300"
-                />
-                {search && (
-                  <button onClick={() => setSearch("")}
-                    className="text-slate-300 hover:text-slate-500 transition-colors text-sm cursor-pointer shrink-0">✕</button>
-                )}
+          <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-16">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="inline-flex items-center gap-2 mb-5">
+                <div className="w-5 h-px bg-[#4db87a]/50" />
+                <span className="text-[#4db87a] text-[10.5px] font-semibold tracking-[3px] uppercase">
+                  Plantation sites
+                </span>
               </div>
+              <h1 className="font-['Cormorant_Garant',serif] text-[44px] sm:text-[56px] font-semibold text-white leading-[0.92] tracking-[-0.8px] mb-4">
+                Browse available<br />
+                <em className="not-italic text-[#4db87a]">land parcels</em>
+              </h1>
+              <p className="text-white/40 text-[14.5px] leading-relaxed max-w-[420px] font-light">
+                Explore verified sites across India ready for afforestation — filter by type, location, and more.
+              </p>
+            </motion.div>
 
-              {/* pin button */}
-              <button
-                onClick={() => setMapOpen(true)}
-                className={`shrink-0 flex items-center gap-2 px-3 sm:px-4 py-3 rounded-xl border text-sm font-medium
-                            transition-all duration-150 cursor-pointer shadow-sm whitespace-nowrap
-                            ${pinLocation
-                              ? "bg-[#0d3320] text-white border-[#0d3320]"
-                              : "bg-white text-[#0d3320] border-slate-200 hover:border-emerald-400 hover:bg-emerald-50"}`}>
-                <span>📍</span>
-                <span className="hidden sm:inline">{pinLocation ? "Change pin" : "Near location"}</span>
-              </button>
+            {/* Stats row */}
+            {!loading && (
+              <motion.div
+                className="flex items-center gap-6 mt-8 pt-8 border-t border-white/[0.08]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div>
+                  <span className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#4db87a]">{lands.length}</span>
+                  <span className="text-white/30 text-[12px] ml-2 uppercase tracking-[1px]">Total sites</span>
+                </div>
+                <div className="w-px h-6 bg-white/10" />
+                <div>
+                  <span className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#4db87a]">{filtered.length}</span>
+                  <span className="text-white/30 text-[12px] ml-2 uppercase tracking-[1px]">Showing</span>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
 
-              {/* view toggle */}
-              <div className="shrink-0 flex bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`px-3 py-3 transition-all duration-150 cursor-pointer
-                    ${viewMode === "grid" ? "bg-[#0d3320] text-white" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
-                  title="Grid view">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
-                    <rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
-                    <rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/>
-                    <rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/>
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`px-3 py-3 transition-all duration-150 cursor-pointer border-l border-slate-200
-                    ${viewMode === "list" ? "bg-[#0d3320] text-white" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
-                  title="List view">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <rect x="1" y="2" width="14" height="2.5" rx="1.25" fill="currentColor"/>
-                    <rect x="1" y="6.75" width="14" height="2.5" rx="1.25" fill="currentColor"/>
-                    <rect x="1" y="11.5" width="14" height="2.5" rx="1.25" fill="currentColor"/>
-                  </svg>
-                </button>
-              </div>
+        {/* ── CONTROLS ─────────────────────────────── */}
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-6 flex flex-col gap-4">
+
+          {/* Search + Actions row */}
+          <div className="flex items-center gap-2.5">
+            {/* Search */}
+            <div className="flex-1 flex items-center gap-3 bg-white border border-[#e0d8cf] rounded-xl px-4 py-3 shadow-sm focus-within:border-[#4db87a] focus-within:ring-2 focus-within:ring-[#4db87a]/10 transition-all">
+              <svg className="text-[#b5ac9e] shrink-0" width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M10.5 10.5L13.5 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search by name, status, owner…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="flex-1 outline-none text-sm text-[#0c1e11] bg-transparent placeholder:text-[#c8bfb4]"
+              />
+              {search && (
+                <button onClick={() => setSearch("")} className="text-[#c8bfb4] hover:text-[#8a7d6e] transition-colors cursor-pointer text-sm shrink-0">✕</button>
+              )}
             </div>
 
-            {/* pin info bar */}
-            <AnimatePresence>
-              {pinLocation && (
-                <motion.div
-                  initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:"auto" }}
-                  exit={{ opacity:0, height:0 }} className="overflow-hidden">
-                  <div className="flex items-center flex-wrap gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200
-                                  rounded-xl text-sm text-emerald-800">
-                    <span>📍</span>
-                    <span>Within <strong>{pinRadius} km</strong> of {pinLocation.lat.toFixed(4)}, {pinLocation.lng.toFixed(4)}</span>
-                    <div className="flex items-center gap-2 ml-auto">
-                      <span className="text-xs text-emerald-600">Radius:</span>
-                      <input type="range" min={10} max={200} step={10} value={pinRadius}
-                        onChange={e => setPinRadius(Number(e.target.value))}
-                        className="w-20" />
-                      <span className="text-xs font-semibold text-emerald-700 w-14">{pinRadius} km</span>
-                      <button
-                        onClick={() => { setPinLocation(null); setPinRadius(50); }}
-                        className="text-xs font-medium px-2.5 py-1 rounded-lg border border-emerald-300
-                                   bg-white text-emerald-700 hover:bg-emerald-100 transition-colors cursor-pointer">
-                        Clear
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Pin button */}
+            <button
+              onClick={() => setMapOpen(true)}
+              className={`shrink-0 flex items-center gap-2 h-[46px] px-4 rounded-xl border text-[13px] font-medium transition-all duration-200 cursor-pointer whitespace-nowrap shadow-sm ${pinLocation
+                  ? "bg-[#0c1e11] text-white border-[#0c1e11]"
+                  : "bg-white text-[#0c1e11] border-[#e0d8cf] hover:border-[#4db87a] hover:bg-emerald-50/50"
+                }`}
+            >
+              <span>📍</span>
+              <span className="hidden sm:inline">{pinLocation ? "Change pin" : "Near me"}</span>
+            </button>
 
-            {/* filter chips */}
+            {/* View toggle */}
+            <div className="shrink-0 flex bg-white border border-[#e0d8cf] rounded-xl overflow-hidden shadow-sm h-[46px]">
+              <button
+                onClick={() => setViewMode("grid")}
+                title="Grid view"
+                className={`px-3.5 flex items-center justify-center transition-all duration-200 cursor-pointer ${viewMode === "grid" ? "bg-[#0c1e11] text-white" : "text-[#b5ac9e] hover:text-[#0c1e11]"
+                  }`}
+              >
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                  <rect x="1" y="1" width="5.5" height="5.5" rx="1.2" fill="currentColor" />
+                  <rect x="8.5" y="1" width="5.5" height="5.5" rx="1.2" fill="currentColor" />
+                  <rect x="1" y="8.5" width="5.5" height="5.5" rx="1.2" fill="currentColor" />
+                  <rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1.2" fill="currentColor" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                title="List view"
+                className={`px-3.5 flex items-center justify-center border-l border-[#e0d8cf] transition-all duration-200 cursor-pointer ${viewMode === "list" ? "bg-[#0c1e11] text-white" : "text-[#b5ac9e] hover:text-[#0c1e11]"
+                  }`}
+              >
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                  <rect x="1" y="2" width="13" height="2.2" rx="1.1" fill="currentColor" />
+                  <rect x="1" y="6.4" width="13" height="2.2" rx="1.1" fill="currentColor" />
+                  <rect x="1" y="10.8" width="13" height="2.2" rx="1.1" fill="currentColor" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Pin info bar */}
+          <AnimatePresence>
+            {pinLocation && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="flex items-center flex-wrap gap-4 px-4 py-3.5 bg-emerald-50 border border-emerald-200/80 rounded-xl text-sm text-emerald-800">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="font-medium">Within <strong>{pinRadius} km</strong> of {pinLocation.lat.toFixed(4)}, {pinLocation.lng.toFixed(4)}</span>
+                  </div>
+                  <div className="flex items-center gap-3 ml-auto">
+                    <span className="text-xs text-emerald-600 font-medium">Radius</span>
+                    <input
+                      type="range" min={10} max={200} step={10}
+                      value={pinRadius}
+                      onChange={e => setPinRadius(Number(e.target.value))}
+                      className="w-24 accent-emerald-600"
+                    />
+                    <span className="text-xs font-semibold text-emerald-700 w-12">{pinRadius} km</span>
+                    <button
+                      onClick={() => { setPinLocation(null); setPinRadius(50); }}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Filter chips */}
+          {statusTypes.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">Filter:</span>
-              {statusTypes.map(type => (
-                <button key={type}
-                  onClick={() => setActiveFilter(activeFilter === type ? "" : type)}
-                  className={`px-3.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-150 cursor-pointer
-                    ${activeFilter === type
-                      ? "bg-[#0d3320] border-[#0d3320] text-white shadow-sm"
-                      : "bg-white border-slate-200 text-slate-500 hover:border-emerald-400 hover:text-[#0d3320]"}`}>
+              <span className="text-[10.5px] font-semibold text-[#b5ac9e] uppercase tracking-[1.5px] mr-1">Filter:</span>
+              {["All", ...statusTypes].map(type => (
+                <button
+                  key={type}
+                  onClick={() => setActiveFilter(type === "All" ? "" : (activeFilter === type ? "" : type))}
+                  className={`h-8 px-3.5 rounded-full border text-[12px] font-medium transition-all duration-200 cursor-pointer ${(type === "All" && !activeFilter) || activeFilter === type
+                      ? "bg-[#0c1e11] border-[#0c1e11] text-white shadow-sm"
+                      : "bg-white border-[#e0d8cf] text-[#8a7d6e] hover:border-[#4db87a]/50 hover:text-[#0c1e11]"
+                    }`}
+                >
                   {type}
                 </button>
               ))}
-              {activeFilter && (
-                <button onClick={() => setActiveFilter("")}
-                  className="px-3.5 py-1.5 rounded-full border border-slate-200 bg-white text-xs font-medium
-                             text-slate-400 hover:text-slate-600 cursor-pointer transition-colors">
-                  ✕ Clear
-                </button>
-              )}
-            </div>
-          </motion.div>
-
-          {/* ── RESULTS META ────────────────────────── */}
-          {!loading && (
-            <div className="flex items-center justify-between mb-5">
-              <p className="text-sm text-slate-400">
-                Showing <span className="font-semibold text-[#0d3320]">{filtered.length}</span> of {lands.length} sites
-              </p>
-              {filtered.length !== lands.length && (
-                <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                  Filters active
-                </span>
-              )}
             </div>
           )}
+        </div>
 
-          {/* ── CARDS ───────────────────────────────── */}
+        {/* ── CONTENT ──────────────────────────────── */}
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pb-16">
           {loading ? (
-            // ── SKELETON ──────────────────────────────
             <div className={viewMode === "grid"
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
               : "flex flex-col gap-4"}>
-              {[...Array(6)].map((_, i) => <CardSkeleton key={i} list={viewMode === "list"} />)}
+              {[...Array(6)].map((_, i) =>
+                viewMode === "grid"
+                  ? <GridSkeleton key={i} />
+                  : <ListSkeleton key={i} />
+              )}
             </div>
           ) : filtered.length === 0 ? (
-            // ── EMPTY STATE ───────────────────────────
-            <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-              <span className="text-5xl">🌾</span>
-              <h3 style={{ fontFamily:"'DM Serif Display',serif" }}
-                className="text-2xl text-[#0d3320]">No sites found</h3>
-              <p className="text-sm text-slate-400 max-w-xs">
-                Try adjusting your search, filters, or proximity radius.
-              </p>
+            <div className="flex flex-col items-center justify-center py-28 gap-5 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-[#f2ede3] border border-[#ede8de] flex items-center justify-center text-3xl">
+                🌾
+              </div>
+              <div>
+                <h3 className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#0c1e11] mb-2">
+                  No sites found
+                </h3>
+                <p className="text-[13.5px] text-[#b5ac9e] max-w-xs leading-relaxed">
+                  Try adjusting your search terms, filters, or proximity radius.
+                </p>
+              </div>
+              {(search || activeFilter || pinLocation) && (
+                <button
+                  onClick={() => { setSearch(""); setActiveFilter(""); setPinLocation(null); }}
+                  className="text-[13px] font-semibold text-[#2d8a55] border border-emerald-200 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 transition-colors cursor-pointer"
+                >
+                  Clear all filters
+                </button>
+              )}
             </div>
           ) : viewMode === "grid" ? (
-            // ── GRID VIEW ─────────────────────────────
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filtered.map((land, i) => (
                 <motion.div key={land.id}
-                  initial={{ opacity:0, y:14 }} animate={{ opacity:1, y:0 }}
-                  transition={{ duration:0.3, delay: Math.min(i * 0.04, 0.3) }}>
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.35) }}>
                   <GridCard
                     land={land}
-                    onOpenGallery={imgs => openGallery(imgs, 0)}
+                    onOpenGallery={imgs => { setGallery(imgs); setGalleryIdx(0); }}
                     onNavigate={id => navigate(`/lands/${id}`)}
                   />
                 </motion.div>
               ))}
             </div>
           ) : (
-            // ── LIST VIEW ─────────────────────────────
             <div className="flex flex-col gap-4">
               {filtered.map((land, i) => (
                 <motion.div key={land.id}
-                  initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
-                  transition={{ duration:0.25, delay: Math.min(i * 0.03, 0.25) }}>
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.28) }}>
                   <ListCard
                     land={land}
-                    onOpenGallery={imgs => openGallery(imgs, 0)}
+                    onOpenGallery={imgs => { setGallery(imgs); setGalleryIdx(0); }}
                     onNavigate={id => navigate(`/lands/${id}`)}
                   />
                 </motion.div>
               ))}
             </div>
           )}
-
         </div>
       </div>
 
-      {/* ── MAP MODAL ─────────────────────────────── */}
+      {/* ── MAP MODAL ────────────────────────────────── */}
       <AnimatePresence>
         {mapOpen && (
           <motion.div
-            className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4 sm:p-6"
-            initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-            onClick={e => e.target === e.currentTarget && setMapOpen(false)}>
+            className="fixed inset-0 bg-black/55 z-[9999] flex items-center justify-center p-4 sm:p-6"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={e => e.target === e.currentTarget && setMapOpen(false)}
+          >
             <motion.div
-              className="bg-white w-full max-w-3xl rounded-2xl overflow-hidden flex flex-col shadow-2xl"
-              style={{ height:"clamp(400px,78vh,700px)" }}
-              initial={{ scale:0.96, opacity:0 }}
-              animate={{ scale:1, opacity:1 }}
-              exit={{ scale:0.96, opacity:0 }}
-              transition={{ duration:0.18 }}>
-
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
+              className="bg-white w-full max-w-3xl rounded-2xl overflow-hidden flex flex-col shadow-2xl border border-[#ede8de]"
+              style={{ height: "clamp(420px,78vh,700px)" }}
+              initial={{ scale: 0.96, opacity: 0, y: 12 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#ede8de] shrink-0">
                 <div>
-                  <h3 className="text-sm font-semibold text-[#0d3320]">📍 Drop a pin to search nearby</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Click anywhere on the map to set your search location</p>
+                  <h3 className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11]">
+                    Drop a pin to search nearby
+                  </h3>
+                  <p className="text-[12.5px] text-[#b5ac9e] mt-0.5 font-['Outfit',sans-serif]">
+                    Click anywhere on the map to set your search location
+                  </p>
                 </div>
-                <button onClick={() => setMapOpen(false)}
-                  className="w-8 h-8 rounded-xl border border-slate-200 flex items-center justify-center
-                             text-slate-400 hover:bg-slate-100 transition-colors cursor-pointer text-sm">
+                <button
+                  onClick={() => setMapOpen(false)}
+                  className="w-9 h-9 rounded-xl border border-[#e0d8cf] flex items-center justify-center text-[#b5ac9e] hover:bg-[#f7f3ec] hover:text-[#0c1e11] transition-colors cursor-pointer text-sm"
+                >
                   ✕
                 </button>
               </div>
-
               <div className="flex-1 overflow-hidden">
                 <MapContainer center={[19.0, 76.0]} zoom={6}
-                  style={{ height:"100%", width:"100%" }} ref={mapRef}>
+                  style={{ height: "100%", width: "100%" }} ref={mapRef}>
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <MapClickHandler onMapClick={handleMapClick} />
                   {pinLocation && <Marker position={[pinLocation.lat, pinLocation.lng]} />}
                   {lands.filter(l => l.centroidLat && l.centroidLng).map(l => (
                     <Marker key={l.id} position={[l.centroidLat, l.centroidLng]}>
-                      <Popup><strong>{l.title || "Land"}</strong><br />{l.landStatus}</Popup>
+                      <Popup>
+                        <strong className="font-['Outfit',sans-serif]">{l.title || "Land"}</strong>
+                        <br />{l.landStatus}
+                      </Popup>
                     </Marker>
                   ))}
                 </MapContainer>
@@ -631,63 +686,60 @@ const Browse = () => {
         )}
       </AnimatePresence>
 
-      {/* ── GALLERY LIGHTBOX ──────────────────────── */}
+      {/* ── GALLERY LIGHTBOX ─────────────────────────── */}
       <AnimatePresence>
         {gallery && (
           <motion.div
-            className="fixed inset-0 bg-black/92 z-[99999] flex flex-col items-center justify-center p-4 sm:p-6"
-            initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-            onClick={e => e.target === e.currentTarget && setGallery(null)}>
-
-            {/* close */}
-            <button onClick={() => setGallery(null)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center
-                         text-white hover:bg-white/20 transition-colors cursor-pointer text-lg backdrop-blur-sm">
+            className="fixed inset-0 bg-black/95 z-[99999] flex flex-col items-center justify-center p-4 sm:p-8"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={e => e.target === e.currentTarget && setGallery(null)}
+          >
+            <button
+              onClick={() => setGallery(null)}
+              className="absolute top-5 right-5 w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer border border-white/10"
+            >
               ✕
             </button>
 
-            {/* main image */}
-            <div className="relative max-w-3xl w-full flex items-center justify-center flex-1">
-              {galleryIdx > 0 && (
-                <button
-                  className="absolute left-0 sm:-left-14 z-10 w-11 h-11 rounded-full bg-white/10 border-none text-white
-                             flex items-center justify-center text-2xl hover:bg-white/20 transition-colors cursor-pointer backdrop-blur-sm"
-                  onClick={() => setGalleryIdx(i => i-1)}>‹</button>
-              )}
+            <div className="relative max-w-4xl w-full flex items-center justify-center flex-1 gap-4">
+              <button
+                className={`w-11 h-11 rounded-xl bg-white/10 backdrop-blur-sm text-white flex items-center justify-center text-xl hover:bg-white/20 transition-colors cursor-pointer border border-white/10 shrink-0 ${galleryIdx === 0 ? "opacity-25 pointer-events-none" : ""}`}
+                onClick={() => setGalleryIdx(i => i - 1)}
+              >‹</button>
 
               <motion.img
                 key={galleryIdx}
                 src={gallery[galleryIdx]?.imageUrl}
-                initial={{ opacity:0, scale:0.96 }} animate={{ opacity:1, scale:1 }}
-                transition={{ duration:0.18 }}
-                className="max-h-[62vh] max-w-full rounded-xl object-contain shadow-2xl"
-                onError={e => { e.target.src="https://via.placeholder.com/800x600/e8f5ee/0d3320?text=🌿"; }}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.2 }}
+                className="max-h-[62vh] max-w-full rounded-2xl object-contain shadow-2xl flex-1"
+                onError={e => { e.target.src = "https://via.placeholder.com/800x600/f2ede3/0c1e11?text=🌿"; }}
               />
 
-              {galleryIdx < gallery.length - 1 && (
-                <button
-                  className="absolute right-0 sm:-right-14 z-10 w-11 h-11 rounded-full bg-white/10 border-none text-white
-                             flex items-center justify-center text-2xl hover:bg-white/20 transition-colors cursor-pointer backdrop-blur-sm"
-                  onClick={() => setGalleryIdx(i => i+1)}>›</button>
-              )}
+              <button
+                className={`w-11 h-11 rounded-xl bg-white/10 backdrop-blur-sm text-white flex items-center justify-center text-xl hover:bg-white/20 transition-colors cursor-pointer border border-white/10 shrink-0 ${galleryIdx >= gallery.length - 1 ? "opacity-25 pointer-events-none" : ""}`}
+                onClick={() => setGalleryIdx(i => i + 1)}
+              >›</button>
             </div>
 
-            {/* counter */}
-            <p className="text-white/50 text-sm mt-3 mb-3">{galleryIdx+1} / {gallery.length}</p>
+            <p className="text-white/30 text-[12.5px] mt-4 mb-4 font-['Outfit',sans-serif]">
+              {galleryIdx + 1} / {gallery.length}
+            </p>
 
-            {/* thumbnails */}
-            <div className="flex gap-2 flex-wrap justify-center max-w-xl">
+            <div className="flex gap-2 flex-wrap justify-center max-w-lg">
               {gallery.map((img, i) => (
-                <button key={img.id} onClick={() => setGalleryIdx(i)}
-                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden border-2 shrink-0 cursor-pointer
-                              transition-all duration-150
-                              ${i === galleryIdx ? "border-white opacity-100" : "border-transparent opacity-50 hover:opacity-80"}`}>
+                <button
+                  key={img.id}
+                  onClick={() => setGalleryIdx(i)}
+                  className={`w-13 h-13 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 shrink-0 cursor-pointer transition-all duration-200 ${i === galleryIdx ? "border-[#4db87a] opacity-100 scale-105" : "border-transparent opacity-40 hover:opacity-70"
+                    }`}
+                >
                   <img src={img.imageUrl} className="w-full h-full object-cover"
-                    onError={e => { e.target.src="https://via.placeholder.com/56x56/e8f5ee/0d3320?text=🌿"; }} />
+                    onError={e => { e.target.style.display = "none"; }} />
                 </button>
               ))}
             </div>
-
           </motion.div>
         )}
       </AnimatePresence>
