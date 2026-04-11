@@ -65,26 +65,11 @@ function FadeIn({ children, delay = 0, y = 24, className = "" }) {
 // ─── Main Landing ─────────────────────────────────────────────
 export default function Landing() {
   const [stats, setStats] = useState(null);
-  const [navOpen, setNavOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`${BASE_URL}/api/stats`).then(r => setStats(r.data)).catch(() => { });
   }, []);
-
-  // Lock body scroll when mobile nav open
-  useEffect(() => {
-    document.body.style.overflow = navOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [navOpen]);
-
-  const navLinks = [
-    { to: "/browse", label: "Browse" },
-    { to: "/plantationShowcase", label: "Showcase" },
-    { to: "/community", label: "Community" },
-    { to: "/about", label: "About" },
-    { to: "/contact", label: "Contact" },
-  ];
 
   return (
     <>
@@ -116,95 +101,6 @@ export default function Landing() {
             }}
           />
 
-          {/* ── NAV ── */}
-          <nav className="relative z-20 flex items-center justify-between px-6 sm:px-10 xl:px-16 py-6">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 no-underline shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-base shadow-[0_0_20px_rgba(77,184,122,0.35)]">
-                🌿
-              </div>
-              <span className="font-['Cormorant_Garant',serif] font-semibold text-xl text-white tracking-wide">
-                TerraSpotter
-              </span>
-            </Link>
-
-            {/* Desktop nav */}
-            <div className="hidden lg:flex items-center gap-8">
-              {navLinks.map(l => (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  className="text-[13.5px] text-white/50 font-medium no-underline hover:text-white transition-colors duration-200"
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </div>
-
-            {/* Desktop CTA */}
-            <div className="hidden lg:flex items-center gap-3">
-              <Link
-                to="/login"
-                className="text-[13.5px] text-white/60 font-medium no-underline hover:text-white transition-colors px-4 py-2"
-              >
-                Sign in
-              </Link>
-              <Link
-                to="/signup"
-                className="text-[13.5px] font-semibold text-[#0c1e11] no-underline px-5 py-2.5 rounded-xl bg-[#4db87a] hover:bg-[#5dcf8a] transition-all duration-200 shadow-[0_4px_16px_rgba(77,184,122,0.3)] active:scale-[0.97]"
-              >
-                Get started →
-              </Link>
-            </div>
-
-            {/* Mobile hamburger */}
-            <button
-              onClick={() => setNavOpen(o => !o)}
-              className="lg:hidden w-10 h-10 rounded-xl border border-white/15 bg-white/[0.06] flex flex-col items-center justify-center gap-[5px] cursor-pointer"
-            >
-              <span className={`w-4 h-[1.5px] bg-white rounded-sm transition-all duration-200 ${navOpen ? "translate-y-[6.5px] rotate-45" : ""}`} />
-              <span className={`w-4 h-[1.5px] bg-white rounded-sm transition-all duration-200 ${navOpen ? "opacity-0 scale-x-0" : ""}`} />
-              <span className={`w-4 h-[1.5px] bg-white rounded-sm transition-all duration-200 ${navOpen ? "-translate-y-[6.5px] -rotate-45" : ""}`} />
-            </button>
-          </nav>
-
-          {/* Mobile drawer */}
-          <AnimatePresence>
-            {navOpen && (
-              <>
-                <motion.div
-                  className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm lg:hidden"
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  onClick={() => setNavOpen(false)}
-                />
-                <motion.div
-                  className="fixed top-0 right-0 bottom-0 w-[80vw] max-w-[300px] z-40 bg-[#0e2514] border-l border-white/[0.08] flex flex-col px-6 py-8 gap-2 lg:hidden"
-                  initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-                  transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-                >
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-sm">🌿</div>
-                    <span className="font-['Cormorant_Garant',serif] font-semibold text-white">TerraSpotter</span>
-                    <button onClick={() => setNavOpen(false)} className="ml-auto text-white/40 hover:text-white text-lg cursor-pointer">✕</button>
-                  </div>
-                  {navLinks.map(l => (
-                    <Link
-                      key={l.to}
-                      to={l.to}
-                      onClick={() => setNavOpen(false)}
-                      className="text-[15px] text-white/60 font-medium no-underline py-3 px-3 rounded-xl hover:text-white hover:bg-white/[0.06] transition-all"
-                    >
-                      {l.label}
-                    </Link>
-                  ))}
-                  <div className="mt-auto flex flex-col gap-2 pt-6 border-t border-white/[0.08]">
-                    <Link to="/login" onClick={() => setNavOpen(false)} className="text-center py-3 rounded-xl border border-white/15 text-white/70 text-sm font-medium no-underline hover:text-white hover:bg-white/[0.06] transition-all">Sign in</Link>
-                    <Link to="/signup" onClick={() => setNavOpen(false)} className="text-center py-3 rounded-xl bg-[#4db87a] text-[#0c1e11] text-sm font-semibold no-underline hover:bg-[#5dcf8a] transition-all">Get started →</Link>
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
 
           {/* ── HERO CONTENT ── */}
           <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 pt-12 pb-20 sm:pb-28">
