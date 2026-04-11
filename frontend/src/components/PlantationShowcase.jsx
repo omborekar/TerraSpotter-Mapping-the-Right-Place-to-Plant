@@ -2,676 +2,332 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Showcase page displaying completed plantations and impact metrics.
- */
+ Description: Plantation Showcase — Verdant Editorial redesign.
+*/
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, MapPin, Calendar, TreePine, Users, MessageSquare, Camera, X, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, MapPin, Calendar, TreePine, Users, Camera, X, ChevronLeft, ChevronRight, Check } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-/* ─── Bone skeleton ─── */
-function Bone({ style = {}, className = "" }) {
-  return (
-    <div
-      className={className}
-      style={{
-        background: "linear-gradient(90deg,#e8e2d9 25%,#d4cec5 50%,#e8e2d9 75%)",
-        backgroundSize: "200% 100%",
-        animation: "ps-shimmer 1.4s infinite",
-        borderRadius: 4,
-        ...style,
-      }}
-    />
-  );
+const Bone = ({ className = "" }) => (
+  <div className={`rounded-lg bg-gradient-to-r from-[#f0ebe2] via-[#e8e2d8] to-[#f0ebe2] bg-[length:200%_100%] animate-pulse ${className}`} />
+);
+
+const BoneDark = ({ className = "" }) => (
+  <div className={`rounded-lg bg-gradient-to-r from-white/[0.05] via-white/[0.11] to-white/[0.05] bg-[length:200%_100%] animate-pulse ${className}`} />
+);
+
+// ─── Stars display ────────────────────────────────────────────
+const StarRow = ({ value = 0, size = 14 }) => (
+  <div className="flex items-center gap-0.5">
+    {[1, 2, 3, 4, 5].map(i => (
+      <Star key={i} size={size}
+        fill={i <= Math.round(value) ? "#c9a84c" : "transparent"}
+        stroke={i <= Math.round(value) ? "#c9a84c" : "#e0d8cf"}
+        strokeWidth={1.5}
+      />
+    ))}
+  </div>
+);
+
+// ─── Animated counter ─────────────────────────────────────────
+function Counter({ target }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const seen = useRef(false);
+  useEffect(() => {
+    if (!target || seen.current) return;
+    const ob = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      seen.current = true;
+      const num = parseFloat(String(target).replace(/,/g, ""));
+      let cur = 0; const steps = 55; const inc = num / steps;
+      const t = setInterval(() => {
+        cur = Math.min(cur + inc, num);
+        setCount(Number.isInteger(num) ? Math.floor(cur) : parseFloat(cur.toFixed(1)));
+        if (cur >= num) clearInterval(t);
+      }, 1600 / steps);
+    }, { threshold: 0.3 });
+    if (ref.current) ob.observe(ref.current);
+    return () => ob.disconnect();
+  }, [target]);
+  return <span ref={ref}>{typeof target === "number" ? count.toLocaleString() : count}</span>;
 }
 
-function BoneDark({ style = {} }) {
-  return (
-    <div
-      style={{
-        background: "linear-gradient(90deg,rgba(255,255,255,0.06) 25%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.06) 75%)",
-        backgroundSize: "200% 100%",
-        animation: "ps-shimmer 1.4s infinite",
-        borderRadius: 4,
-        ...style,
-      }}
-    />
-  );
-}
-
-/* ─── Main ─── */
+// ─── Main ─────────────────────────────────────────────────────
 export default function PlantationShowcase() {
-  const [plantations, setPlantations]     = useState([]);
-  const [loading, setLoading]             = useState(true);
-  const [selectedPlantation, setSelected] = useState(null);
-  const [showReviewModal, setShowReview]  = useState(false);
-  const [filter, setFilter]               = useState("all");
+  const [plantations, setPlantations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
+  const [showReview, setShowReview] = useState(false);
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => { fetchPlantations(); }, []);
 
   const fetchPlantations = async () => {
     try {
-      const res  = await fetch(`${BASE_URL}/api/plantations/completed`, { credentials: "include" });
+      const res = await fetch(`${BASE_URL}/api/plantations/completed`, { credentials: "include" });
       const data = await res.json();
       setPlantations(data);
-    } catch (err) { console.error("Failed to fetch:", err); }
+    } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
 
   const sorted = [...plantations].sort((a, b) => {
-    if (filter === "recent")  return new Date(b.completedAt) - new Date(a.completedAt);
+    if (filter === "recent") return new Date(b.completedAt) - new Date(a.completedAt);
     if (filter === "popular") return (b.reviews?.length || 0) - (a.reviews?.length || 0);
     return 0;
   });
 
-  const totalTrees   = plantations.reduce((s, p) => s + (p.treesPlanted || 0), 0);
+  const totalTrees = plantations.reduce((s, p) => s + (p.treesPlanted || 0), 0);
   const totalReviews = plantations.reduce((s, p) => s + (p.reviews?.length || 0), 0);
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Epilogue:wght@300;400;500;600;700&display=swap');
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-        :root {
-          --cream:#f5f0e8; --parchment:#ede7d9; --ink:#1a1a14; --ink2:#2e2e24;
-          --forest:#1c3a25; --moss:#2d5a3d; --leaf:#3d7a52; --sage:#7aad89;
-          --mist:#c4d9cc; --gold:#c9a84c; --gold-lt:#e8d5a3;
-          --warm:#8c8678; --line:#d6cfc4;
-        }
-        body{font-family:'Epilogue',sans-serif;}
-        @keyframes ps-shimmer{to{background-position:-200% 0;}}
-        @keyframes ps-float{
-          0%,100%{transform:translate(0,0) scale(1);}
-          50%{transform:translate(20px,-20px) scale(1.05);}
-        }
-        @keyframes ps-spin{to{transform:rotate(360deg);}}
+    <div className="font-['Outfit',sans-serif] bg-[#f7f3ec] min-h-screen">
+      {/* ── HERO ── */}
+      <section className="relative overflow-hidden bg-[#0c1e11] pb-14 pt-16 sm:pt-20">
+        <div className="absolute top-[-12%] left-[-8%] w-[520px] h-[520px] rounded-full bg-[#163d25] opacity-30 blur-[150px]" />
+        <div className="absolute bottom-[-15%] right-[-6%] w-[400px] h-[400px] rounded-full bg-[#c9a84c]/8 blur-[110px]" />
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "30px 30px" }}
+        />
 
-        /* ── ROOT ── */
-        .ps-root{background:var(--cream);min-height:100vh;font-family:'Epilogue',sans-serif;color:var(--ink);}
-
-        /* ── HERO ── */
-        .ps-hero{
-          background:var(--forest);
-          position:relative;overflow:hidden;
-          padding:88px 0 72px;
-        }
-        .ps-hero-blob{
-          position:absolute;border-radius:50%;pointer-events:none;
-          filter:blur(80px);
-        }
-        .ps-hero-blob-1{width:480px;height:480px;top:-160px;left:-120px;background:rgba(61,122,82,0.22);animation:ps-float 22s ease-in-out infinite;}
-        .ps-hero-blob-2{width:360px;height:360px;bottom:-100px;right:-80px;background:rgba(201,168,76,0.1);animation:ps-float 18s ease-in-out 6s infinite;}
-        .ps-hero-inner{max-width:1340px;margin:0 auto;padding:0 56px;position:relative;z-index:1;}
-        .ps-hero-eyebrow{
-          font-size:10px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;
-          color:var(--sage);margin-bottom:32px;display:flex;align-items:center;gap:12px;
-        }
-        .ps-hero-eyebrow::after{content:'';flex:0 0 40px;height:1px;background:var(--sage);opacity:0.45;}
-        .ps-hero-title{
-          font-family:'Cormorant Garamond',serif;
-          font-size:clamp(56px,9vw,108px);font-weight:300;line-height:0.95;
-          color:var(--cream);letter-spacing:-0.03em;margin-bottom:44px;
-        }
-        .ps-hero-title em{font-style:italic;color:var(--gold-lt);}
-        .ps-hero-rule{width:56px;height:1px;background:rgba(196,217,204,0.4);margin-bottom:52px;}
-        .ps-hero-stats{display:flex;gap:0;flex-wrap:wrap;}
-        .ps-stat{
-          padding:0 52px 0 0;margin-right:52px;
-          border-right:1px solid rgba(255,255,255,0.1);
-          position:relative;
-        }
-        .ps-stat:last-child{border-right:none;padding-right:0;margin-right:0;}
-        .ps-stat-val{
-          font-family:'Cormorant Garamond',serif;
-          font-size:clamp(48px,7vw,80px);font-weight:600;line-height:1;
-          color:#fff;letter-spacing:-0.03em;display:block;
-        }
-        .ps-stat-lbl{
-          font-size:9px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;
-          color:var(--sage);margin-top:7px;display:block;
-        }
-
-        /* ── STICKY NAV ── */
-        .ps-nav{
-          background:var(--parchment);border-bottom:1px solid var(--line);
-          position:sticky;top:0;z-index:50;
-        }
-        .ps-nav-inner{
-          max-width:1340px;margin:0 auto;padding:0 56px;
-          display:flex;align-items:center;justify-content:space-between;
-          height:58px;gap:24px;flex-wrap:wrap;
-        }
-        .ps-nav-count{
-          font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--warm);
-        }
-        .ps-filter-row{display:flex;gap:2px;}
-        .ps-fpill{
-          padding:6px 20px;border-radius:100px;
-          font-family:'Epilogue',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.06em;
-          border:1px solid transparent;cursor:pointer;transition:all 0.2s;
-          background:transparent;color:var(--warm);
-        }
-        .ps-fpill:hover{color:var(--ink);}
-        .ps-fpill.active{background:var(--forest);color:var(--cream);border-color:var(--forest);}
-
-        /* ── CONTENT ── */
-        .ps-content{max-width:1340px;margin:0 auto;padding:64px 56px 100px;}
-        .ps-section-label{
-          font-size:10px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;
-          color:var(--warm);margin-bottom:44px;
-          display:flex;align-items:center;gap:16px;
-        }
-        .ps-section-label::after{content:'';flex:1;height:1px;background:var(--line);}
-
-        /* ── CARD LIST ── */
-        .ps-list{display:flex;flex-direction:column;}
-        .ps-card{
-          display:grid;grid-template-columns:400px 1fr;
-          border-top:1px solid var(--line);cursor:pointer;
-          transition:background 0.2s;position:relative;
-          overflow:hidden;
-        }
-        .ps-card:last-child{border-bottom:1px solid var(--line);}
-        .ps-card:hover{background:rgba(237,231,217,0.6);}
-        .ps-card:hover .ps-card-cta{opacity:1;transform:translateY(0);}
-        .ps-card:hover .ps-card-img-el{transform:scale(1.05);}
-
-        /* Image col */
-        .ps-card-imgwrap{position:relative;overflow:hidden;background:var(--mist);}
-        .ps-card-img-el{
-          width:100%;height:100%;object-fit:cover;display:block;
-          transition:transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
-          aspect-ratio:4/3;
-        }
-        .ps-card-no-img{
-          display:flex;flex-direction:column;align-items:center;justify-content:center;
-          gap:8px;color:var(--warm);font-size:11px;aspect-ratio:4/3;
-        }
-        .ps-card-photo-badge{
-          position:absolute;bottom:12px;left:12px;
-          background:rgba(26,26,20,0.72);backdrop-filter:blur(6px);
-          color:#fff;font-size:10px;font-weight:600;letter-spacing:0.08em;
-          padding:5px 12px;border-radius:100px;
-          display:flex;align-items:center;gap:5px;
-        }
-
-        /* Body col */
-        .ps-card-body{
-          padding:40px 52px 40px 52px;
-          display:flex;flex-direction:column;
-        }
-        .ps-card-dateline{
-          font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;
-          color:var(--leaf);margin-bottom:18px;
-          display:flex;align-items:center;gap:10px;
-        }
-        .ps-card-dateline-sep{width:3px;height:3px;border-radius:50%;background:var(--mist);}
-        .ps-card-title{
-          font-family:'Cormorant Garamond',serif;
-          font-size:clamp(26px,2.8vw,40px);font-weight:600;line-height:1.1;
-          color:var(--ink);letter-spacing:-0.02em;margin-bottom:14px;
-        }
-        .ps-card-loc{
-          display:flex;align-items:center;gap:6px;
-          font-size:12px;color:var(--warm);margin-bottom:20px;
-        }
-        .ps-card-excerpt{
-          font-size:13px;line-height:1.8;color:var(--warm);
-          display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
-          flex:1;margin-bottom:32px;
-        }
-        .ps-card-bottom{
-          display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
-          margin-top:auto;
-        }
-        .ps-card-figures{display:flex;gap:32px;}
-        .ps-fig-val{
-          font-family:'Cormorant Garamond',serif;
-          font-size:36px;font-weight:600;line-height:1;
-          color:var(--ink);letter-spacing:-0.02em;display:block;
-        }
-        .ps-fig-lbl{
-          font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;
-          color:var(--warm);margin-top:4px;display:block;
-        }
-        .ps-card-rating{
-          display:flex;align-items:center;gap:7px;
-          padding:8px 18px;border:1px solid var(--line);border-radius:100px;
-          font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--gold);
-        }
-        .ps-card-cta{
-          position:absolute;bottom:40px;right:52px;
-          display:flex;align-items:center;gap:6px;
-          padding:9px 20px;background:var(--forest);color:var(--cream);
-          border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;
-          opacity:0;transform:translateY(6px);transition:all 0.28s;
-        }
-
-        /* ── EMPTY ── */
-        .ps-empty{padding:100px 0;text-align:center;color:var(--warm);}
-        .ps-empty-title{
-          font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;
-          color:var(--ink2);margin:18px 0 10px;
-        }
-
-        /* ── MODAL ── */
-        .ps-overlay{
-          position:fixed;inset:0;
-          background:rgba(26,26,20,0.84);backdrop-filter:blur(14px);
-          z-index:1000;display:flex;align-items:flex-start;justify-content:center;
-          padding:28px 20px;overflow-y:auto;
-        }
-        .ps-modal{
-          background:var(--cream);border-radius:2px;
-          max-width:900px;width:100%;margin:auto;position:relative;overflow:hidden;
-        }
-        .ps-modal-x{
-          position:absolute;top:18px;right:18px;
-          width:38px;height:38px;border:1px solid var(--line);border-radius:50%;
-          background:var(--cream);cursor:pointer;
-          display:flex;align-items:center;justify-content:center;
-          z-index:10;transition:background 0.2s;color:var(--ink);
-        }
-        .ps-modal-x:hover{background:var(--parchment);}
-        .ps-modal-gallery{position:relative;aspect-ratio:16/9;background:var(--ink);overflow:hidden;}
-        .ps-modal-gallery img{width:100%;height:100%;object-fit:cover;display:block;}
-        .ps-modal-nav-btn{
-          position:absolute;top:50%;transform:translateY(-50%);
-          width:42px;height:42px;border:1px solid rgba(255,255,255,0.25);border-radius:50%;
-          background:rgba(26,26,20,0.48);backdrop-filter:blur(6px);
-          color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
-          transition:background 0.2s;
-        }
-        .ps-modal-nav-btn:hover{background:rgba(26,26,20,0.8);}
-        .ps-modal-dots{
-          position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
-          display:flex;gap:5px;
-        }
-        .ps-modal-dot{height:3px;border-radius:2px;background:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.22s;width:18px;}
-        .ps-modal-dot.on{background:#fff;width:30px;}
-        .ps-modal-body{padding:48px 52px;}
-        .ps-modal-ey{
-          font-size:10px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;
-          color:var(--leaf);margin-bottom:14px;display:flex;align-items:center;gap:10px;
-        }
-        .ps-modal-title{
-          font-family:'Cormorant Garamond',serif;
-          font-size:clamp(30px,4.5vw,52px);font-weight:600;line-height:1.0;
-          color:var(--ink);letter-spacing:-0.02em;margin-bottom:24px;
-        }
-        .ps-modal-metarow{
-          display:flex;flex-wrap:wrap;gap:20px;
-          padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-          margin-bottom:36px;font-size:12px;color:var(--warm);
-        }
-        .ps-modal-metaitem{display:flex;align-items:center;gap:7px;}
-        .ps-modal-stats{
-          display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
-          background:var(--line);border:1px solid var(--line);border-radius:2px;overflow:hidden;
-          margin-bottom:36px;
-        }
-        .ps-modal-stat-cell{background:var(--cream);padding:22px 24px;text-align:center;}
-        .ps-modal-stat-n{
-          font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;
-          line-height:1;color:var(--forest);letter-spacing:-0.02em;display:block;
-        }
-        .ps-modal-stat-l{
-          font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;
-          color:var(--warm);margin-top:6px;display:block;
-        }
-        .ps-modal-notes{
-          background:var(--parchment);border-left:3px solid var(--forest);
-          padding:20px 24px;border-radius:0 2px 2px 0;margin-bottom:36px;
-          font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;
-          line-height:1.7;color:var(--ink2);font-style:italic;
-        }
-        .ps-cta-btn{
-          width:100%;padding:15px;background:var(--forest);color:var(--cream);
-          border:none;border-radius:2px;font-family:'Epilogue',sans-serif;
-          font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;
-          cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
-          transition:background 0.2s,transform 0.15s;margin-bottom:44px;
-        }
-        .ps-cta-btn:hover{background:var(--moss);transform:translateY(-1px);}
-        .ps-reviews-sec{border-top:1px solid var(--line);padding-top:36px;}
-        .ps-reviews-hd{
-          font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;
-          color:var(--ink);margin-bottom:20px;letter-spacing:-0.01em;
-        }
-        .ps-rev{padding:18px 0;border-bottom:1px solid var(--line);}
-        .ps-rev:last-child{border-bottom:none;}
-        .ps-rev-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-        .ps-rev-user{font-size:13px;font-weight:600;color:var(--ink);}
-        .ps-rev-date{font-size:11px;color:var(--warm);}
-        .ps-rev-stars{display:flex;gap:3px;margin-bottom:8px;}
-        .ps-rev-body{font-size:13px;line-height:1.7;color:var(--ink2);}
-        .ps-rev-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px;margin-top:10px;}
-        .ps-rev-img{aspect-ratio:1;border-radius:2px;overflow:hidden;}
-        .ps-rev-img img{width:100%;height:100%;object-fit:cover;}
-
-        /* ── REVIEW MODAL ── */
-        .ps-rmodal{
-          background:var(--cream);border-radius:2px;
-          max-width:540px;width:100%;margin:auto;position:relative;
-        }
-        .ps-rmodal-body{padding:48px;}
-        .ps-rmodal-title{
-          font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;
-          color:var(--ink);margin-bottom:32px;letter-spacing:-0.02em;
-        }
-        .ps-flabel{
-          display:block;font-size:9px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;
-          color:var(--warm);margin-bottom:10px;
-        }
-        .ps-star-row{display:flex;gap:8px;margin-bottom:28px;}
-        .ps-textarea{
-          width:100%;min-height:112px;padding:14px 16px;
-          border:1px solid var(--line);background:transparent;border-radius:2px;
-          font-family:'Epilogue',sans-serif;font-size:13px;color:var(--ink);
-          resize:vertical;outline:none;transition:border-color 0.2s;margin-bottom:24px;
-        }
-        .ps-textarea:focus{border-color:var(--forest);}
-        .ps-upload{
-          border:1px dashed var(--line);border-radius:2px;padding:24px;
-          text-align:center;cursor:pointer;background:var(--parchment);
-          transition:border-color 0.2s,background 0.2s;margin-bottom:12px;
-        }
-        .ps-upload:hover{border-color:var(--moss);background:#e5ede7;}
-        .ps-upload-txt{font-size:11px;color:var(--warm);margin-top:7px;}
-        .ps-pgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:24px;}
-        .ps-pthumb{position:relative;aspect-ratio:1;border-radius:2px;overflow:hidden;}
-        .ps-pthumb img{width:100%;height:100%;object-fit:cover;display:block;}
-        .ps-premove{
-          position:absolute;top:3px;right:3px;width:19px;height:19px;border-radius:50%;
-          background:rgba(26,26,20,0.72);color:#fff;border:none;cursor:pointer;
-          display:flex;align-items:center;justify-content:center;
-        }
-        .ps-err{
-          padding:11px 16px;background:#fef2f2;border:1px solid #fecaca;
-          border-radius:2px;font-size:12px;color:#dc2626;margin-bottom:18px;
-        }
-        .ps-btnrow{display:flex;gap:10px;}
-        .ps-btn-ghost{
-          flex:1;padding:14px;border:1px solid var(--line);background:transparent;
-          border-radius:2px;font-family:'Epilogue',sans-serif;font-size:11px;font-weight:600;
-          letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;color:var(--ink2);
-          transition:border-color 0.2s;
-        }
-        .ps-btn-ghost:hover{border-color:var(--forest);}
-        .ps-btn-solid{
-          flex:1;padding:14px;border:none;background:var(--forest);border-radius:2px;
-          font-family:'Epilogue',sans-serif;font-size:11px;font-weight:600;
-          letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;color:var(--cream);
-          display:flex;align-items:center;justify-content:center;gap:8px;
-          transition:background 0.2s,opacity 0.2s;
-        }
-        .ps-btn-solid:hover:not(:disabled){background:var(--moss);}
-        .ps-btn-solid:disabled{opacity:0.55;cursor:not-allowed;}
-        .ps-spin{
-          width:13px;height:13px;border:2px solid rgba(245,240,232,0.3);
-          border-top-color:var(--cream);border-radius:50%;
-          animation:ps-spin 0.7s linear infinite;
-        }
-
-        /* ── RESPONSIVE ── */
-        @media(max-width:960px){
-          .ps-hero-inner,.ps-nav-inner,.ps-content{padding-left:28px;padding-right:28px;}
-          .ps-card{grid-template-columns:1fr;}
-          .ps-card-imgwrap .ps-card-img-el{aspect-ratio:16/9;}
-          .ps-card-no-img{aspect-ratio:16/9;}
-          .ps-card-body{padding:28px 28px 32px;}
-          .ps-card-cta{right:28px;bottom:28px;}
-        }
-        @media(max-width:640px){
-          .ps-hero{padding:60px 0 52px;}
-          .ps-hero-stats{gap:0;flex-direction:column;}
-          .ps-stat{border-right:none;border-bottom:1px solid rgba(255,255,255,0.1);padding:0 0 20px;margin:0 0 20px;}
-          .ps-stat:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-          .ps-nav-inner{height:auto;padding:10px 24px;gap:8px;}
-          .ps-content{padding-top:40px;padding-bottom:60px;padding-left:20px;padding-right:20px;}
-          .ps-modal-body{padding:28px 24px;}
-          .ps-modal-stats{grid-template-columns:repeat(3,1fr);}
-          .ps-rmodal-body{padding:32px 22px;}
-        }
-      `}</style>
-
-      <div className="ps-root">
-
-        {/* ── HERO ── */}
-        <div className="ps-hero">
-          <div className="ps-hero-blob ps-hero-blob-1" />
-          <div className="ps-hero-blob ps-hero-blob-2" />
-          <div className="ps-hero-inner">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <div className="ps-hero-eyebrow">TerraSpotter — Green Legacy Archive</div>
-              <h1 className="ps-hero-title">
-                Where land<br /><em>becomes forest</em>
-              </h1>
-              <div className="ps-hero-rule" />
-            </motion.div>
-
-            <div className="ps-hero-stats">
-              {loading ? (
-                <>
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="ps-stat">
-                      <BoneDark style={{ height: 70, width: 120, marginBottom: 8 }} />
-                      <BoneDark style={{ height: 10, width: 90 }} />
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <>
-                  {[
-                    { val: plantations.length,           lbl: "Plantations Completed" },
-                    { val: totalTrees.toLocaleString(),  lbl: "Trees in the Ground" },
-                    { val: totalReviews,                 lbl: "Community Voices" },
-                  ].map((s, i) => (
-                    <motion.div
-                      key={i}
-                      className="ps-stat"
-                      initial={{ opacity: 0, y: 18 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + i * 0.12, duration: 0.55 }}
-                    >
-                      <span className="ps-stat-val">{s.val}</span>
-                      <span className="ps-stat-lbl">{s.lbl}</span>
-                    </motion.div>
-                  ))}
-                </>
-              )}
+        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-10 xl:px-16">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <div className="flex items-center gap-3 mb-7">
+              <div className="w-8 h-px bg-[#4db87a]/50" />
+              <span className="text-[10px] font-semibold tracking-[3px] uppercase text-[#4db87a]/70">
+                TerraSpotter — Green Legacy Archive
+              </span>
             </div>
-          </div>
-        </div>
+            <h1 className="font-['Cormorant_Garant',serif] text-[clamp(56px,9vw,108px)] font-semibold text-white leading-[0.88] tracking-[-2px] mb-6">
+              Where land<br /><em className="not-italic text-[#c9a84c]">becomes forest</em>
+            </h1>
+            <div className="w-14 h-px bg-white/20 mb-10" />
+          </motion.div>
 
-        {/* ── STICKY NAV ── */}
-        <div className="ps-nav">
-          <div className="ps-nav-inner">
-            <span className="ps-nav-count">
-              {loading ? "Loading…" : `${sorted.length} Record${sorted.length !== 1 ? "s" : ""}`}
-            </span>
-            <div className="ps-filter-row">
-              {[
-                { key: "all",     label: "All" },
-                { key: "recent",  label: "Recent" },
-                { key: "popular", label: "Popular" },
-              ].map(({ key, label }) => (
-                <button
-                  key={key}
-                  className={`ps-fpill${filter === key ? " active" : ""}`}
-                  onClick={() => setFilter(key)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ── CONTENT ── */}
-        <div className="ps-content">
-          <div className="ps-section-label">Field Reports · {new Date().getFullYear()}</div>
-
-          {loading ? (
-            <div className="ps-list">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} style={{ display: "grid", gridTemplateColumns: "400px 1fr", borderTop: "1px solid var(--line)" }}>
-                  <Bone style={{ aspectRatio: "4/3", borderRadius: 0 }} />
-                  <div style={{ padding: "40px 52px", display: "flex", flexDirection: "column", gap: 14 }}>
-                    <Bone style={{ height: 11, width: 100 }} />
-                    <Bone style={{ height: 40, width: "75%" }} />
-                    <Bone style={{ height: 40, width: "55%" }} />
-                    <Bone style={{ height: 14, width: "90%" }} />
-                    <Bone style={{ height: 14, width: "80%" }} />
-                    <Bone style={{ height: 14, width: "70%" }} />
-                    <div style={{ display: "flex", gap: 32, marginTop: "auto" }}>
-                      <div>
-                        <Bone style={{ height: 36, width: 72, marginBottom: 6 }} />
-                        <Bone style={{ height: 10, width: 50 }} />
-                      </div>
-                      <div>
-                        <Bone style={{ height: 36, width: 48, marginBottom: 6 }} />
-                        <Bone style={{ height: 10, width: 50 }} />
-                      </div>
-                    </div>
-                  </div>
+          <div className="flex flex-wrap gap-0">
+            {loading ? [...Array(3)].map((_, i) => (
+              <div key={i} className="pr-12 mr-12 border-r border-white/10 last:border-0 last:pr-0 last:mr-0">
+                <BoneDark className="h-16 w-28 mb-2" />
+                <BoneDark className="h-2.5 w-32" />
+              </div>
+            )) : [
+              { val: plantations.length, lbl: "Plantations Completed" },
+              { val: totalTrees, lbl: "Trees in the Ground" },
+              { val: totalReviews, lbl: "Community Voices" },
+            ].map((s, i) => (
+              <motion.div key={s.lbl}
+                className="pr-10 sm:pr-14 mr-10 sm:mr-14 border-r border-white/10 last:border-0 last:pr-0 last:mr-0 mb-6"
+                initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + i * 0.12 }}
+              >
+                <div className="font-['Cormorant_Garant',serif] text-[clamp(48px,7vw,80px)] font-semibold text-white leading-none tracking-[-1.5px]">
+                  <Counter target={s.val} />
                 </div>
-              ))}
-            </div>
-          ) : sorted.length === 0 ? (
-            <div className="ps-empty">
-              <TreePine size={52} strokeWidth={1} />
-              <div className="ps-empty-title">No records yet</div>
-              <p style={{ fontSize: 13, color: "var(--warm)" }}>Be the first to complete a plantation.</p>
-            </div>
-          ) : (
-            <motion.div
-              className="ps-list"
-              initial="hidden"
-              animate="visible"
-              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
-            >
-              {sorted.map((p, idx) => (
-                <PlantationRow key={p.id} plantation={p} index={idx} onClick={() => setSelected(p)} />
-              ))}
-            </motion.div>
-          )}
+                <div className="text-[9.5px] font-semibold uppercase tracking-[0.22em] text-white/35 mt-2 font-['Outfit',sans-serif]">
+                  {s.lbl}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── STICKY NAV ── */}
+      <div className="sticky top-0 z-50 bg-[#f2ede3] border-b border-[#e0d8cf]">
+        <div className="max-w-[1320px] mx-auto px-6 sm:px-10 xl:px-16 h-[58px] flex items-center justify-between gap-5">
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[#b5ac9e]">
+            {loading ? "Loading…" : `${sorted.length} Record${sorted.length !== 1 ? "s" : ""}`}
+          </span>
+          <div className="flex gap-1">
+            {[{ key: "all", label: "All" }, { key: "recent", label: "Recent" }, { key: "popular", label: "Popular" }].map(f => (
+              <button key={f.key}
+                onClick={() => setFilter(f.key)}
+                className={`h-8 px-4 rounded-full text-[11.5px] font-semibold border transition-all duration-200 cursor-pointer ${filter === f.key
+                    ? "bg-[#0c1e11] border-[#0c1e11] text-white"
+                    : "bg-transparent border-transparent text-[#8a7d6e] hover:text-[#0c1e11]"
+                  }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Detail Modal */}
+      {/* ── CONTENT ── */}
+      <div className="max-w-[1320px] mx-auto px-6 sm:px-10 xl:px-16 py-14 sm:py-16">
+        <div className="flex items-center gap-4 mb-12">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#b5ac9e] whitespace-nowrap">
+            Field Reports · {new Date().getFullYear()}
+          </span>
+          <div className="flex-1 h-px bg-[#e0d8cf]" />
+        </div>
+
+        {loading ? (
+          <div className="flex flex-col divide-y divide-[#e0d8cf]">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-0">
+                <Bone className="aspect-[4/3] lg:aspect-auto rounded-none min-h-[240px]" />
+                <div className="p-8 lg:p-12 flex flex-col gap-4">
+                  <Bone className="h-3 w-28" />
+                  <Bone className="h-10 w-3/4" />
+                  <Bone className="h-10 w-1/2" />
+                  <Bone className="h-3.5 w-full" /><Bone className="h-3.5 w-5/6" /><Bone className="h-3.5 w-4/5" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : sorted.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-28 gap-5 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#f2ede3] border border-[#ede8de] flex items-center justify-center">
+              <TreePine size={28} strokeWidth={1} className="text-[#b5ac9e]" />
+            </div>
+            <h3 className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#0c1e11]">
+              No records yet
+            </h3>
+            <p className="text-[13.5px] text-[#b5ac9e] font-light">Be the first to complete a plantation.</p>
+          </div>
+        ) : (
+          <motion.div
+            className="flex flex-col divide-y divide-[#e0d8cf] border-y border-[#e0d8cf]"
+            initial="hidden" animate="visible"
+            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+          >
+            {sorted.map((p, idx) => (
+              <PlantationRow key={p.id} plantation={p} onClick={() => setSelected(p)} />
+            ))}
+          </motion.div>
+        )}
+      </div>
+
       <AnimatePresence>
-        {selectedPlantation && (
-          <PlantationDetailModal
-            plantation={selectedPlantation}
+        {selected && (
+          <DetailModal
+            plantation={selected}
             onClose={() => setSelected(null)}
             onReview={() => setShowReview(true)}
           />
         )}
       </AnimatePresence>
 
-      {/* Review Modal */}
       <AnimatePresence>
-        {showReviewModal && (
+        {showReview && (
           <ReviewModal
-            plantation={selectedPlantation}
+            plantation={selected}
             onClose={() => setShowReview(false)}
             onSuccess={() => { setShowReview(false); fetchPlantations(); }}
           />
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }
 
-/* ─── Plantation Row ─── */
-function PlantationRow({ plantation, index, onClick }) {
+// ─── Plantation Row ───────────────────────────────────────────
+function PlantationRow({ plantation, onClick }) {
   const avgRating = plantation.reviews?.length
     ? (plantation.reviews.reduce((s, r) => s + r.rating, 0) / plantation.reviews.length).toFixed(1)
     : null;
   const imgSrc = plantation.images?.[0];
 
   return (
-    <motion.div
-      className="ps-card"
+    <motion.article
+      className="grid grid-cols-1 lg:grid-cols-[380px_1fr] cursor-pointer group hover:bg-[#f2ede3]/60 transition-all duration-300 relative overflow-hidden"
       onClick={onClick}
       variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } } }}
     >
       {/* Image */}
-      <div className="ps-card-imgwrap">
+      <div className="relative overflow-hidden bg-[#e8f0ec] min-h-[260px] lg:min-h-[320px]">
         {imgSrc ? (
           <>
             <img
-              src={imgSrc}
-              alt={plantation.title}
-              className="ps-card-img-el"
+              src={imgSrc} alt={plantation.title}
+              className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105"
               onError={e => { e.target.src = "https://placehold.co/400x300?text=🌿"; }}
             />
-            <div className="ps-card-photo-badge">
-              <Camera size={10} />
-              {plantation.images?.length || 1} photo{plantation.images?.length !== 1 ? "s" : ""}
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+            {plantation.images?.length > 1 && (
+              <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/55 backdrop-blur-sm text-white text-[10.5px] font-semibold px-2.5 py-1 rounded-full font-['Outfit',sans-serif]">
+                <Camera size={10} /> {plantation.images.length} photos
+              </div>
+            )}
           </>
         ) : (
-          <div className="ps-card-no-img">
-            <TreePine size={32} strokeWidth={1} />
-            <span>No photos</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#f2ede3]">
+            <TreePine size={36} strokeWidth={1} className="text-[#b5ac9e]" />
+            <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">No photos</span>
           </div>
         )}
       </div>
 
       {/* Body */}
-      <div className="ps-card-body">
-        <div className="ps-card-dateline">
-          <span>
+      <div className="px-8 py-10 lg:px-14 lg:py-12 flex flex-col">
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
+          <span className="text-[10px] font-semibold tracking-[0.22em] uppercase text-[#2d8a55] font-['Outfit',sans-serif]">
             {new Date(plantation.completedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
           </span>
           {plantation.teamName && (
-            <><span className="ps-card-dateline-sep" /><span>{plantation.teamName}</span></>
+            <>
+              <span className="w-1 h-1 rounded-full bg-[#c4d9cc]" />
+              <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-[#b5ac9e] font-['Outfit',sans-serif]">
+                {plantation.teamName}
+              </span>
+            </>
           )}
         </div>
 
-        <h2 className="ps-card-title">{plantation.title}</h2>
+        <h2 className="font-['Cormorant_Garant',serif] text-[clamp(26px,3vw,42px)] font-semibold text-[#0c1e11] leading-[1.05] tracking-[-0.5px] mb-3">
+          {plantation.title}
+        </h2>
 
-        <div className="ps-card-loc">
+        <div className="flex items-center gap-1.5 text-[12px] text-[#b5ac9e] mb-5 font-['Outfit',sans-serif]">
           <MapPin size={12} strokeWidth={1.5} />
           {plantation.location}
         </div>
 
         {plantation.notes && (
-          <p className="ps-card-excerpt">{plantation.notes}</p>
+          <p className="text-[13.5px] text-[#6b5e4e] leading-[1.8] font-light line-clamp-3 mb-8 flex-1">
+            {plantation.notes}
+          </p>
         )}
 
-        <div className="ps-card-bottom">
-          <div className="ps-card-figures">
+        <div className="flex items-end justify-between gap-4 mt-auto flex-wrap">
+          <div className="flex gap-8">
             <div>
-              <span className="ps-fig-val">{(plantation.treesPlanted || 0).toLocaleString()}</span>
-              <span className="ps-fig-lbl">Trees</span>
+              <div className="font-['Cormorant_Garant',serif] text-[38px] font-semibold text-[#0c1e11] leading-none">
+                {(plantation.treesPlanted || 0).toLocaleString()}
+              </div>
+              <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#b5ac9e] mt-1.5">Trees</div>
             </div>
             <div>
-              <span className="ps-fig-val">{plantation.reviews?.length || 0}</span>
-              <span className="ps-fig-lbl">Reviews</span>
+              <div className="font-['Cormorant_Garant',serif] text-[38px] font-semibold text-[#0c1e11] leading-none">
+                {plantation.reviews?.length || 0}
+              </div>
+              <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#b5ac9e] mt-1.5">Reviews</div>
             </div>
           </div>
           {avgRating && (
-            <div className="ps-card-rating">
-              <Star size={14} fill="currentColor" strokeWidth={0} />
-              {avgRating}
+            <div className="flex items-center gap-2 border border-[#e0d8cf] rounded-full px-4 py-2">
+              <StarRow value={parseFloat(avgRating)} />
+              <span className="font-['Cormorant_Garant',serif] text-[20px] font-semibold text-[#c9a84c]">{avgRating}</span>
             </div>
           )}
         </div>
 
-        <div className="ps-card-cta">
-          View Record <ChevronRight size={13} />
+        {/* Hover CTA */}
+        <div className="absolute bottom-10 right-14 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 hidden lg:flex items-center gap-2 bg-[#0c1e11] text-white text-[10px] font-semibold tracking-[0.15em] uppercase px-4 py-2.5 rounded-sm">
+          View Record <ChevronRight size={12} />
         </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 }
 
-/* ─── Detail Modal ─── */
-function PlantationDetailModal({ plantation, onClose, onReview }) {
+// ─── Detail Modal ─────────────────────────────────────────────
+function DetailModal({ plantation, onClose, onReview }) {
   const [cur, setCur] = useState(0);
   const images = plantation.images || [];
   const avgRating = plantation.reviews?.length
@@ -680,35 +336,40 @@ function PlantationDetailModal({ plantation, onClose, onReview }) {
 
   return (
     <motion.div
-      className="ps-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-[#0c1e11]/85 backdrop-blur-[14px] z-[1000] flex items-start justify-center p-5 sm:p-8 overflow-y-auto font-['Outfit',sans-serif]"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <motion.div
-        className="ps-modal"
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 28 }}
+        className="bg-[#f7f3ec] w-full max-w-[900px] my-auto overflow-hidden shadow-2xl border border-[#ede8de] rounded-sm"
+        initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 28 }}
         transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
       >
-        <button className="ps-modal-x" onClick={onClose}><X size={17} /></button>
+        <button onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full border border-[#e0d8cf] bg-[#f7f3ec] flex items-center justify-center text-[#8a7d6e] hover:bg-[#f2ede3] transition-colors cursor-pointer"
+        >
+          <X size={16} />
+        </button>
 
+        {/* Gallery */}
         {images.length > 0 && (
-          <div className="ps-modal-gallery">
-            <img src={images[cur]} alt={`img ${cur + 1}`} />
+          <div className="relative aspect-video bg-[#0c1e11] overflow-hidden">
+            <img src={images[cur]} alt="" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             {images.length > 1 && (
               <>
-                <button className="ps-modal-nav-btn" style={{ left: 14 }} onClick={() => setCur((cur - 1 + images.length) % images.length)}>
-                  <ChevronLeft size={17} />
+                <button onClick={() => setCur((cur - 1 + images.length) % images.length)}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-black/75 transition-all cursor-pointer">
+                  <ChevronLeft size={16} />
                 </button>
-                <button className="ps-modal-nav-btn" style={{ right: 14 }} onClick={() => setCur((cur + 1) % images.length)}>
-                  <ChevronRight size={17} />
+                <button onClick={() => setCur((cur + 1) % images.length)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-black/75 transition-all cursor-pointer">
+                  <ChevronRight size={16} />
                 </button>
-                <div className="ps-modal-dots">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
                   {images.map((_, i) => (
-                    <div key={i} className={`ps-modal-dot${i === cur ? " on" : ""}`} onClick={() => setCur(i)} />
+                    <button key={i} onClick={() => setCur(i)}
+                      className={`h-[3px] rounded-full cursor-pointer transition-all duration-250 ${i === cur ? "bg-white w-7" : "bg-white/40 w-4"}`} />
                   ))}
                 </div>
               </>
@@ -716,67 +377,74 @@ function PlantationDetailModal({ plantation, onClose, onReview }) {
           </div>
         )}
 
-        <div className="ps-modal-body">
-          <div className="ps-modal-ey">
-            <span style={{ width: 24, height: 1, background: "var(--leaf)", display: "inline-block" }} />
-            Field Report
+        <div className="px-8 sm:px-12 py-10 sm:py-12">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-6 h-px bg-[#2d8a55]" />
+            <span className="text-[10px] font-semibold tracking-[2.5px] uppercase text-[#2d8a55]">Field Report</span>
           </div>
-          <h2 className="ps-modal-title">{plantation.title}</h2>
+          <h2 className="font-['Cormorant_Garant',serif] text-[clamp(28px,4.5vw,50px)] font-semibold text-[#0c1e11] leading-[0.95] tracking-[-0.5px] mb-6">
+            {plantation.title}
+          </h2>
 
-          <div className="ps-modal-metarow">
-            <span className="ps-modal-metaitem"><MapPin size={13} strokeWidth={1.5} />{plantation.location}</span>
-            <span className="ps-modal-metaitem">
-              <Calendar size={13} strokeWidth={1.5} />
+          <div className="flex flex-wrap gap-5 py-5 border-t border-b border-[#e0d8cf] mb-8 text-[12.5px] text-[#8a7d6e]">
+            <span className="flex items-center gap-2"><MapPin size={12} strokeWidth={1.5} />{plantation.location}</span>
+            <span className="flex items-center gap-2">
+              <Calendar size={12} strokeWidth={1.5} />
               {new Date(plantation.completedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             </span>
-            <span className="ps-modal-metaitem"><Users size={13} strokeWidth={1.5} />{plantation.teamName || "Green Team"}</span>
+            <span className="flex items-center gap-2"><Users size={12} strokeWidth={1.5} />{plantation.teamName || "Green Team"}</span>
           </div>
 
-          <div className="ps-modal-stats">
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-px bg-[#e0d8cf] border border-[#e0d8cf] mb-8">
             {[
               { val: (plantation.treesPlanted || 0).toLocaleString(), lbl: "Trees Planted" },
-              { val: plantation.moreCapacity || 0,                    lbl: "More Capacity" },
-              { val: avgRating,                                        lbl: "Avg Rating" },
+              { val: plantation.moreCapacity || 0, lbl: "More Capacity" },
+              { val: avgRating, lbl: "Avg Rating" },
             ].map((s, i) => (
-              <div key={i} className="ps-modal-stat-cell">
-                <span className="ps-modal-stat-n">{s.val}</span>
-                <span className="ps-modal-stat-l">{s.lbl}</span>
+              <div key={i} className="bg-[#f7f3ec] px-5 py-5 text-center">
+                <div className="font-['Cormorant_Garant',serif] text-[44px] font-semibold text-[#0c1e11] leading-none tracking-[-0.5px]">
+                  {s.val}
+                </div>
+                <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#b5ac9e] mt-2">{s.lbl}</div>
               </div>
             ))}
           </div>
 
           {plantation.notes && (
-            <div className="ps-modal-notes">"{plantation.notes}"</div>
+            <div className="border-l-4 border-[#0c1e11] pl-5 py-1 mb-8">
+              <p className="font-['Cormorant_Garant',serif] text-[18px] font-normal italic text-[#2e2e24] leading-[1.75]">
+                "{plantation.notes}"
+              </p>
+            </div>
           )}
 
-          <button className="ps-cta-btn" onClick={onReview}>
+          <button
+            onClick={onReview}
+            className="w-full py-4 bg-[#0c1e11] text-white text-[11px] font-semibold tracking-[0.18em] uppercase font-['Outfit',sans-serif] flex items-center justify-center gap-2.5 hover:bg-[#163d25] transition-colors cursor-pointer mb-10 rounded-sm"
+          >
             <Star size={13} strokeWidth={1.5} /> Write a Review
           </button>
 
           {plantation.reviews?.length > 0 && (
-            <div className="ps-reviews-sec">
-              <h3 className="ps-reviews-hd">Community Reviews ({plantation.reviews.length})</h3>
-              {plantation.reviews.map((r, i) => (
-                <div key={i} className="ps-rev">
-                  <div className="ps-rev-head">
-                    <span className="ps-rev-user">{r.userName}</span>
-                    <span className="ps-rev-date">{new Date(r.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <div className="ps-rev-stars">
-                    {[...Array(5)].map((_, si) => (
-                      <Star key={si} size={13} strokeWidth={0} fill={si < r.rating ? "var(--gold)" : "var(--line)"} />
-                    ))}
-                  </div>
-                  <p className="ps-rev-body">{r.comment}</p>
-                  {r.images?.length > 0 && (
-                    <div className="ps-rev-imgs">
-                      {r.images.map((img, ri) => (
-                        <div key={ri} className="ps-rev-img"><img src={img} alt="" /></div>
-                      ))}
+            <div className="border-t border-[#e0d8cf] pt-8">
+              <h3 className="font-['Cormorant_Garant',serif] text-[24px] font-semibold text-[#0c1e11] mb-5">
+                Community Reviews ({plantation.reviews.length})
+              </h3>
+              <div className="flex flex-col gap-4">
+                {plantation.reviews.map((r, i) => (
+                  <div key={i} className="border-b border-[#e0d8cf] pb-4 last:border-0 last:pb-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[13.5px] font-semibold text-[#0c1e11]">{r.userName}</span>
+                      <div className="flex items-center gap-2">
+                        <StarRow value={r.rating} size={12} />
+                        <span className="text-[11px] text-[#b5ac9e]">{new Date(r.createdAt).toLocaleDateString()}</span>
+                      </div>
                     </div>
-                  )}
-                </div>
-              ))}
+                    {r.comment && <p className="text-[13px] text-[#6b5e4e] leading-relaxed italic font-light">"{r.comment}"</p>}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -785,27 +453,27 @@ function PlantationDetailModal({ plantation, onClose, onReview }) {
   );
 }
 
-/* ─── Review Modal ─── */
+// ─── Review Modal ─────────────────────────────────────────────
 function ReviewModal({ plantation, onClose, onSuccess }) {
-  const [rating, setRating]       = useState(0);
-  const [hovered, setHovered]     = useState(0);
-  const [comment, setComment]     = useState("");
-  const [photos, setPhotos]       = useState([]);
+  const [rating, setRating] = useState(0);
+  const [hovered, setHovered] = useState(0);
+  const [comment, setComment] = useState("");
+  const [photos, setPhotos] = useState([]);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError]         = useState("");
+  const [error, setError] = useState("");
   const fileRef = useRef(null);
 
-  const addFiles = (files) => {
+  const addFiles = files => {
     const valid = Array.from(files).filter(f => f.type.startsWith("image/")).slice(0, 5 - photos.length);
     setPhotos(p => [...p, ...valid.map(f => ({ file: f, previewUrl: URL.createObjectURL(f) }))].slice(0, 5));
   };
 
-  const removePhoto = (idx) => {
+  const removePhoto = idx => {
     setPhotos(p => { URL.revokeObjectURL(p[idx].previewUrl); return p.filter((_, i) => i !== idx); });
   };
 
   const handleSubmit = async () => {
-    if (!rating)         { setError("Please select a rating"); return; }
+    if (!rating) { setError("Please select a rating"); return; }
     if (!comment.trim()) { setError("Please write a comment"); return; }
     setError(""); setSubmitting(true);
     try {
@@ -813,52 +481,52 @@ function ReviewModal({ plantation, onClose, onSuccess }) {
       fd.append("rating", rating);
       fd.append("comment", comment);
       photos.forEach(p => fd.append("images", p.file));
-      const res = await fetch(`${BASE_URL}/api/plantations/${plantation.id}/review`, { method: "POST", credentials: "include", body: fd });
-      if (!res.ok) { const b = await res.json().catch(() => ({})); throw new Error(b.message || `Server error (${res.status})`); }
+      const res = await fetch(`${BASE_URL}/api/plantations/${plantation.id}/review`, {
+        method: "POST", credentials: "include", body: fd,
+      });
+      if (!res.ok) { const b = await res.json().catch(() => { }); throw new Error(b?.message || `Error ${res.status}`); }
       onSuccess();
-    } catch (err) {
-      setError(err.message || "Failed to submit review");
-    } finally {
-      setSubmitting(false);
-    }
+    } catch (err) { setError(err.message || "Failed to submit review"); }
+    finally { setSubmitting(false); }
   };
 
   return (
     <motion.div
-      className="ps-overlay"
+      className="fixed inset-0 bg-[#0c1e11]/85 backdrop-blur-[8px] z-[1001] flex items-center justify-center p-5 font-['Outfit',sans-serif]"
       style={{ zIndex: 1001 }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       onClick={e => e.target === e.currentTarget && !submitting && onClose()}
     >
       <motion.div
-        className="ps-rmodal"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-[#f7f3ec] w-full max-w-[520px] rounded-sm overflow-hidden shadow-2xl border border-[#ede8de]"
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="ps-rmodal-body">
-          <button
-            onClick={onClose}
-            disabled={submitting}
-            style={{ position: "absolute", top: 18, right: 18, width: 36, height: 36, border: "1px solid var(--line)", borderRadius: "50%", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ink)" }}
-          >
-            <X size={15} />
+        <div className="h-[3px] bg-gradient-to-r from-[#0c1e11] via-[#4db87a] to-[#0c1e11]" />
+        <div className="p-8 sm:p-10 relative">
+          <button onClick={onClose} disabled={submitting}
+            className="absolute top-5 right-5 w-8 h-8 rounded-full border border-[#e0d8cf] flex items-center justify-center text-[#b5ac9e] hover:bg-[#f2ede3] transition-colors cursor-pointer">
+            <X size={14} />
           </button>
 
-          <h2 className="ps-rmodal-title">Leave a Review</h2>
+          <div className="inline-flex items-center gap-2 mb-5">
+            <div className="w-4 h-px bg-[#4db87a]" />
+            <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a]">Review</span>
+          </div>
+          <h2 className="font-['Cormorant_Garant',serif] text-[32px] font-semibold text-[#0c1e11] mb-6 leading-tight tracking-[-0.3px]">
+            Leave a Review
+          </h2>
 
-          <label className="ps-flabel">Rating *</label>
-          <div className="ps-star-row">
+          <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3">
+            Rating <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-2 mb-6">
             {[1, 2, 3, 4, 5].map(s => (
-              <Star
-                key={s}
-                size={30}
-                fill={s <= (hovered || rating) ? "var(--gold)" : "none"}
+              <Star key={s} size={28}
+                fill={s <= (hovered || rating) ? "#c9a84c" : "transparent"}
+                stroke={s <= (hovered || rating) ? "#c9a84c" : "#e0d8cf"}
                 strokeWidth={1.5}
-                style={{ cursor: "pointer", color: "var(--gold)", transition: "transform 0.15s" }}
+                className="cursor-pointer transition-transform hover:scale-110"
                 onMouseEnter={() => setHovered(s)}
                 onMouseLeave={() => setHovered(0)}
                 onClick={() => setRating(s)}
@@ -866,42 +534,58 @@ function ReviewModal({ plantation, onClose, onSuccess }) {
             ))}
           </div>
 
-          <label className="ps-flabel">Your Review *</label>
+          <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3">
+            Your Review <span className="text-red-500">*</span>
+          </label>
           <textarea
-            className="ps-textarea"
-            value={comment}
-            onChange={e => setComment(e.target.value)}
+            value={comment} onChange={e => setComment(e.target.value)}
             placeholder="Describe what you observed — the growth, the terrain, the atmosphere…"
+            className="w-full min-h-[100px] px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-none bg-white text-sm text-[#0c1e11] outline-none resize-vertical mb-5 font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 transition-all leading-relaxed placeholder:text-[#c8bfb4]"
           />
 
-          <label className="ps-flabel">Add Photos (Optional)</label>
+          <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3">
+            Photos (Optional)
+          </label>
           {photos.length < 5 && (
-            <div className="ps-upload" onClick={() => fileRef.current?.click()}>
-              <Camera size={22} style={{ margin: "0 auto", color: "var(--warm)" }} />
-              <div className="ps-upload-txt">Click to upload</div>
+            <div
+              onClick={() => fileRef.current?.click()}
+              className="border border-dashed border-[#e0d8cf] rounded-none py-5 px-4 text-center cursor-pointer bg-[#f2ede3] hover:border-[#4db87a]/50 hover:bg-emerald-50/40 transition-all mb-3"
+            >
+              <Camera size={20} className="mx-auto text-[#b5ac9e] mb-1.5" />
+              <div className="text-[12px] text-[#8a7d6e]">Click to upload</div>
               <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={e => addFiles(e.target.files)} />
             </div>
           )}
           {photos.length > 0 && (
-            <div className="ps-pgrid">
+            <div className="grid grid-cols-5 gap-2 mb-5">
               {photos.map((p, i) => (
-                <div key={i} className="ps-pthumb">
-                  <img src={p.previewUrl} alt="" />
-                  <button className="ps-premove" onClick={() => removePhoto(i)}><X size={10} /></button>
+                <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-[#e0d8cf]">
+                  <img src={p.previewUrl} alt="" className="w-full h-full object-cover" />
+                  <button onClick={() => removePhoto(i)}
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/65 text-white cursor-pointer text-[10px] flex items-center justify-center hover:bg-red-600/80 transition-colors">
+                    ✕
+                  </button>
                 </div>
               ))}
             </div>
           )}
 
-          {error && <div className="ps-err">{error}</div>}
+          {error && (
+            <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200/80 rounded text-[12.5px] text-red-700 font-medium">
+              {error}
+            </div>
+          )}
 
-          <div className="ps-btnrow">
-            <button className="ps-btn-ghost" onClick={onClose} disabled={submitting}>Cancel</button>
-            <button className="ps-btn-solid" onClick={handleSubmit} disabled={submitting}>
+          <div className="flex gap-3 mt-2">
+            <button onClick={onClose} disabled={submitting}
+              className="flex-1 py-3.5 border border-[#e0d8cf] bg-transparent text-[#8a7d6e] text-[11px] font-semibold tracking-[0.1em] uppercase cursor-pointer hover:border-[#0c1e11] hover:text-[#0c1e11] transition-all rounded-sm">
+              Cancel
+            </button>
+            <button onClick={handleSubmit} disabled={submitting}
+              className="flex-1 py-3.5 bg-[#0c1e11] text-white text-[11px] font-semibold tracking-[0.1em] uppercase cursor-pointer hover:bg-[#163d25] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 rounded-sm">
               {submitting
-                ? <><div className="ps-spin" />Submitting…</>
-                : <><Check size={14} />Submit Review</>
-              }
+                ? <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Submitting…</>
+                : <><Check size={13} />Submit Review</>}
             </button>
           </div>
         </div>
