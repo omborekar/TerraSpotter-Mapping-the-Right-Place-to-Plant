@@ -2,21 +2,16 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Modal dialog for marking plantation as complete with proof photos.
- */
+ Description: Modal for marking plantation complete — Verdant Editorial redesign.
+*/
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-// CompletePlantationModal: collects proof photos, planted counts and notes
-// then posts completion to /api/lands/my/:id/plantation-complete
 export default function CompletePlantationModal({ land, onClose, onSuccess }) {
-  const [form, setForm] = useState({
-    treesPlanted: "",
-    moreCapacity: "",
-    notes: "",
-  });
-  const [photos, setPhotos] = useState([]);          // { file, previewUrl }[]
+  const [form, setForm] = useState({ treesPlanted: "", moreCapacity: "", notes: "" });
+  const [photos, setPhotos] = useState([]);
   const [dragOver, setDragOver] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -24,12 +19,12 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
-  // photo handling
   const addFiles = files => {
     const valid = Array.from(files).filter(f => f.type.startsWith("image/")).slice(0, 5 - photos.length);
     const entries = valid.map(file => ({ file, previewUrl: URL.createObjectURL(file) }));
     setPhotos(prev => [...prev, ...entries].slice(0, 5));
   };
+
   const removePhoto = idx => {
     setPhotos(prev => {
       URL.revokeObjectURL(prev[idx].previewUrl);
@@ -37,23 +32,18 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
     });
   };
 
-  // submit
   const handleSubmit = async () => {
     if (!form.treesPlanted) { setError("Please enter how many trees were planted."); return; }
     if (photos.length === 0) { setError("Please upload at least one proof photo."); return; }
     setError(""); setSubmitting(true);
-
     try {
       const fd = new FormData();
-      fd.append("treesPlanted",  form.treesPlanted);
-      fd.append("moreCapacity",  form.moreCapacity);
-      fd.append("notes",         form.notes);
+      fd.append("treesPlanted", form.treesPlanted);
+      fd.append("moreCapacity", form.moreCapacity);
+      fd.append("notes", form.notes);
       photos.forEach(p => fd.append("images", p.file));
-
       const res = await fetch(`${BASE_URL}/api/lands/${land.id}/plantation-complete`, {
-        method: "POST",
-        credentials: "include",
-        body: fd,
+        method: "POST", credentials: "include", body: fd,
       });
       if (!res.ok) {
         const b = await res.json().catch(() => ({}));
@@ -68,225 +58,173 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
   };
 
   return (
-    <>
-      <style>{`
-        .cp-overlay {
-          position:fixed;inset:0;background:rgba(8,24,15,.58);
-          z-index:10001;display:flex;align-items:center;justify-content:center;
-          padding:20px;backdrop-filter:blur(6px);overflow-y:auto;
-        }
-        .cp-modal {
-          background:#faf8f4;border-radius:22px;width:100%;max-width:560px;
-          box-shadow:0 28px 90px rgba(13,51,32,.26);overflow:hidden;
-          margin:auto;
-        }
-        .cp-header {
-          background:linear-gradient(135deg,#0d3320 0%,#2d8a55 100%);
-          padding:28px 32px 22px;position:relative;
-        }
-        .cp-header-badge {
-          display:inline-flex;align-items:center;gap:6px;
-          background:rgba(255,255,255,.15);border-radius:20px;
-          padding:4px 12px;font-size:11.5px;color:rgba(255,255,255,.85);
-          font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px;
-        }
-        .cp-header h2 { font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:#fff;letter-spacing:-.3px; }
-        .cp-header p  { font-size:13px;color:rgba(255,255,255,.62);margin-top:4px; }
-        .cp-close {
-          position:absolute;top:16px;right:16px;width:32px;height:32px;
-          border-radius:50%;background:rgba(255,255,255,.12);border:none;
-          color:white;font-size:16px;cursor:pointer;
-          display:flex;align-items:center;justify-content:center;transition:background .15s;
-        }
-        .cp-close:hover { background:rgba(255,255,255,.22); }
+    <motion.div
+      className="fixed inset-0 bg-[#0b1d10]/70 backdrop-blur-[7px] z-[10001] flex items-center justify-center p-4 sm:p-6 overflow-y-auto font-['Outfit',sans-serif]"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={e => e.target === e.currentTarget && !submitting && onClose()}
+    >
+      <motion.div
+        className="bg-[#f7f3ec] w-full max-w-[560px] rounded-2xl overflow-hidden shadow-2xl my-auto border border-[#ede8de]"
+        initial={{ scale: 0.93, opacity: 0, y: 24 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.93, opacity: 0, y: 24 }}
+        transition={{ type: "spring", stiffness: 300, damping: 26 }}
+      >
+        {/* Header */}
+        <div className="relative bg-[#0c1e11] px-7 sm:px-8 pt-7 pb-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0c1e11] via-[#0f2916] to-[#071408]" />
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#4db87a]/10 blur-[80px]" />
 
-        .cp-body { padding:26px 32px 22px;display:flex;flex-direction:column;gap:18px; }
+          <button
+            onClick={onClose}
+            disabled={submitting}
+            className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/10 border border-white/15 text-white/60 hover:text-white hover:bg-white/18 transition-all cursor-pointer flex items-center justify-center text-sm"
+          >
+            ✕
+          </button>
 
-        /* photo uploader */
-        .cp-drop {
-          border:2px dashed #c5d5cc;border-radius:12px;padding:22px;
-          text-align:center;cursor:pointer;transition:border-color .2s,background .2s;
-          background:#f5f1eb;
-        }
-        .cp-drop.over { border-color:#2d8a55;background:#e8f5ee; }
-        .cp-drop-icon { font-size:28px;margin-bottom:6px; }
-        .cp-drop-text { font-size:13.5px;color:#4a5e52;font-weight:500; }
-        .cp-drop-sub  { font-size:12px;color:#8a9e92;margin-top:3px; }
-        .cp-photos { display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px; }
-        .cp-photo-thumb {
-          aspect-ratio:1;border-radius:9px;overflow:hidden;
-          position:relative;border:1.5px solid #dde5e0;
-        }
-        .cp-photo-thumb img { width:100%;height:100%;object-fit:cover;display:block; }
-        .cp-photo-remove {
-          position:absolute;top:4px;right:4px;width:20px;height:20px;
-          border-radius:50%;background:rgba(0,0,0,.65);color:white;
-          border:none;cursor:pointer;font-size:11px;display:flex;
-          align-items:center;justify-content:center;
-        }
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-3">
+              <span className="text-sm">🌳</span>
+              <span className="text-[11px] font-semibold tracking-[2px] uppercase text-white/75 font-['Outfit',sans-serif]">
+                Mark Complete
+              </span>
+            </div>
+            <h2 className="font-['Cormorant_Garant',serif] text-[22px] sm:text-[26px] font-semibold text-white leading-tight mb-1">
+              Plantation Complete!
+            </h2>
+            <p className="text-[13px] text-white/45 font-['Outfit',sans-serif] font-light">
+              {land?.title || "This site"} — submit proof photos and final details
+            </p>
+          </div>
+        </div>
 
-        /* form grid */
-        .cp-grid { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
-        .cp-field { display:flex;flex-direction:column;gap:6px; }
-        .cp-field.full { grid-column:1/-1; }
-        .cp-label {
-          font-size:11.5px;font-weight:700;text-transform:uppercase;
-          letter-spacing:.7px;color:#4a5e52;
-        }
-        .cp-req { color:#c0392b;margin-left:2px; }
-        .cp-input, .cp-textarea {
-          padding:10px 14px;border:1.5px solid #dde5e0;border-radius:9px;
-          font-family:'DM Sans',sans-serif;font-size:14px;
-          background:#fff;color:#0f1a14;outline:none;
-          transition:border-color .2s,box-shadow .2s;width:100%;
-        }
-        .cp-input:focus, .cp-textarea:focus {
-          border-color:#2d8a55;box-shadow:0 0 0 3px rgba(45,138,85,.1);
-        }
-        .cp-textarea { resize:none;min-height:72px;line-height:1.5; }
-        .cp-hint { font-size:11.5px;color:#6b7a72;margin-top:2px; }
+        {/* Body */}
+        <div className="px-7 sm:px-8 py-6 flex flex-col gap-5">
 
-        .cp-error {
-          padding:9px 14px;background:#fff5f5;border:1px solid #fecaca;
-          border-radius:8px;font-size:12.5px;color:#c0392b;
-          display:flex;align-items:center;gap:7px;
-        }
+          {/* Photo uploader */}
+          <div>
+            <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3 font-['Outfit',sans-serif]">
+              Photo Proof <span className="text-red-500">*</span>
+              <span className="normal-case tracking-normal font-normal text-[#b5ac9e] ml-2">(up to 5 images)</span>
+            </label>
 
-        .cp-footer {
-          padding:14px 32px 24px;display:flex;gap:10px;justify-content:flex-end;
-          border-top:1px solid #e8ede9;
-        }
-        .cp-btn-cancel {
-          padding:10px 20px;border-radius:9px;border:1.5px solid #dde5e0;
-          background:#fff;color:#6b7a72;font-family:'DM Sans',sans-serif;
-          font-size:14px;cursor:pointer;transition:border-color .15s;
-        }
-        .cp-btn-cancel:hover { border-color:#0d3320;color:#0d3320; }
-        .cp-btn-submit {
-          padding:10px 24px;border-radius:9px;border:none;
-          background:linear-gradient(135deg,#16a34a,#0d3320);
-          color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;
-          font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;
-          transition:opacity .15s,transform .1s;
-        }
-        .cp-btn-submit:hover:not(:disabled) { opacity:.9; }
-        .cp-btn-submit:active:not(:disabled) { transform:scale(.98); }
-        .cp-btn-submit:disabled { opacity:.45;cursor:not-allowed; }
-        .cp-spin {
-          width:13px;height:13px;border:2px solid rgba(255,255,255,.35);
-          border-top-color:#fff;border-radius:50%;
-          animation:cp-spin .6s linear infinite;
-        }
-        @keyframes cp-spin { to { transform:rotate(360deg) } }
+            {photos.length < 5 && (
+              <div
+                onClick={() => fileRef.current?.click()}
+                onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={e => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}
+                className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 ${dragOver
+                    ? "border-[#4db87a] bg-emerald-50/60"
+                    : "border-[#e0d8cf] bg-[#f2ede3] hover:border-[#4db87a]/50 hover:bg-emerald-50/40"
+                  }`}
+              >
+                <div className="text-3xl mb-2">📸</div>
+                <div className="text-[13.5px] font-medium text-[#5c5044] font-['Outfit',sans-serif]">
+                  Click or drag photos here
+                </div>
+                <div className="text-[12px] text-[#b5ac9e] mt-1 font-['Outfit',sans-serif]">
+                  JPG, PNG, WEBP — show the planted area
+                </div>
+                <input
+                  ref={fileRef} type="file" accept="image/*" multiple hidden
+                  onChange={e => addFiles(e.target.files)}
+                />
+              </div>
+            )}
 
-        /* success state */
-        .cp-success {
-          text-align:center;padding:48px 32px;
-          display:flex;flex-direction:column;align-items:center;gap:14px;
-        }
-        .cp-success-icon { font-size:52px; }
-        .cp-success h3 { font-family:'Fraunces',serif;font-size:22px;color:#0d3320; }
-        .cp-success p  { font-size:13.5px;color:#6b7a72;max-width:300px;line-height:1.6; }
-
-        @media(max-width:540px) {
-          .cp-body { padding:20px 18px; }
-          .cp-footer { padding:12px 18px 20px; }
-          .cp-grid { grid-template-columns:1fr; }
-          .cp-header { padding:22px 18px 18px; }
-        }
-      `}</style>
-
-      <motion.div className="cp-overlay"
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={e => e.target === e.currentTarget && !submitting && onClose()}>
-        <motion.div className="cp-modal"
-          initial={{ scale: .93, opacity: 0, y: 24 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: .93, opacity: 0, y: 24 }}
-          transition={{ type: "spring", stiffness: 300, damping: 26 }}>
-
-          <div className="cp-header">
-            <button className="cp-close" onClick={onClose} disabled={submitting}>✕</button>
-            <div className="cp-header-badge">🌳 Mark Complete</div>
-            <h2>Plantation Complete!</h2>
-            <p>{land?.title || "This site"} — submit your proof and final details</p>
+            {photos.length > 0 && (
+              <div className={`grid grid-cols-5 gap-2 ${photos.length < 5 ? "mt-3" : ""}`}>
+                {photos.map((p, i) => (
+                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-[1.5px] border-[#e0d8cf]">
+                    <img src={p.previewUrl} alt="" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => removePhoto(i)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/65 text-white border-none cursor-pointer text-[10px] flex items-center justify-center hover:bg-red-600/80 transition-colors"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="cp-body">
-
-            {/* Photo uploader */}
-            <div>
-              <label className="cp-label" style={{ display: "block", marginBottom: 8 }}>
-                Photo Proof <span className="cp-req">*</span>
-                <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0, color: "#6b7a72", marginLeft: 6 }}>
-                  (up to 5 images)
-                </span>
+          {/* Numbers grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
+                Trees Planted <span className="text-red-500">*</span>
               </label>
-
-              {photos.length < 5 && (
-                <div
-                  className={`cp-drop${dragOver ? " over" : ""}`}
-                  onClick={() => fileRef.current?.click()}
-                  onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={e => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}>
-                  <div className="cp-drop-icon">📸</div>
-                  <div className="cp-drop-text">Click or drag photos here</div>
-                  <div className="cp-drop-sub">JPG, PNG, WEBP — show the planted area</div>
-                  <input ref={fileRef} type="file" accept="image/*" multiple hidden
-                    onChange={e => addFiles(e.target.files)} />
-                </div>
-              )}
-
-              {photos.length > 0 && (
-                <div className="cp-photos">
-                  {photos.map((p, i) => (
-                    <div key={i} className="cp-photo-thumb">
-                      <img src={p.previewUrl} alt="" />
-                      <button className="cp-photo-remove" onClick={() => removePhoto(i)}>✕</button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <input
+                type="number" min="1" placeholder="e.g. 95"
+                value={form.treesPlanted} onChange={e => set("treesPlanted", e.target.value)}
+                className="w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all"
+              />
+              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">Actual number planted today</span>
             </div>
 
-            {/* Numbers */}
-            <div className="cp-grid">
-              <div className="cp-field">
-                <label className="cp-label">Trees Planted <span className="cp-req">*</span></label>
-                <input type="number" className="cp-input" placeholder="e.g. 95" min="1"
-                  value={form.treesPlanted} onChange={e => set("treesPlanted", e.target.value)} />
-                <span className="cp-hint">Actual number planted today</span>
-              </div>
-
-              <div className="cp-field">
-                <label className="cp-label">More Can Be Planted</label>
-                <input type="number" className="cp-input" placeholder="e.g. 40" min="0"
-                  value={form.moreCapacity} onChange={e => set("moreCapacity", e.target.value)} />
-                <span className="cp-hint">Remaining capacity estimate</span>
-              </div>
-
-              <div className="cp-field full">
-                <label className="cp-label">Field Notes</label>
-                <textarea className="cp-textarea"
-                  placeholder="e.g. Soil was rocky in the north corner, water access good from the canal. Recommend native shrubs for perimeter…"
-                  value={form.notes} onChange={e => set("notes", e.target.value)} />
-              </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
+                More Can Be Planted
+              </label>
+              <input
+                type="number" min="0" placeholder="e.g. 40"
+                value={form.moreCapacity} onChange={e => set("moreCapacity", e.target.value)}
+                className="w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all"
+              />
+              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">Remaining capacity estimate</span>
             </div>
 
-            {error && <div className="cp-error">⚠️ {error}</div>}
+            <div className="flex flex-col gap-1.5 sm:col-span-2">
+              <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
+                Field Notes
+              </label>
+              <textarea
+                placeholder="e.g. Soil was rocky in the north corner, water access good from the canal. Recommend native shrubs for perimeter…"
+                value={form.notes} onChange={e => set("notes", e.target.value)}
+                className="w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all resize-none min-h-[80px] leading-relaxed"
+              />
+            </div>
           </div>
 
-          <div className="cp-footer">
-            <button className="cp-btn-cancel" onClick={onClose} disabled={submitting}>Cancel</button>
-            <button className="cp-btn-submit" onClick={handleSubmit} disabled={submitting}>
-              {submitting
-                ? <><div className="cp-spin" /> Uploading…</>
-                : "✅ Mark Plantation Complete"}
-            </button>
-          </div>
-        </motion.div>
+          {/* Error */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200/80 rounded-xl text-[12.5px] text-red-700 font-medium font-['Outfit',sans-serif]"
+              >
+                <span className="shrink-0">⚠️</span> {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 px-7 sm:px-8 py-5 border-t border-[#ede8de]">
+          <button
+            onClick={onClose}
+            disabled={submitting}
+            className="px-5 py-2.5 rounded-xl border-[1.5px] border-[#e0d8cf] bg-white text-[13.5px] font-medium text-[#8a7d6e] font-['Outfit',sans-serif] hover:border-[#0c1e11] hover:text-[#0c1e11] transition-all cursor-pointer disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold font-['Outfit',sans-serif] hover:bg-[#163d25] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-[0_4px_16px_rgba(12,30,17,0.2)]"
+          >
+            {submitting ? (
+              <>
+                <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Uploading…
+              </>
+            ) : "✅ Mark Plantation Complete"}
+          </button>
+        </div>
       </motion.div>
-    </>
+    </motion.div>
   );
 }

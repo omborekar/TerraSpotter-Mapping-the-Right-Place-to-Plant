@@ -1055,7 +1055,7 @@ const Main = () => {
                         polyline: false,
                         circlemarker: false,
                         polygon: {
-                          allowIntersection: false,
+                          allowIntersection: true,
                           showArea: true,
                           metric: true,
                           shapeOptions: {

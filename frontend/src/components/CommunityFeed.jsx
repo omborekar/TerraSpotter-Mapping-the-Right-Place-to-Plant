@@ -2,20 +2,20 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Global community feed showing completed plantations.
+ Description: Community feed — Verdant Editorial redesign. Cormorant Garant + Outfit.
 */
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  TreePine, TrendingUp, Heart, Sprout, Droplets, Sun, AlertTriangle,
-  MapPin, Clock, ChevronRight, Users, BarChart3, Activity, Star, Camera,
-  Navigation, CheckCircle, Crosshair, X
+  TreePine, TrendingUp, Heart, Sprout, Clock,
+  Users, Activity, Star, MapPin, CheckCircle,
+  Crosshair, X, Navigation,
 } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-/* ─── Time-ago ─── */
+// ─── helpers ──────────────────────────────────────────────────
 function timeAgo(dateStr) {
   if (!dateStr) return "Some time ago";
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -29,448 +29,156 @@ function timeAgo(dateStr) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-/* ─── Distance Helpers ─── */
 function getDistance(lat1, lon1, lat2, lon2) {
   if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
-  const R = 6371; // km
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-/* ─── Skeleton ─── */
-function Bone({ style = {} }) {
-  return (
-    <div style={{
-      background: "linear-gradient(90deg,#e8e2d9 25%,#d4cec5 50%,#e8e2d9 75%)",
-      backgroundSize: "200% 100%", animation: "cf-shimmer 1.4s infinite",
-      borderRadius: 4, ...style,
-    }} />
-  );
+// ─── Skeleton bones ───────────────────────────────────────────
+const Bone = ({ className = "" }) => (
+  <div className={`rounded-lg bg-gradient-to-r from-[#ede8de] via-[#e0d8ce] to-[#ede8de] bg-[length:200%_100%] animate-pulse ${className}`} />
+);
+
+const BoneDark = ({ className = "" }) => (
+  <div className={`rounded-lg bg-gradient-to-r from-white/[0.05] via-white/[0.11] to-white/[0.05] bg-[length:200%_100%] animate-pulse ${className}`} />
+);
+
+// ─── Animated counter ─────────────────────────────────────────
+function Counter({ target, suffix = "" }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const seen = useRef(false);
+
+  useEffect(() => {
+    if (!target || seen.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      seen.current = true;
+      const num = parseFloat(target);
+      const dur = 1600;
+      const steps = 55;
+      const inc = num / steps;
+      let cur = 0;
+      const t = setInterval(() => {
+        cur = Math.min(cur + inc, num);
+        setCount(Number.isInteger(num) ? Math.floor(cur) : parseFloat(cur.toFixed(1)));
+        if (cur >= num) clearInterval(t);
+      }, dur / steps);
+    }, { threshold: 0.3 });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
 }
 
-function BoneDark({ style = {} }) {
-  return (
-    <div style={{
-      background: "linear-gradient(90deg,rgba(255,255,255,0.06) 25%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.06) 75%)",
-      backgroundSize: "200% 100%", animation: "cf-shimmer 1.4s infinite",
-      borderRadius: 4, ...style,
-    }} />
-  );
-}
+// ─── Review Modal ─────────────────────────────────────────────
+function ReviewModal({ completionId, onClose, onSuccess }) {
+  const [rating, setRating] = useState(0);
+  const [hovered, setHovered] = useState(0);
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
 
-/* ─── Main ─── */
-export default function CommunityFeed() {
-  const navigate = useNavigate();
-  const [plantations, setPlantations] = useState([]);
-  const [stats, setStats]     = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter]   = useState("recent"); // recent, popular, nearest
-  const [userLoc, setUserLoc] = useState(null);
-  const [locLoading, setLocLoading] = useState(false);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [selectedLandId, setSelectedLandId] = useState(null);
-  const [selectedCompletionId, setSelectedCompletionId] = useState(null);
-
-  useEffect(() => { fetchAll(); }, []);
-
-  const fetchAll = async () => {
+  const handleSubmit = async () => {
+    if (!rating) return alert("Please select a rating!");
     setLoading(true);
     try {
-        const [planRes, statsRes] = await Promise.all([
-            fetch(`${BASE_URL}/api/plantations/completed`, { credentials: "include" }),
-            fetch(`${BASE_URL}/api/growth/stats`, { credentials: "include" })
-        ]);
-        if (planRes.ok) setPlantations(await planRes.json());
-        if (statsRes.ok) setStats(await statsRes.json());
-    } catch (err) { console.error("Failed to fetch community data:", err); }
-    finally { setLoading(false); }
-  };
-
-  const handleClosest = () => {
-    if (userLoc) {
-        setFilter("nearest");
-        return;
+      const formData = new FormData();
+      formData.append("rating", rating);
+      formData.append("comment", comment);
+      const res = await fetch(`${BASE_URL}/api/plantations/${completionId}/review`, {
+        method: "POST", body: formData, credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to submit review");
+      onSuccess();
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting review");
+    } finally {
+      setLoading(false);
     }
-    setLocLoading(true);
-    navigator.geolocation.getCurrentPosition(pos => {
-        setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setFilter("nearest");
-        setLocLoading(false);
-    }, err => {
-        console.error(err);
-        setLocLoading(false);
-        alert("Location access denied or unavailable.");
-    });
-  };
-
-  // Sort logic
-  const sorted = [...plantations].sort((a, b) => {
-    if (filter === "recent") return new Date(b.completedAt) - new Date(a.completedAt);
-    if (filter === "popular") return (b.reviews?.length || 0) - (a.reviews?.length || 0);
-    if (filter === "nearest" && userLoc) {
-        const da = getDistance(userLoc.lat, userLoc.lng, a.centroidLat, a.centroidLng);
-        const db = getDistance(userLoc.lat, userLoc.lng, b.centroidLat, b.centroidLng);
-        return da - db;
-    }
-    return 0;
-  });
-
-  const handleOpenReview = (landId, completionId, e) => {
-      e.stopPropagation();
-      setSelectedLandId(landId);
-      setSelectedCompletionId(completionId);
-      setShowReviewModal(true);
-  };
-
-  const handleOpenGrowth = (landId, e) => {
-      e.stopPropagation();
-      navigate(`/lands/${landId}/growth`);
   };
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400\\&family=Epilogue:wght@300;400;500;600;700\\&display=swap');
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-        :root {
-          --cf-cream:#f5f0e8; --cf-parchment:#ede7d9; --cf-ink:#1a1a14; --cf-ink2:#2e2e24;
-          --cf-forest:#1c3a25; --cf-moss:#2d5a3d; --cf-leaf:#3d7a52; --cf-sage:#7aad89;
-          --cf-mist:#c4d9cc; --cf-gold:#c9a84c; --cf-gold-lt:#e8d5a3;
-          --cf-warm:#8c8678; --cf-line:#d6cfc4;
-        }
-        @keyframes cf-shimmer{to{background-position:-200% 0;}}
-        @keyframes cf-float{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,-20px) scale(1.05);}}
-        @keyframes cf-spin { to { transform: rotate(360deg); } }
+    <motion.div
+      className="fixed inset-0 bg-[#0b1d10]/85 backdrop-blur-[8px] z-[9999] flex items-center justify-center p-5"
+      onClick={e => e.target === e.currentTarget && onClose()}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-[#f7f3ec] rounded-2xl max-w-[520px] w-full relative overflow-hidden shadow-2xl border border-[#ede8de]"
+        initial={{ scale: 0.93, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.93, y: 20 }}
+        transition={{ type: "spring", bounce: 0.25 }}
+      >
+        {/* Accent bar */}
+        <div className="h-[3px] bg-gradient-to-r from-[#0c1e11] via-[#4db87a] to-[#0c1e11]" />
 
-        .cf-root{background:var(--cf-cream);min-height:100vh;font-family:'Epilogue',sans-serif;color:var(--cf-ink);}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-[#b5ac9e] hover:text-[#0c1e11] transition-colors cursor-pointer"
+        >
+          <X size={20} />
+        </button>
 
-        /* ── HERO ── */
-        .cf-hero{background:var(--cf-forest);position:relative;overflow:hidden;padding:88px 0 72px;}
-        .cf-hero-blob{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);}
-        .cf-blob-1{width:500px;height:500px;top:-180px;right:-120px;background:rgba(61,122,82,0.22);animation:cf-float 22s ease-in-out infinite;}
-        .cf-blob-2{width:380px;height:380px;bottom:-120px;left:-80px;background:rgba(201,168,76,0.1);animation:cf-float 18s ease-in-out 6s infinite;}
-        .cf-hero-inner{max-width:1340px;margin:0 auto;padding:0 56px;position:relative;z-index:1;}
-        .cf-hero-eyebrow{
-          font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
-          color:var(--cf-sage);margin-bottom:32px;display:flex;align-items:center;gap:12px;
-        }
-        .cf-hero-eyebrow::after{content:'';flex:0 0 40px;height:1px;background:var(--cf-sage);opacity:.45;}
-        .cf-hero-title{
-          font-family:'Cormorant Garamond',serif;font-size:clamp(48px,8vw,96px);
-          font-weight:300;line-height:.95;color:var(--cf-cream);letter-spacing:-.03em;margin-bottom:44px;
-        }
-        .cf-hero-title em{font-style:italic;color:var(--cf-gold-lt);}
-        .cf-hero-rule{width:56px;height:1px;background:rgba(196,217,204,.4);margin-bottom:50px;}
-        .cf-hero-stats{display:flex;gap:0;flex-wrap:wrap;}
-        .cf-hstat{padding:0 52px 0 0;margin-right:52px;border-right:1px solid rgba(255,255,255,.1);}
-        .cf-hstat:last-child{border-right:none;padding-right:0;margin-right:0;}
-        .cf-hstat-val{
-          font-family:'Cormorant Garamond',serif;font-size:clamp(44px,6vw,72px);
-          font-weight:600;line-height:1;color:#fff;letter-spacing:-.03em;display:block;
-        }
-        .cf-hstat-lbl{font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--cf-sage);margin-top:7px;display:block;}
-
-        /* ── STICKY NAV ── */
-        .cf-nav{background:var(--cf-parchment);border-bottom:1px solid var(--cf-line);position:sticky;top:0;z-index:50;}
-        .cf-nav-inner{
-          max-width:1340px;margin:0 auto;padding:0 56px;display:flex;align-items:center;
-          justify-content:space-between;height:58px;gap:24px;flex-wrap:wrap;
-        }
-        .cf-nav-count{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--cf-warm);}
-        .cf-fpills{display:flex;gap:4px;}
-        .cf-fpill{
-          display:inline-flex;align-items:center;gap:6px;
-          padding:6px 20px;border-radius:100px;font-family:'Epilogue',sans-serif;
-          font-size:11px;font-weight:600;letter-spacing:.06em;border:1px solid transparent;
-          cursor:pointer;transition:all .2s;background:transparent;color:var(--cf-warm);
-        }
-        .cf-fpill:hover{color:var(--cf-ink);}
-        .cf-fpill.active{background:var(--cf-forest);color:var(--cf-cream);border-color:var(--cf-forest);}
-        .cf-spin { animation: cf-spin 1s linear infinite; }
-
-        /* ── CONTENT ── */
-        .cf-content{max-width:1340px;margin:0 auto;padding:64px 56px 100px;}
-        .cf-section-label{
-          font-size:10px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;
-          color:var(--cf-warm);margin-bottom:40px;display:flex;align-items:center;gap:16px;
-        }
-        .cf-section-label::after{content:'';flex:1;height:1px;background:var(--cf-line);}
-
-        /* ── CARD GRID ── */
-        .cf-grid{
-          display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:24px;
-        }
-
-        /* ── FEED CARD ── */
-        .cf-card{
-          background:#fff;border:1px solid var(--cf-line);border-radius:16px;
-          overflow:hidden;cursor:pointer;transition:box-shadow .25s,transform .25s;
-          display:flex;flex-direction:column;
-        }
-        .cf-card:hover{box-shadow:0 8px 40px rgba(0,0,0,.08);transform:translateY(-3px);}
-
-        .cf-card-img{aspect-ratio:16/9;background:var(--cf-mist);overflow:hidden;position:relative;}
-        .cf-card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;}
-        .cf-card:hover .cf-card-img img{transform:scale(1.05);}
-        .cf-card-no-img{
-          display:flex;flex-direction:column;align-items:center;justify-content:center;
-          gap:8px;color:var(--cf-warm);font-size:11px;aspect-ratio:16/9;background:var(--cf-parchment);
-        }
-        .cf-card-time{
-          position:absolute;top:12px;right:12px;
-          background:rgba(26,26,20,.72);backdrop-filter:blur(6px);
-          color:#fff;font-size:10px;font-weight:600;letter-spacing:.08em;
-          padding:5px 12px;border-radius:100px;display:flex;align-items:center;gap:5px;
-        }
-        .cf-card-dist{
-          position:absolute;bottom:12px;left:12px;
-          background:rgba(255,255,255,.9);backdrop-filter:blur(6px);
-          color:var(--cf-ink);font-size:10px;font-weight:700;letter-spacing:.08em;
-          padding:5px 12px;border-radius:100px;display:flex;align-items:center;gap:5px;
-        }
-
-        .cf-card-body{padding:24px 24px 20px;flex:1;display:flex;flex-direction:column;}
-        .cf-card-site{
-          font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
-          color:var(--cf-ink);margin-bottom:6px;letter-spacing:-.02em;line-height:1.2;
-        }
-        .cf-card-loc{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--cf-warm);margin-bottom:14px;}
-        .cf-card-notes{
-          font-size:12.5px;line-height:1.7;color:var(--cf-ink2);flex:1;
-          display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-          margin-bottom:18px;
-        }
-
-        .cf-card-stats{
-          display:flex;gap:16px;padding-top:14px;border-top:1px solid var(--cf-line);
-        }
-        .cf-card-stat{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--cf-warm);font-weight:500;}
-        .cf-card-stat-val{font-weight:700;color:var(--cf-ink);}
-        .cf-card-stat-icon{opacity:.5;}
-
-        .cf-card-actions{
-          padding:12px 24px 16px;display:flex;flex-wrap:wrap;gap:10px;
-          border-top:1px solid var(--cf-line);background:#fcfbf9;
-        }
-        .cf-btn-outline{
-          flex:1;padding:10px;border:1px solid var(--cf-line);border-radius:8px;
-          background:#fff;font-family:'Epilogue',sans-serif;font-size:11px;font-weight:600;
-          color:var(--cf-ink);text-align:center;cursor:pointer;transition:all .2s;
-          display:flex;align-items:center;justify-content:center;gap:6px;
-        }
-        .cf-btn-outline:hover{border-color:var(--cf-leaf);color:var(--cf-leaf);}
-        .cf-btn-solid{
-          flex:1;padding:10px;border:none;border-radius:8px;
-          background:var(--cf-forest);font-family:'Epilogue',sans-serif;font-size:11px;font-weight:600;
-          color:var(--cf-cream);text-align:center;cursor:pointer;transition:all .2s;
-          display:flex;align-items:center;justify-content:center;gap:6px;
-        }
-        .cf-btn-solid:hover{background:var(--cf-moss);}
-
-        /* ── EMPTY ── */
-        .cf-empty{text-align:center;padding:100px 24px;grid-column:1/-1;}
-        .cf-empty-title{
-          font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;
-          color:var(--cf-ink2);margin:18px 0 10px;
-        }
-        
-        /* ── REVIEW MODAL ── */
-        .cf-rmodal-overlay {
-          position:fixed;inset:0;background:rgba(26,26,20,0.84);backdrop-filter:blur(8px);
-          z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;
-        }
-        .cf-rmodal {
-          background:var(--cf-cream);border-radius:12px;max-width:540px;width:100%;
-          position:relative;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.2);
-        }
-        .cf-rmodal-body { padding:40px; }
-        .cf-rmodal-title {
-          font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;
-          color:var(--cf-ink);margin-bottom:24px;letter-spacing:-.02em;line-height:1.1;
-        }
-        .cf-rmodal-close {
-          position:absolute;top:16px;right:16px;background:none;border:none;
-          color:var(--cf-warm);cursor:pointer;transition:color .2s;
-        }
-        .cf-rmodal-close:hover { color:var(--cf-ink); }
-        .cf-flabel {
-          display:block;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
-          color:var(--cf-warm);margin-bottom:12px;
-        }
-        .cf-star-row { display:flex;gap:8px;margin-bottom:24px; }
-        .cf-star { cursor:pointer;transition:transform .15s; }
-        .cf-star:hover { transform:scale(1.1); }
-        .cf-textarea {
-          width:100%;min-height:100px;padding:14px;border:1px solid var(--cf-line);
-          border-radius:8px;font-family:'Epilogue',sans-serif;font-size:14px;
-          background:#fff;outline:none;resize:vertical;margin-bottom:24px;
-        }
-        .cf-textarea:focus { border-color:var(--cf-forest); }
-        .cf-btn-submit-review {
-          width:100%;padding:14px;border:none;background:var(--cf-forest);color:#fff;
-          border-radius:8px;font-family:'Epilogue',sans-serif;font-size:13px;font-weight:600;
-          cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
-        }
-        .cf-btn-submit-review:disabled { opacity:.6;cursor:not-allowed; }
-
-        /* responsive */
-        @media(max-width:960px){
-          .cf-hero-inner,.cf-nav-inner,.cf-content{padding-left:28px;padding-right:28px;}
-          .cf-grid{grid-template-columns:1fr;}
-        }
-        @media(max-width:640px){
-          .cf-hero{padding:60px 0 52px;}
-          .cf-hero-stats{flex-direction:column;gap:0;}
-          .cf-hstat{border-right:none;border-bottom:1px solid rgba(255,255,255,.1);padding:0 0 20px;margin:0 0 20px;}
-          .cf-hstat:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-          .cf-nav-inner{height:auto;padding:10px 24px;gap:8px;}
-          .cf-content{padding-top:40px;padding-bottom:60px;}
-          .cf-grid{grid-template-columns:1fr;}
-        }
-      `}</style>
-
-      <div className="cf-root">
-
-        {/* ── HERO ── */}
-        <div className="cf-hero">
-          <div className="cf-hero-blob cf-blob-1" />
-          <div className="cf-hero-blob cf-blob-2" />
-          <div className="cf-hero-inner">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <div className="cf-hero-eyebrow">TerraSpotter — Community Pulse</div>
-              <h1 className="cf-hero-title">
-                Watching forests<br /><em>come alive</em>
-              </h1>
-              <div className="cf-hero-rule" />
-            </motion.div>
-
-            <div className="cf-hero-stats">
-              {loading ? (
-                [...Array(3)].map((_, i) => (
-                  <div key={i} className="cf-hstat">
-                    <BoneDark style={{ height: 60, width: 100, marginBottom: 8 }} />
-                    <BoneDark style={{ height: 10, width: 80 }} />
-                  </div>
-                ))
-              ) : (
-                <>
-                  {[
-                    { val: plantations.length || 0, lbl: "Completed Plantations", icon: <CheckCircle size={16} /> },
-                    { val: stats?.totalUpdates || 0, lbl: "Growth Updates", icon: <Activity size={16} /> },
-                    { val: `${stats?.avgSurvivalRate || 0}%`, lbl: "Avg Survival Rate", icon: <Heart size={16} /> },
-                  ].map((s, i) => (
-                    <motion.div
-                      key={i} className="cf-hstat"
-                      initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: .3 + i * .12, duration: .55 }}
-                    >
-                      <span className="cf-hstat-val">{s.val}</span>
-                      <span className="cf-hstat-lbl">{s.lbl}</span>
-                    </motion.div>
-                  ))}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ── STICKY NAV ── */}
-        <div className="cf-nav">
-          <div className="cf-nav-inner">
-            <span className="cf-nav-count">
-              {loading ? "Loading…" : `${sorted.length} Plantation${sorted.length !== 1 ? "s" : ""}`}
+        <div className="p-8">
+          <div className="inline-flex items-center gap-2 mb-4">
+            <div className="w-4 h-px bg-[#4db87a]" />
+            <span className="text-[10px] font-semibold tracking-[2.5px] uppercase text-[#4db87a] font-['Outfit',sans-serif]">
+              Community Review
             </span>
-            <div className="cf-fpills">
-              <button className={`cf-fpill${filter === "recent" ? " active" : ""}`} onClick={() => setFilter("recent")}>
-                  Recent
-              </button>
-              <button className={`cf-fpill${filter === "popular" ? " active" : ""}`} onClick={() => setFilter("popular")}>
-                  Popular
-              </button>
-              <button className={`cf-fpill${filter === "nearest" ? " active" : ""}`} onClick={handleClosest}>
-                  {locLoading ? <Navigation size={12} className="cf-spin" /> : <Crosshair size={12} />} Nearest to me
-              </button>
-            </div>
           </div>
+          <h2 className="font-['Cormorant_Garant',serif] text-[30px] font-semibold text-[#0c1e11] mb-6 leading-tight">
+            Share your experience
+          </h2>
+
+          <label className="block text-[10.5px] font-semibold text-[#8a7d6e] uppercase tracking-[1.2px] mb-3 font-['Outfit',sans-serif]">
+            Overall rating
+          </label>
+          <div className="flex gap-2 mb-6">
+            {[1, 2, 3, 4, 5].map(v => (
+              <Star
+                key={v}
+                size={28}
+                className="cursor-pointer transition-transform duration-150 hover:scale-110"
+                fill={(hovered || rating) >= v ? "#c9a84c" : "transparent"}
+                stroke={(hovered || rating) >= v ? "#c9a84c" : "#e0d8cf"}
+                onMouseEnter={() => setHovered(v)}
+                onMouseLeave={() => setHovered(0)}
+                onClick={() => setRating(v)}
+              />
+            ))}
+          </div>
+
+          <label className="block text-[10.5px] font-semibold text-[#8a7d6e] uppercase tracking-[1.2px] mb-3 font-['Outfit',sans-serif]">
+            Your observations (optional)
+          </label>
+          <textarea
+            className="w-full min-h-[96px] px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none resize-vertical mb-6 font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 transition-all leading-relaxed placeholder:text-[#c8bfb4]"
+            placeholder="How is the plantation doing? Was it a good community effort?"
+            value={comment}
+            onChange={e => setComment(e.target.value)}
+          />
+
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !rating}
+            className="w-full py-3.5 bg-[#0c1e11] text-white rounded-xl text-[14px] font-semibold font-['Outfit',sans-serif] cursor-pointer hover:bg-[#163d25] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(12,30,17,0.2)]"
+          >
+            {loading ? (
+              <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting…</>
+            ) : "Submit Review"}
+          </button>
         </div>
-
-        {/* ── CONTENT ── */}
-        <div className="cf-content">
-          <div className="cf-section-label">Community Plantations Feed · {new Date().getFullYear()}</div>
-
-          {loading ? (
-            <div className="cf-grid">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} style={{ background: "#fff", border: "1px solid var(--cf-line)", borderRadius: 16, overflow: "hidden" }}>
-                  <Bone style={{ aspectRatio: "16/9", borderRadius: 0 }} />
-                  <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 10 }}>
-                    <Bone style={{ height: 24, width: "70%" }} />
-                    <Bone style={{ height: 12, width: "40%" }} />
-                    <Bone style={{ height: 12, width: "90%" }} />
-                    <Bone style={{ height: 12, width: "80%" }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : sorted.length === 0 ? (
-            <div className="cf-grid">
-              <div className="cf-empty">
-                <Sprout size={52} strokeWidth={1} />
-                <div className="cf-empty-title">No completed plantations yet</div>
-                <p style={{ fontSize: 13, color: "var(--cf-warm)" }}>
-                  There are no completed plantations available to track or review.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <motion.div
-              className="cf-grid"
-              initial="hidden" animate="visible"
-              variants={{ hidden: {}, visible: { transition: { staggerChildren: .06 } } }}
-            >
-              {sorted.map((u, idx) => {
-                  let distanceStr = null;
-                  if (userLoc && u.centroidLat && u.centroidLng) {
-                      const dist = getDistance(userLoc.lat, userLoc.lng, u.centroidLat, u.centroidLng);
-                      distanceStr = dist < 1 ? `${Math.round(dist * 1000)} m` : `${dist.toFixed(1)} km`;
-                  }
-                  
-                  return (
-                    <FeedCard 
-                        key={u.id || idx} 
-                        update={u} 
-                        distStr={distanceStr}
-                        onReview={(e) => handleOpenReview(u.landId, u.id, e)}
-                        onGrowth={(e) => handleOpenGrowth(u.landId, e)}
-                        onClick={() => navigate(`/lands/${u.landId}`)} 
-                    />
-                  );
-              })}
-            </motion.div>
-          )}
-        </div>
-      </div>
-
-      {/* ── REVIEW MODAL ── */}
-      <AnimatePresence>
-        {showReviewModal && (
-            <CommunityReviewModal 
-                completionId={selectedCompletionId} 
-                onClose={() => setShowReviewModal(false)} 
-                onSuccess={() => { setShowReviewModal(false); fetchAll(); }}
-            />
-        )}
-      </AnimatePresence>
-    </>
+      </motion.div>
+    </motion.div>
   );
 }
 
-/* ─── Feed Card ─── */
+// ─── Feed Card ────────────────────────────────────────────────
 function FeedCard({ update, distStr, onClick, onReview, onGrowth }) {
   const images = update.images || [];
   const thumbSrc = images[0] || null;
@@ -479,133 +187,330 @@ function FeedCard({ update, distStr, onClick, onReview, onGrowth }) {
     : null;
 
   return (
-    <motion.div
-      className="cf-card"
+    <motion.article
+      className="bg-white border border-[#ede8de] rounded-2xl overflow-hidden cursor-pointer flex flex-col hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(12,30,17,0.1)] transition-all duration-300 group"
       onClick={onClick}
       variants={{
         hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: .45, ease: [.22, 1, .36, 1] } },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
       }}
     >
       {/* Image */}
-      <div className="cf-card-img">
+      <div className="relative aspect-video overflow-hidden bg-[#e8f0ec]">
         {thumbSrc ? (
-          <img src={thumbSrc} alt={update.title} onError={e => { e.target.src = "https://placehold.co/400x225?text=🌿"; }} />
+          <img
+            src={thumbSrc}
+            alt={update.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={e => { e.target.src = "https://placehold.co/480x270?text=🌿"; }}
+          />
         ) : (
-          <div className="cf-card-no-img">
-            <TreePine size={32} strokeWidth={1} />
-            <span>No photos</span>
+          <div className="flex flex-col items-center justify-center h-full gap-2 bg-[#f2ede3]">
+            <TreePine size={36} strokeWidth={1} className="text-[#b5ac9e]" />
+            <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">No photos</span>
           </div>
         )}
-        <div className="cf-card-time">
-          <Clock size={10} /> {timeAgo(update.completedAt)}
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/55 backdrop-blur-sm text-white text-[10.5px] font-semibold px-2.5 py-1 rounded-full font-['Outfit',sans-serif]">
+          <Clock size={9} />
+          {timeAgo(update.completedAt)}
         </div>
         {distStr && (
-            <div className="cf-card-dist">
-                <MapPin size={10} /> {distStr}
-            </div>
+          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm text-[#0c1e11] text-[10.5px] font-bold px-2.5 py-1 rounded-full font-['Outfit',sans-serif]">
+            <MapPin size={9} />
+            {distStr}
+          </div>
         )}
       </div>
 
       {/* Body */}
-      <div className="cf-card-body">
-        <div className="cf-card-site">{update.title || "Plantation Site"}</div>
-        <div className="cf-card-loc">
-          <MapPin size={11} strokeWidth={1.5} />
-          {update.location || "Location unknown"}
+      <div className="px-5 pt-5 pb-4 flex flex-col gap-3 flex-1">
+        <div>
+          <h3 className="font-['Cormorant_Garant',serif] text-[21px] font-semibold text-[#0c1e11] leading-tight mb-1">
+            {update.title || "Plantation Site"}
+          </h3>
+          <div className="flex items-center gap-1.5 text-[11.5px] text-[#b5ac9e] font-['Outfit',sans-serif]">
+            <MapPin size={11} strokeWidth={1.5} />
+            {update.location || "Location unknown"}
+          </div>
         </div>
-        {update.notes && <p className="cf-card-notes">{update.notes}</p>}
 
-        <div className="cf-card-stats">
-          <div className="cf-card-stat">
-            <TreePine size={12} className="cf-card-stat-icon" />
-            <span className="cf-card-stat-val">{(update.treesPlanted || 0).toLocaleString()}</span> trees
+        {update.notes && (
+          <p className="text-[13px] text-[#6b5e4e] leading-[1.7] font-['Outfit',sans-serif] font-light line-clamp-2 flex-1">
+            {update.notes}
+          </p>
+        )}
+
+        {/* Stats row */}
+        <div className="flex items-center gap-5 pt-3 border-t border-[#ede8de]">
+          <div className="flex items-center gap-1.5 text-[11.5px] text-[#8a7d6e] font-['Outfit',sans-serif]">
+            <TreePine size={12} className="opacity-50" />
+            <span className="font-semibold text-[#0c1e11]">{(update.treesPlanted || 0).toLocaleString()}</span>
+            <span>trees</span>
           </div>
-          <div className="cf-card-stat">
-            <Users size={12} className="cf-card-stat-icon" />
-            <span className="cf-card-stat-val">{update.teamName || "Community"}</span>
+          <div className="flex items-center gap-1.5 text-[11.5px] text-[#8a7d6e] font-['Outfit',sans-serif]">
+            <Users size={12} className="opacity-50" />
+            <span className="font-medium">{update.teamName || "Community"}</span>
           </div>
-          <div className="cf-card-stat">
-            <Star size={12} className="cf-card-stat-icon" />
-            <span className="cf-card-stat-val">{avgRating || "No reviews"}</span>
-          </div>
+          {avgRating && (
+            <div className="flex items-center gap-1 ml-auto">
+              <Star size={11} fill="#c9a84c" stroke="#c9a84c" />
+              <span className="text-[11.5px] font-semibold text-[#0c1e11] font-['Outfit',sans-serif]">{avgRating}</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="cf-card-actions">
-          <button className="cf-btn-outline" onClick={onReview}>
-              <Star size={13} /> Add Review
-          </button>
-          <button className="cf-btn-solid" onClick={onGrowth}>
-              <TrendingUp size={13} /> Track Growth
-          </button>
+      {/* Action buttons */}
+      <div className="px-4 pb-4 grid grid-cols-2 gap-2.5">
+        <button
+          onClick={onReview}
+          className="py-2.5 rounded-xl border-[1.5px] border-[#e0d8cf] bg-white text-[12px] font-semibold text-[#0c1e11] font-['Outfit',sans-serif] cursor-pointer hover:border-[#4db87a]/50 hover:text-[#2d8a55] transition-all duration-200 flex items-center justify-center gap-2"
+        >
+          <Star size={12} />
+          Add Review
+        </button>
+        <button
+          onClick={onGrowth}
+          className="py-2.5 rounded-xl bg-[#0c1e11] text-[12px] font-semibold text-white font-['Outfit',sans-serif] cursor-pointer hover:bg-[#163d25] transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_2px_10px_rgba(12,30,17,0.2)]"
+        >
+          <TrendingUp size={12} />
+          Track Growth
+        </button>
       </div>
-    </motion.div>
+    </motion.article>
   );
 }
 
-/* ─── Simple Community Review Modal ─── */
-function CommunityReviewModal({ completionId, onClose, onSuccess }) {
-    const [rating, setRating] = useState(0);
-    const [hovered, setHovered] = useState(0);
-    const [comment, setComment] = useState("");
-    const [loading, setLoading] = useState(false);
+// ─── Main ─────────────────────────────────────────────────────
+export default function CommunityFeed() {
+  const navigate = useNavigate();
+  const [plantations, setPlantations] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("recent");
+  const [userLoc, setUserLoc] = useState(null);
+  const [locLoading, setLocLoading] = useState(false);
+  const [reviewModal, setReviewModal] = useState(null); // { completionId }
 
-    const handleSubmit = async () => {
-        if (!rating) return alert("Please select a rating!");
-        setLoading(true);
-        try {
-            const formData = new FormData();
-            formData.append("rating", rating);
-            formData.append("comment", comment);
-            
-            const res = await fetch(`${BASE_URL}/api/plantations/${completionId}/review`, {
-                method: "POST", body: formData, credentials: "include"
-            });
-            if (!res.ok) throw new Error("Failed to submit review");
-            onSuccess();
-        } catch (err) {
-            console.error(err);
-            alert("Error submitting review");
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => { fetchAll(); }, []);
 
-    return (
-        <motion.div className="cf-rmodal-overlay" onClick={e => e.target === e.currentTarget && onClose()} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div className="cf-rmodal" initial={{ scale: .9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: .9, y: 20 }}>
-                <button className="cf-rmodal-close" onClick={onClose}><X size={20}/></button>
-                <div className="cf-rmodal-body">
-                    <h2 className="cf-rmodal-title">Add a Review</h2>
-                    
-                    <label className="cf-flabel">Overall Rating</label>
-                    <div className="cf-star-row">
-                        {[1,2,3,4,5].map(v => (
-                            <Star 
-                                key={v} size={28} className="cf-star"
-                                fill={(hovered || rating) >= v ? "var(--cf-gold)" : "transparent"}
-                                stroke={(hovered || rating) >= v ? "var(--cf-gold)" : "var(--cf-line)"}
-                                onMouseEnter={() => setHovered(v)}
-                                onMouseLeave={() => setHovered(0)}
-                                onClick={() => setRating(v)}
-                            />
-                        ))}
-                    </div>
+  const fetchAll = async () => {
+    setLoading(true);
+    try {
+      const [planRes, statsRes] = await Promise.all([
+        fetch(`${BASE_URL}/api/plantations/completed`, { credentials: "include" }),
+        fetch(`${BASE_URL}/api/growth/stats`, { credentials: "include" }),
+      ]);
+      if (planRes.ok) setPlantations(await planRes.json());
+      if (statsRes.ok) setStats(await statsRes.json());
+    } catch (err) { console.error("Failed to fetch community data:", err); }
+    finally { setLoading(false); }
+  };
 
-                    <label className="cf-flabel">Your Experience / Observations (Optional)</label>
-                    <textarea 
-                        className="cf-textarea" 
-                        placeholder="How is the plantation doing? Was it a good effort by the community?"
-                        value={comment} onChange={e => setComment(e.target.value)}
-                    />
-
-                    <button className="cf-btn-submit-review" onClick={handleSubmit} disabled={loading || !rating}>
-                        {loading ? <div className="cf-spin"><Activity size={16}/></div> : "Submit Review"}
-                    </button>
-                </div>
-            </motion.div>
-        </motion.div>
+  const handleNearest = () => {
+    if (userLoc) { setFilter("nearest"); return; }
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setFilter("nearest");
+        setLocLoading(false);
+      },
+      err => { console.error(err); setLocLoading(false); alert("Location access denied or unavailable."); }
     );
+  };
+
+  const sorted = [...plantations].sort((a, b) => {
+    if (filter === "recent") return new Date(b.completedAt) - new Date(a.completedAt);
+    if (filter === "popular") return (b.reviews?.length || 0) - (a.reviews?.length || 0);
+    if (filter === "nearest" && userLoc) {
+      return getDistance(userLoc.lat, userLoc.lng, a.centroidLat, a.centroidLng) -
+        getDistance(userLoc.lat, userLoc.lng, b.centroidLat, b.centroidLng);
+    }
+    return 0;
+  });
+
+  const heroStats = [
+    { val: plantations.length || 0, label: "Completed Plantations" },
+    { val: stats?.totalUpdates || 0, label: "Growth Updates" },
+    { val: `${stats?.avgSurvivalRate || 0}%`, label: "Avg Survival Rate" },
+  ];
+
+  const filterBtns = [
+    { key: "recent", label: "Recent" },
+    { key: "popular", label: "Popular" },
+    { key: "nearest", label: "Nearest to me", icon: true },
+  ];
+
+  return (
+    <div className="font-['Outfit',sans-serif] bg-[#f7f3ec] min-h-screen">
+      {/* ── HERO ── */}
+      <section className="relative overflow-hidden bg-[#0c1e11] pb-14 pt-16 sm:pt-20 sm:pb-18">
+        {/* Glow blobs */}
+        <div className="absolute top-[-15%] right-[-8%] w-[520px] h-[520px] rounded-full bg-[#163d25] opacity-35 blur-[140px]" />
+        <div className="absolute bottom-[-20%] left-[-10%] w-[450px] h-[450px] rounded-full bg-[#c9a84c]/10 blur-[120px]" />
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "30px 30px" }}
+        />
+
+        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-10 xl:px-16">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex items-center gap-3 mb-7">
+              <div className="w-8 h-px bg-[#4db87a]/50" />
+              <span className="text-[10px] font-semibold tracking-[3px] uppercase text-[#4db87a]/70">
+                TerraSpotter — Community Pulse
+              </span>
+            </div>
+
+            <h1 className="font-['Cormorant_Garant',serif] text-[clamp(52px,9vw,104px)] font-semibold text-white leading-[0.88] tracking-[-2px] mb-6">
+              Watching forests<br />
+              <em className="not-italic text-[#c9a84c]">come alive</em>
+            </h1>
+
+            <div className="w-14 h-px bg-white/20 mb-10" />
+          </motion.div>
+
+          {/* Hero stats */}
+          <div className="flex flex-wrap gap-0">
+            {loading ? (
+              [...Array(3)].map((_, i) => (
+                <div key={i} className="pr-12 mr-12 border-r border-white/10 last:border-0 last:pr-0 last:mr-0">
+                  <BoneDark className="h-16 w-24 mb-2" />
+                  <BoneDark className="h-2.5 w-28" />
+                </div>
+              ))
+            ) : heroStats.map((s, i) => (
+              <motion.div
+                key={s.label}
+                className="pr-10 sm:pr-14 mr-10 sm:mr-14 border-r border-white/10 last:border-0 last:pr-0 last:mr-0 mb-6"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 + i * 0.1, duration: 0.55 }}
+              >
+                <div className="font-['Cormorant_Garant',serif] text-[clamp(44px,6vw,72px)] font-semibold text-white leading-none tracking-[-1.5px]">
+                  {s.val}
+                </div>
+                <div className="text-[9.5px] font-semibold uppercase tracking-[0.22em] text-white/35 mt-2 font-['Outfit',sans-serif]">
+                  {s.label}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── STICKY NAV ── */}
+      <div className="sticky top-0 z-50 bg-[#f2ede3] border-b border-[#e0d8cf]">
+        <div className="max-w-[1320px] mx-auto px-6 sm:px-10 xl:px-16 h-[58px] flex items-center justify-between gap-5 flex-wrap">
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[#b5ac9e] font-['Outfit',sans-serif]">
+            {loading ? "Loading…" : `${sorted.length} Plantation${sorted.length !== 1 ? "s" : ""}`}
+          </span>
+
+          <div className="flex gap-1.5">
+            {filterBtns.map(f => (
+              <button
+                key={f.key}
+                onClick={f.icon ? handleNearest : () => setFilter(f.key)}
+                className={`inline-flex items-center gap-2 h-8 px-4 rounded-full border text-[11.5px] font-semibold font-['Outfit',sans-serif] cursor-pointer transition-all duration-200 ${filter === f.key
+                    ? "bg-[#0c1e11] border-[#0c1e11] text-white"
+                    : "bg-transparent border-transparent text-[#8a7d6e] hover:text-[#0c1e11]"
+                  }`}
+              >
+                {f.icon && (
+                  locLoading
+                    ? <span className="w-3 h-3 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+                    : <Crosshair size={11} />
+                )}
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── CONTENT ── */}
+      <div className="max-w-[1320px] mx-auto px-6 sm:px-10 xl:px-16 py-14 sm:py-16">
+
+        {/* Section label */}
+        <div className="flex items-center gap-4 mb-10">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#b5ac9e] font-['Outfit',sans-serif] whitespace-nowrap">
+            Community Plantations Feed · {new Date().getFullYear()}
+          </span>
+          <div className="flex-1 h-px bg-[#e0d8cf]" />
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white border border-[#ede8de] rounded-2xl overflow-hidden">
+                <Bone className="aspect-video rounded-none" />
+                <div className="p-5 flex flex-col gap-3">
+                  <Bone className="h-6 w-3/5" />
+                  <Bone className="h-3.5 w-2/5" />
+                  <Bone className="h-3.5 w-full" />
+                  <Bone className="h-3.5 w-4/5" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : sorted.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-28 gap-5 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#f2ede3] border border-[#ede8de] flex items-center justify-center">
+              <Sprout size={28} strokeWidth={1} className="text-[#b5ac9e]" />
+            </div>
+            <div>
+              <h3 className="font-['Cormorant_Garant',serif] text-[30px] font-semibold text-[#0c1e11] mb-2">
+                No completed plantations yet
+              </h3>
+              <p className="text-[13.5px] text-[#b5ac9e] max-w-xs leading-relaxed font-light">
+                Completed plantations will appear here once they've been recorded.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+          >
+            {sorted.map((u, idx) => {
+              let distanceStr = null;
+              if (userLoc && u.centroidLat && u.centroidLng) {
+                const dist = getDistance(userLoc.lat, userLoc.lng, u.centroidLat, u.centroidLng);
+                distanceStr = dist < 1 ? `${Math.round(dist * 1000)} m` : `${dist.toFixed(1)} km`;
+              }
+              return (
+                <FeedCard
+                  key={u.id || idx}
+                  update={u}
+                  distStr={distanceStr}
+                  onReview={e => { e.stopPropagation(); setReviewModal({ completionId: u.id }); }}
+                  onGrowth={e => { e.stopPropagation(); navigate(`/lands/${u.landId}/growth`); }}
+                  onClick={() => navigate(`/lands/${u.landId}`)}
+                />
+              );
+            })}
+          </motion.div>
+        )}
+      </div>
+
+      {/* ── REVIEW MODAL ── */}
+      <AnimatePresence>
+        {reviewModal && (
+          <ReviewModal
+            completionId={reviewModal.completionId}
+            onClose={() => setReviewModal(null)}
+            onSuccess={() => { setReviewModal(null); fetchAll(); }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
