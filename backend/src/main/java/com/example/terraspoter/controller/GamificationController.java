@@ -3,13 +3,12 @@
  Author: Om Borekar
  Year: 2026
  Description: REST endpoints exposing gamification data — user progress, leaderboard,
-              badge catalogue, and admin backfill trigger.
+              and badge catalogue.
 */
 package com.example.terraspoter.controller;
 
 import com.example.terraspoter.model.Badge;
 import com.example.terraspoter.repository.BadgeRepository;
-import com.example.terraspoter.service.GamificationBackfillService;
 import com.example.terraspoter.service.GamificationService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ import java.util.Map;
 public class GamificationController {
 
     private final GamificationService         gamificationService;
-    private final GamificationBackfillService backfillService;
     private final BadgeRepository             badgeRepository;
 
     /**
@@ -59,51 +57,6 @@ public class GamificationController {
     @GetMapping("/badges")
     public ResponseEntity<List<Badge>> getAllBadges() {
         return ResponseEntity.ok(badgeRepository.findAll());
-    }
-
-    // ─── ADMIN: Backfill ──────────────────────────────────────────────────────
-
-    /**
-     * DRY-RUN preview — shows what the backfill WOULD do without writing anything.
-     * GET /api/gamification/admin/backfill/preview
-     */
-    @GetMapping("/admin/backfill/preview")
-    public ResponseEntity<?> previewBackfill(HttpSession session) {
-        // Basic admin check — adjust to match your actual role system
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Not logged in"));
-
-        GamificationBackfillService.BackfillReport report = backfillService.run(true);
-        return ResponseEntity.ok(buildReportResponse(report));
-    }
-
-    /**
-     * EXECUTE the backfill — scans all existing data tables and awards missing XP + badges.
-     * POST /api/gamification/admin/backfill/run
-     * Safe to call multiple times — idempotent.
-     */
-    @PostMapping("/admin/backfill/run")
-    public ResponseEntity<?> runBackfill(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Not logged in"));
-
-        GamificationBackfillService.BackfillReport report = backfillService.run(false);
-        return ResponseEntity.ok(buildReportResponse(report));
-    }
-
-    private Map<String, Object> buildReportResponse(GamificationBackfillService.BackfillReport report) {
-        return Map.of(
-            "dryRun",          report.dryRun,
-            "totalXpAwarded",  report.totalXpAwarded,
-            "usersUpdated",    report.usersUpdated.size(),
-            "newBadgesAwarded",report.newBadgesAwarded.size(),
-            "badgeDetails",    report.newBadgesAwarded,
-            "errors",          report.errors,
-            "tableResults",    report.tableResults,
-            "details",         report.details
-        );
     }
 }
 

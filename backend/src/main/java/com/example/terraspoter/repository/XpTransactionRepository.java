@@ -20,7 +20,4 @@ public interface XpTransactionRepository extends JpaRepository<XpTransaction, Lo
     int sumXpByUserIdAndAction(Long userId, String action);
 
     long countByUserIdAndAction(Long userId, String action);
-
-    /** Used by backfill to skip already-awarded XP for a specific record */
-    boolean existsByUserIdAndActionAndReferenceId(Long userId, String action, Long referenceId);
 }
