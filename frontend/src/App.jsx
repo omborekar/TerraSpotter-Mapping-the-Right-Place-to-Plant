@@ -26,6 +26,7 @@ import PlantationShowcase from "./components/PlantationShowcase";
 import AdminPendingLands from "./components/AdminPendingLands";
 import GrowthTracker from "./components/GrowthTracker";
 import CommunityFeed from "./components/CommunityFeed";
+import Leaderboard from "./components/Leaderboard";
 
 import "./App.css";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
@@ -78,6 +79,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
 
         {/* LAND */}
         <Route path="/lands/:id" element={<SiteDetail />} />

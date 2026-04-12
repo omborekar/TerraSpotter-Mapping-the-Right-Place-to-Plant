@@ -6,6 +6,7 @@
 */
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, AreaChart, Area } from "recharts";
 import LoadingSpinner from "./ui/LoadingSpinner";
 import axios from "axios";
@@ -264,17 +265,27 @@ function ChangePasswordModal({ email, onClose }) {
   );
 }
 
+// ─── Level label helper ───────────────────────────────────────
+const LEVEL_LABELS = [
+  "", "Seedling", "Sprout", "Sapling", "Grove Keeper", "Forest Guard",
+  "Eco Warrior", "Tree Sage", "Nature Warden", "Biome Master", "Eco Legend",
+];
+function getLevelLabel(lv) {
+  return LEVEL_LABELS[Math.min(lv, LEVEL_LABELS.length - 1)] || `Level ${lv}`;
+}
+
 // ─── Main Profile ─────────────────────────────────────────────
 export default function Profile() {
-  const [profile, setProfile] = useState(null);
-  const [lands, setLands] = useState([]);
+  const [profile,     setProfile]     = useState(null);
+  const [lands,       setLands]       = useState([]);
   const [completions, setCompletions] = useState([]);
-  const [filter, setFilter] = useState("monthly");
-  const [editOpen, setEditOpen] = useState(false);
-  const [pwOpen, setPwOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [gamification, setGamification] = useState(null);
+  const [filter,      setFilter]      = useState("monthly");
+  const [editOpen,    setEditOpen]    = useState(false);
+  const [pwOpen,      setPwOpen]      = useState(false);
+  const [saving,      setSaving]      = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
-  const [editData, setEditData] = useState({ fname: "", lname: "", phoneNo: "" });
+  const [editData,    setEditData]    = useState({ fname: "", lname: "", phoneNo: "" });
 
   useEffect(() => {
     fetch(`${BASE_URL}/api/users/profile`, { credentials: "include" })
@@ -292,6 +303,14 @@ export default function Profile() {
   useEffect(() => {
     fetch(`${BASE_URL}/api/plantations/completions/my`, { credentials: "include" })
       .then(r => r.json()).then(data => { if (Array.isArray(data)) setCompletions(data); }).catch(() => { });
+  }, []);
+
+  // Fetch gamification data
+  useEffect(() => {
+    fetch(`${BASE_URL}/api/gamification/me`, { credentials: "include" })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setGamification(data); })
+      .catch(() => {});
   }, []);
 
   const stats = React.useMemo(() => {
@@ -403,10 +422,180 @@ export default function Profile() {
           className="grid grid-cols-2 md:grid-cols-4 gap-4"
         >
           <StatCard label="Lands Submitted" value={lands.length} accent="#0c1e11" icon="🌍" />
-          <StatCard label="Pending Review" value={pendingLands} accent="#c9a84c" icon="⏳" />
-          <StatCard label="Approved" value={approvedLands} accent="#4db87a" icon="✅" />
-          <StatCard label="Trees Planted" value={totalTrees > 0 ? totalTrees.toLocaleString() : "—"} accent="#2563eb" icon="🌳" />
+          <StatCard label="Pending Review"  value={pendingLands} accent="#c9a84c" icon="⏳" />
+          <StatCard label="Approved"         value={approvedLands} accent="#4db87a" icon="✅" />
+          <StatCard label="Trees Planted"    value={totalTrees > 0 ? totalTrees.toLocaleString() : "—"} accent="#2563eb" icon="🌳" />
         </motion.div>
+
+        {/* ── GAMIFICATION HERO ── */}
+        {gamification && (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.11 }}
+          >
+            {/* Top bar: XP + Level + Streak + Rank + Leaderboard link */}
+            <div className="relative overflow-hidden rounded-3xl" style={{ background: "linear-gradient(135deg, #0c1e11, #163d25)" }}>
+              <div className="absolute top-[-20%] right-[-5%] w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #4db87a, transparent)" }} />
+
+              <div className="relative z-10 px-7 py-6">
+                {/* Header row */}
+                <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+                  <div>
+                    <div className="inline-flex items-center gap-2 mb-2" style={{ background: "rgba(77,184,122,0.15)", borderRadius: 100, padding: "4px 12px", border: "1px solid rgba(77,184,122,0.25)" }}>
+                      <span className="text-xs">⚡</span>
+                      <span style={{ color: "#4db87a", fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>Gamification Progress</span>
+                    </div>
+                    <h2 style={{ fontFamily: "'Cormorant Garant', serif", fontSize: 26, fontWeight: 700, color: "#fff", lineHeight: 1.1 }}>
+                      Level {gamification.level} &mdash; {getLevelLabel(gamification.level)}
+                    </h2>
+                  </div>
+
+                  <div className="flex gap-3 flex-wrap">
+                    {/* Rank badge */}
+                    <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: 14, padding: "10px 16px", textAlign: "center", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <p style={{ color: "#fff", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>#{gamification.rank}</p>
+                      <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginTop: 3 }}>Global Rank</p>
+                    </div>
+                    {/* Streak */}
+                    <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: 14, padding: "10px 16px", textAlign: "center", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <p style={{ color: "#fb923c", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>
+                        {gamification.streak > 0 ? `🔥 ${gamification.streak}d` : "—"}
+                      </p>
+                      <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginTop: 3 }}>Streak</p>
+                    </div>
+                    {/* Badge count */}
+                    <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: 14, padding: "10px 16px", textAlign: "center", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <p style={{ color: "#f59e0b", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>{gamification.badgeCount}</p>
+                      <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginTop: 3 }}>Badges</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* XP progress bar */}
+                <div className="mb-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 11.5 }}>
+                      {gamification.xpInCurrentLevel.toLocaleString()} / {gamification.xpNeeded.toLocaleString()} XP to Level {gamification.level + 1}
+                    </span>
+                    <span style={{ color: "#4db87a", fontSize: 13, fontWeight: 700 }}>
+                      {gamification.totalXp.toLocaleString()} XP total
+                    </span>
+                  </div>
+                  <div style={{ height: 10, borderRadius: 10, background: "rgba(255,255,255,0.1)", overflow: "hidden" }}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${gamification.xpProgress}%` }}
+                      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                      style={{
+                        height: "100%", borderRadius: 10,
+                        background: "linear-gradient(90deg, #4db87a, #2d6e3e)",
+                        boxShadow: "0 0 10px rgba(77,184,122,0.5)",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Leaderboard CTA */}
+                <div className="flex justify-end mt-4">
+                  <Link to="/leaderboard" style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    background: "rgba(77,184,122,0.15)",
+                    border: "1px solid rgba(77,184,122,0.3)",
+                    borderRadius: 10, padding: "7px 16px",
+                    color: "#4db87a", fontSize: 12.5, fontWeight: 600, textDecoration: "none",
+                    transition: "background 0.2s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(77,184,122,0.25)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "rgba(77,184,122,0.15)"}
+                  >
+                    🏆 View Leaderboard →
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Badge Gallery */}
+            {gamification.allBadges?.length > 0 && (
+              <div className="bg-white border border-[#ede8de] rounded-3xl shadow-sm overflow-hidden mt-4">
+                <div className="flex items-center gap-3 px-6 py-5 border-b border-[#ede8de]">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-base shrink-0">🏅</div>
+                  <div>
+                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">Badge Collection</h2>
+                    <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">{gamification.badgeCount} / {gamification.allBadges.length} badges earned</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 p-6">
+                  {gamification.allBadges.map(badge => (
+                    <motion.div
+                      key={badge.id}
+                      whileHover={badge.earned ? { scale: 1.08, y: -2 } : {}}
+                      title={badge.description}
+                      className="flex flex-col items-center gap-2 cursor-default"
+                    >
+                      <div style={{
+                        width: 56, height: 56, borderRadius: 16,
+                        background: badge.earned
+                          ? "linear-gradient(135deg, #d1fae5, #6ee7b7)"
+                          : "#f5f5f5",
+                        border: badge.earned ? "2px solid #4db87a" : "2px solid #e5e7eb",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 26,
+                        filter: badge.earned ? "none" : "grayscale(1) opacity(0.4)",
+                        boxShadow: badge.earned ? "0 4px 14px rgba(77,184,122,0.25)" : "none",
+                        transition: "all 0.2s",
+                      }}>
+                        {badge.earned ? badge.icon : "🔒"}
+                      </div>
+                      <p style={{
+                        fontSize: 10.5, fontWeight: badge.earned ? 600 : 400,
+                        color: badge.earned ? "#0c1e11" : "#b5ac9e",
+                        textAlign: "center", lineHeight: 1.3,
+                      }}>{badge.name}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recent XP Activity */}
+            {gamification.recentTransactions?.length > 0 && (
+              <div className="bg-white border border-[#ede8de] rounded-3xl shadow-sm overflow-hidden mt-4">
+                <div className="flex items-center gap-3 px-6 py-5 border-b border-[#ede8de]">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base shrink-0">⚡</div>
+                  <div>
+                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">Recent XP Activity</h2>
+                    <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">Last {gamification.recentTransactions.length} XP events</p>
+                  </div>
+                </div>
+                <div className="divide-y divide-[#f7f3ec]">
+                  {gamification.recentTransactions.map((tx, i) => (
+                    <motion.div
+                      key={tx.id || i}
+                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      className="flex items-center justify-between px-6 py-3.5"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-sm">⚡</div>
+                        <div>
+                          <p className="text-[13px] font-semibold text-[#0c1e11]">{tx.description || tx.action}</p>
+                          <p className="text-[11px] text-[#b5ac9e] mt-0.5">
+                            {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}
+                          </p>
+                        </div>
+                      </div>
+                      <span style={{
+                        fontSize: 14, fontWeight: 700, color: "#4db87a",
+                        background: "rgba(77,184,122,0.1)",
+                        padding: "3px 10px", borderRadius: 100,
+                        border: "1px solid rgba(77,184,122,0.2)",
+                      }}>+{tx.xpAwarded} XP</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         {/* ── LANDS TABLE ── */}
         <motion.div

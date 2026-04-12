@@ -12,7 +12,8 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Navbar() {
-  const [user, setUser] = useState(null);
+  const [user, setUser]     = useState(null);
+  const [xpData, setXpData] = useState(null);
   const [ddOpen, setDdOpen] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -22,18 +23,23 @@ export default function Navbar() {
 
   /* session */
   useEffect(() => {
-    const fetch = async () => {
+    const fetchUser = async () => {
       try {
         const r = await axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true });
         setUser(r.data);
-      } catch { setUser(null); }
+        // Fetch XP after login
+        try {
+          const xp = await axios.get(`${BASE_URL}/api/gamification/me`, { withCredentials: true });
+          setXpData(xp.data);
+        } catch { setXpData(null); }
+      } catch { setUser(null); setXpData(null); }
     };
-    setTimeout(fetch, 300);
-    window.addEventListener("login", fetch);
-    window.addEventListener("logout", fetch);
+    setTimeout(fetchUser, 300);
+    window.addEventListener("login",  fetchUser);
+    window.addEventListener("logout", () => { setUser(null); setXpData(null); });
     return () => {
-      window.removeEventListener("login", fetch);
-      window.removeEventListener("logout", fetch);
+      window.removeEventListener("login",  fetchUser);
+      window.removeEventListener("logout", () => {});
     };
   }, []);
 
@@ -80,18 +86,20 @@ export default function Navbar() {
   };
 
   const NAV = user ? [
-    { to: "/", label: "Home", icon: "🏡" },
-    { to: "/Main", label: "Submit", icon: "📍" },
-    { to: "/browse", label: "Browse", icon: "🗺️" },
-    { to: "/plantationShowcase", label: "History", icon: "📚" },
-    { to: "/community", label: "Community", icon: "🌱" },
-    { to: "/about", label: "About", icon: "ℹ️" },
-    { to: "/contact", label: "Contact", icon: "📞" },
+    { to: "/",                  label: "Home",        icon: "🏡" },
+    { to: "/Main",             label: "Submit",      icon: "📍" },
+    { to: "/browse",           label: "Browse",      icon: "🗺️" },
+    { to: "/plantationShowcase", label: "History",   icon: "📚" },
+    { to: "/community",        label: "Community",   icon: "🌱" },
+    { to: "/leaderboard",      label: "Leaderboard", icon: "🏆" },
+    { to: "/about",            label: "About",       icon: "ℹ️" },
+    { to: "/contact",          label: "Contact",     icon: "📞" },
     ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: "Admin", icon: "⚙️" }] : []),
   ] : [
-    { to: "/", label: "Home", icon: "🏡" },
-    { to: "/about", label: "About", icon: "ℹ️" },
-    { to: "/contact", label: "Contact", icon: "📞" },
+    { to: "/",            label: "Home",        icon: "🏡" },
+    { to: "/leaderboard", label: "Leaderboard", icon: "🏆" },
+    { to: "/about",       label: "About",       icon: "ℹ️" },
+    { to: "/contact",     label: "Contact",     icon: "📞" },
   ];
 
   const DD_ITEMS = NAV.filter(x => x.to !== "/").concat([{ to: "/profile", label: "My Profile", icon: "👤" }]);
@@ -436,6 +444,19 @@ export default function Navbar() {
                     className={`nv-pill${ddOpen ? " open" : ""}`}
                     onClick={() => setDdOpen(o => !o)}
                   >
+                    {/* XP pill — shown when xpData loaded */}
+                    {xpData && (
+                      <span style={{
+                        fontSize: 11, fontWeight: 700,
+                        color: "#1f6b3a",
+                        background: "rgba(58,140,87,0.12)",
+                        padding: "2px 8px", borderRadius: 100,
+                        border: "1px solid rgba(58,140,87,0.2)",
+                        whiteSpace: "nowrap", letterSpacing: 0.2,
+                      }}>
+                        ⚡{xpData.totalXp?.toLocaleString()} &middot; Lv&nbsp;{xpData.level}
+                      </span>
+                    )}
                     <span>{user.fname}</span>
                     <div className="nv-ini">{ini}</div>
                     <svg className={`nv-chv${ddOpen ? " r" : ""}`} width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -564,6 +585,16 @@ export default function Navbar() {
                       <button className="nv-dr-row" onClick={() => drawerGo("/profile")}>
                         <span className="nv-dr-ico">👤</span>
                         <span className="nv-dr-txt">My Profile</span>
+                        {xpData && (
+                          <span style={{
+                            fontSize: 10, fontWeight: 700, color: "#1f6b3a",
+                            background: "rgba(58,140,87,0.12)",
+                            padding: "2px 7px", borderRadius: 100,
+                            border: "1px solid rgba(58,140,87,0.2)",
+                          }}>
+                            Lv {xpData.level}
+                          </span>
+                        )}
                       </button>
 
                       <div className="nv-dr-sep" />

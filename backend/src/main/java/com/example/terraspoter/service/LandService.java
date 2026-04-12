@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Business logic for lands, images, recommendations, and ML integrations.
+ Description: Business logic for lands, images, recommendations, ML integrations, and gamification hooks.
 */
 package com.example.terraspoter.service;
 
@@ -57,8 +57,9 @@ public class LandService {
     private final LandReviewRepository                reviewRepository;
     private final UserRepository                      userRepository;
     private final ObjectMapper                        objectMapper;
-    private final CloudinaryService                   cloudinaryService;   // ← NEW
+    private final CloudinaryService                   cloudinaryService;
     private final BrevoEmailService                   emailService;
+    private final GamificationService                 gamificationService;
 
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(8))
@@ -117,12 +118,19 @@ public class LandService {
         Land land = buildLandFromPayload(payload, userId);
         Land saved = landRepository.save(land);
         fetchAndSaveRecommendations(saved);
-        
+
         // Send Email
-        userRepository.findById(userId).ifPresent(u -> {
-            emailService.sendLandReportedEmail(u.getEmail(), u.getFname(), saved.getTitle());
-        });
-        
+        userRepository.findById(userId).ifPresent(u ->
+            emailService.sendLandReportedEmail(u.getEmail(), u.getFname(), saved.getTitle())
+        );
+
+        // Gamification — award XP for submitting a land
+        try {
+            gamificationService.awardXp(userId, "ADD_LAND", saved.getId(), GamificationService.XP_ADD_LAND);
+        } catch (Exception e) {
+            logger.warning("Gamification award failed for ADD_LAND userId=" + userId + ": " + e.getMessage());
+        }
+
         return saved;
     }
 
@@ -171,9 +179,16 @@ public class LandService {
         Land updatedLand = landRepository.save(land);
 
         // Send Email
-        userRepository.findById(userId).ifPresent(u -> {
-            emailService.sendPlantationStartedEmail(u.getEmail(), u.getFname(), updatedLand.getTitle());
-        });
+        userRepository.findById(userId).ifPresent(u ->
+            emailService.sendPlantationStartedEmail(u.getEmail(), u.getFname(), updatedLand.getTitle())
+        );
+
+        // Gamification — award XP for starting a plantation
+        try {
+            gamificationService.awardXp(userId, "START_PLANTATION", landId, GamificationService.XP_START_PLANTATION);
+        } catch (Exception e) {
+            logger.warning("Gamification award failed for START_PLANTATION userId=" + userId + ": " + e.getMessage());
+        }
 
         return updatedLand;
     }
@@ -222,9 +237,18 @@ public class LandService {
         Land updatedLand = landRepository.save(land);
 
         // Send Email
-        userRepository.findById(userId).ifPresent(u -> {
-            emailService.sendPlantationCompletedEmail(u.getEmail(), u.getFname(), updatedLand.getTitle(), treesPlanted);
-        });
+        userRepository.findById(userId).ifPresent(u ->
+            emailService.sendPlantationCompletedEmail(u.getEmail(), u.getFname(), updatedLand.getTitle(), treesPlanted)
+        );
+
+        // Gamification — award XP for completing a plantation (base + per-tree bonus)
+        try {
+            int xpTotal = GamificationService.XP_COMPLETE_PLANTATION
+                    + (treesPlanted != null ? treesPlanted * GamificationService.XP_PER_TREE : 0);
+            gamificationService.awardXp(userId, "COMPLETE_PLANTATION", landId, xpTotal);
+        } catch (Exception e) {
+            logger.warning("Gamification award failed for COMPLETE_PLANTATION userId=" + userId + ": " + e.getMessage());
+        }
 
         return updatedLand;
     }
@@ -261,6 +285,13 @@ public class LandService {
         userRepository.findById(userId).ifPresent(u ->
                 saved.setUserName(u.getFname() + " " + u.getLname())
         );
+
+        // Gamification — award XP for adding a review
+        try {
+            gamificationService.awardXp(userId, "ADD_REVIEW", landId, GamificationService.XP_ADD_REVIEW);
+        } catch (Exception e) {
+            logger.warning("Gamification award failed for ADD_REVIEW userId=" + userId + ": " + e.getMessage());
+        }
 
         return saved;
     }
