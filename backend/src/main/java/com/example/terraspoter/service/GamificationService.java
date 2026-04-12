@@ -55,20 +55,36 @@ public class GamificationService {
     @PostConstruct
     @Transactional
     public void seedBadges() {
-        seedBadge("Welcome",          "🌱", "WELCOME",              1,  "Joined TerraSpotter");
-        seedBadge("Land Scout",       "🗺️", "ADD_LAND",             1,  "Submitted first land");
-        seedBadge("Explorer",         "🧭", "ADD_LAND",             5,  "Submitted 5 lands");
-        seedBadge("Territory Master", "🌍", "ADD_LAND",             15, "Submitted 15 lands");
-        seedBadge("Verified Scout",   "✅", "LAND_APPROVED",        1,  "Got first land approved");
-        seedBadge("Trusted Reporter", "🏆", "LAND_APPROVED",        5,  "Got 5 lands approved");
-        seedBadge("Plantation Pioneer","🌱","START_PLANTATION",     1,  "Started first plantation");
-        seedBadge("Tree Warrior",     "⚔️", "TOTAL_TREES",          50, "Planted 50 trees total");
-        seedBadge("Forest Guardian",  "🌲", "TOTAL_TREES",          200,"Planted 200 trees total");
-        seedBadge("Eco Legend",       "🏅", "TOTAL_TREES",          500,"Planted 500 trees total");
-        seedBadge("Field Reviewer",   "📋", "ADD_REVIEW",           5,  "Submitted 5 reviews");
-        seedBadge("Growth Tracker",   "📈", "GROWTH_UPDATE",        10, "Submitted 10 growth updates");
-        seedBadge("Land Validator",   "🔍", "VERIFY_LAND",          10, "Verified 10 lands");
-        seedBadge("Weekly Warrior",   "🔥", "STREAK",               7,  "Maintained a 7-day streak");
+        // Onboarding
+        seedBadge("Welcome",            "🌱", "WELCOME",           1,    "Joined TerraSpotter — welcome aboard!");
+        // Land submission milestones
+        seedBadge("Land Scout",         "🗺️", "ADD_LAND",          1,    "Submitted your first land");
+        seedBadge("Explorer",           "🧭", "ADD_LAND",          5,    "Submitted 5 lands");
+        seedBadge("Territory Master",   "🌍", "ADD_LAND",          15,   "Submitted 15 lands");
+        // Land approval milestones
+        seedBadge("Verified Scout",     "✅", "LAND_APPROVED",     1,    "Got first land approved by admin");
+        seedBadge("Trusted Reporter",   "🏆", "LAND_APPROVED",     5,    "Got 5 lands approved by admin");
+        // Plantation started
+        seedBadge("Plantation Pioneer", "🌱", "START_PLANTATION",  1,    "Started your first plantation");
+        seedBadge("Season Planter",     "🌿", "START_PLANTATION",  5,    "Started 5 plantations");
+        // Tree milestones — the core environmental badges
+        seedBadge("Sapling Starter",    "🌿", "TOTAL_TREES",       10,   "Planted 10 trees total");
+        seedBadge("Tree Grower",        "🌳", "TOTAL_TREES",       50,   "Planted 50 trees total");
+        seedBadge("Century Planter",    "💯", "TOTAL_TREES",       100,  "Planted 100 trees — a century milestone!");
+        seedBadge("Forest Builder",     "🌲", "TOTAL_TREES",       250,  "Planted 250 trees total");
+        seedBadge("Forest Guardian",    "🛡️", "TOTAL_TREES",       500,  "Planted 500 trees — half a thousand!");
+        seedBadge("Eco Champion",       "🏅", "TOTAL_TREES",       750,  "Planted 750 trees total");
+        seedBadge("Eco Legend",         "👑", "TOTAL_TREES",       1000, "Planted 1000 trees — a true legend!");
+        // Reviews
+        seedBadge("Field Reviewer",     "📋", "ADD_REVIEW",        5,    "Submitted 5 land reviews");
+        seedBadge("Expert Reviewer",    "⭐", "ADD_REVIEW",        20,   "Submitted 20 land reviews");
+        // Growth updates
+        seedBadge("Growth Tracker",     "📈", "GROWTH_UPDATE",     10,   "Shared 10 growth updates");
+        // Verification (admin)
+        seedBadge("Land Validator",     "🔍", "VERIFY_LAND",       10,   "Verified 10 lands as admin");
+        // Streaks
+        seedBadge("Weekly Warrior",     "🔥", "STREAK",            7,    "Maintained a 7-day activity streak");
+        seedBadge("Monthly Legend",     "🌙", "STREAK",            30,   "Maintained a 30-day activity streak");
     }
 
     private void seedBadge(String name, String icon, String trigger, int threshold, String desc) {
@@ -177,7 +193,7 @@ public class GamificationService {
 
             switch (trigger) {
                 case "WELCOME":
-                    earned = true; // always on first action
+                    earned = true;
                     break;
                 case "ADD_LAND":
                     earned = xpTxRepo.countByUserIdAndAction(userId, "ADD_LAND") >= threshold;
@@ -236,41 +252,76 @@ public class GamificationService {
         UserPoints up = userPointsRepo.findByUserId(userId)
                 .orElseGet(() -> createUserPoints(userId));
 
-        int level   = up.getLevel();
+        int level            = up.getLevel();
         int xpForThisLevel   = (level - 1) * XP_PER_LEVEL;
-        int xpForNextLevel   = level * XP_PER_LEVEL;
+        int xpNeeded         = XP_PER_LEVEL;
         int xpInCurrentLevel = up.getTotalXp() - xpForThisLevel;
-        int xpNeeded         = xpForNextLevel - xpForThisLevel;
 
-        // Earned badges — enrich with badge metadata
-        List<UserBadge> earned = userBadgeRepo.findByUserId(userId);
-        List<Badge> allBadges  = badgeRepo.findAll();
-        Map<Long, Badge> badgeMap = allBadges.stream()
+        // Earned badges
+        List<UserBadge> earned  = userBadgeRepo.findByUserId(userId);
+        List<Badge>     allBadges = badgeRepo.findAll();
+        Map<Long, Badge>  badgeMap = allBadges.stream()
                 .collect(Collectors.toMap(Badge::getId, b -> b));
+        Map<Long, UserBadge> earnedMap = earned.stream()
+                .collect(Collectors.toMap(UserBadge::getBadgeId, ub -> ub,
+                        (a, b) -> a)); // handle duplicates
 
-        List<Map<String, Object>> enrichedBadges = earned.stream().map(ub -> {
-            Badge b = badgeMap.get(ub.getBadgeId());
-            Map<String, Object> m = new LinkedHashMap<>();
-            m.put("name",        b != null ? b.getName()        : "Unknown");
-            m.put("icon",        b != null ? b.getIconCode()     : "🏅");
-            m.put("description", b != null ? b.getDescription()  : "");
-            m.put("earnedAt",    ub.getEarnedAt());
-            return m;
-        }).collect(Collectors.toList());
+        // All badges enriched with earned state, earnedAt and progress
+        int treesTotal = totalTreesPlanted(userId);
+        long landsAdded    = xpTxRepo.countByUserIdAndAction(userId, "ADD_LAND");
+        long landsApproved = xpTxRepo.countByUserIdAndAction(userId, "LAND_APPROVED");
+        long reviews       = xpTxRepo.countByUserIdAndAction(userId, "ADD_REVIEW");
+        long growthUpdates = xpTxRepo.countByUserIdAndAction(userId, "GROWTH_UPDATE");
+        long verifications = xpTxRepo.countByUserIdAndAction(userId, "VERIFY_LAND");
+        long plantsStarted = xpTxRepo.countByUserIdAndAction(userId, "START_PLANTATION");
+        int  streakDays    = up.getStreak();
 
-        // All badges (for gallery — earned / not earned)
         List<Map<String, Object>> allBadgeInfo = allBadges.stream().map(b -> {
-            boolean isEarned = earned.stream().anyMatch(ub -> ub.getBadgeId().equals(b.getId()));
+            boolean isEarned = earnedMap.containsKey(b.getId());
+            UserBadge ub     = earnedMap.get(b.getId());
+
+            // current user progress toward this badge
+            long currentProgress = switch (b.getTriggerType()) {
+                case "ADD_LAND"         -> landsAdded;
+                case "LAND_APPROVED"    -> landsApproved;
+                case "START_PLANTATION" -> plantsStarted;
+                case "TOTAL_TREES"      -> treesTotal;
+                case "ADD_REVIEW"       -> reviews;
+                case "GROWTH_UPDATE"    -> growthUpdates;
+                case "VERIFY_LAND"      -> verifications;
+                case "STREAK"           -> streakDays;
+                case "WELCOME"          -> 1L;
+                default                 -> 0L;
+            };
+
             Map<String, Object> m = new LinkedHashMap<>();
-            m.put("id",          b.getId());
-            m.put("name",        b.getName());
-            m.put("icon",        b.getIconCode());
-            m.put("description", b.getDescription());
-            m.put("earned",      isEarned);
+            m.put("id",              b.getId());
+            m.put("name",            b.getName());
+            m.put("icon",            b.getIconCode());
+            m.put("description",     b.getDescription());
+            m.put("triggerType",     b.getTriggerType());
+            m.put("threshold",       b.getThreshold());
+            m.put("earned",          isEarned);
+            m.put("earnedAt",        ub != null ? ub.getEarnedAt() : null);
+            m.put("currentProgress", currentProgress);
+            m.put("progressPct",     b.getThreshold() > 0
+                    ? (int) Math.min(100, (currentProgress * 100L / b.getThreshold()))
+                    : 100);
             return m;
         }).collect(Collectors.toList());
 
-        // Recent transactions
+        // Per-action XP breakdown
+        List<Map<String, Object>> xpBreakdown = List.of(
+            actionBreakdown("🗺️ Land Submitted",       "ADD_LAND",           XP_ADD_LAND,            landsAdded,    userId),
+            actionBreakdown("✅ Land Approved",          "LAND_APPROVED",      XP_LAND_APPROVED,       landsApproved, userId),
+            actionBreakdown("🌱 Plantation Started",    "START_PLANTATION",   XP_START_PLANTATION,    plantsStarted, userId),
+            actionBreakdown("🌳 Plantation Completed",  "COMPLETE_PLANTATION","—",                    0L,            userId),
+            actionBreakdown("📋 Review Added",           "ADD_REVIEW",         XP_ADD_REVIEW,          reviews,       userId),
+            actionBreakdown("📈 Growth Update",          "GROWTH_UPDATE",      XP_GROWTH_UPDATE,       growthUpdates, userId),
+            actionBreakdown("🔍 Land Verified",          "VERIFY_LAND",        XP_VERIFY_LAND,         verifications, userId)
+        );
+
+        // Recent transactions (last 10)
         List<XpTransaction> recent = xpTxRepo.findTop10ByUserIdOrderByCreatedAtDesc(userId);
 
         // Rank
@@ -282,19 +333,34 @@ public class GamificationService {
         }
 
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("totalXp",         up.getTotalXp());
-        result.put("level",           level);
-        result.put("xpInCurrentLevel",xpInCurrentLevel);
-        result.put("xpNeeded",        xpNeeded);
-        result.put("xpProgress",      (xpNeeded > 0) ? (int)(((double) xpInCurrentLevel / xpNeeded) * 100) : 100);
-        result.put("streak",          up.getStreak());
-        result.put("rank",            rank);
-        result.put("badgeCount",      earned.size());
-        result.put("earnedBadges",    enrichedBadges);
-        result.put("allBadges",       allBadgeInfo);
-        result.put("recentTransactions", recent);
+        result.put("totalXp",           up.getTotalXp());
+        result.put("level",             level);
+        result.put("xpInCurrentLevel",  xpInCurrentLevel);
+        result.put("xpNeeded",          xpNeeded);
+        result.put("xpProgress",        (xpNeeded > 0) ? (int)(((double) xpInCurrentLevel / xpNeeded) * 100) : 100);
+        result.put("streak",            up.getStreak());
+        result.put("rank",              rank);
+        result.put("badgeCount",        earned.size());
+        result.put("totalBadges",       allBadges.size());
+        result.put("totalTreesPlanted", treesTotal);
+        result.put("allBadges",         allBadgeInfo);
+        result.put("xpBreakdown",       xpBreakdown);
+        result.put("recentTransactions",recent);
         return result;
     }
+
+    /** Build one row in the XP breakdown table */
+    private Map<String, Object> actionBreakdown(String label, String action, Object xpEach, long count, Long userId) {
+        int totalEarned = (int) xpTxRepo.sumXpByUserIdAndAction(userId, action);
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("label",       label);
+        m.put("action",      action);
+        m.put("xpEach",      xpEach.toString());
+        m.put("count",       count);
+        m.put("totalEarned", totalEarned);
+        return m;
+    }
+
 
     // ───────────────────────────────────────────────────────────────────────────
     // LEADERBOARD

@@ -431,65 +431,63 @@ export default function Profile() {
         {gamification && (
           <motion.div
             initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.11 }}
+            className="flex flex-col gap-4"
           >
-            {/* Top bar: XP + Level + Streak + Rank + Leaderboard link */}
-            <div className="relative overflow-hidden rounded-3xl" style={{ background: "linear-gradient(135deg, #0c1e11, #163d25)" }}>
-              <div className="absolute top-[-20%] right-[-5%] w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #4db87a, transparent)" }} />
 
-              <div className="relative z-10 px-7 py-6">
-                {/* Header row */}
-                <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+            {/* ── XP Level Card ── */}
+            <div className="relative overflow-hidden rounded-3xl" style={{ background: "linear-gradient(150deg, #071408 0%, #0c1e11 60%, #163d25 100%)" }}>
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-[-40%] right-[-8%] w-96 h-96 rounded-full" style={{ background: "radial-gradient(circle, rgba(77,184,122,0.18) 0%, transparent 70%)" }} />
+                <div className="absolute bottom-[-30%] left-[-5%] w-64 h-64 rounded-full" style={{ background: "radial-gradient(circle, rgba(45,110,62,0.15) 0%, transparent 70%)" }} />
+              </div>
+
+              <div className="relative z-10 px-6 py-6 md:px-8 md:py-7">
+                {/* Header */}
+                <div className="flex items-start justify-between flex-wrap gap-4 mb-6">
                   <div>
-                    <div className="inline-flex items-center gap-2 mb-2" style={{ background: "rgba(77,184,122,0.15)", borderRadius: 100, padding: "4px 12px", border: "1px solid rgba(77,184,122,0.25)" }}>
-                      <span className="text-xs">⚡</span>
-                      <span style={{ color: "#4db87a", fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>Gamification Progress</span>
+                    <div className="inline-flex items-center gap-2 mb-3" style={{ background: "rgba(77,184,122,0.15)", borderRadius: 100, padding: "4px 14px", border: "1px solid rgba(77,184,122,0.25)" }}>
+                      <span style={{ fontSize: 11 }}>⚡</span>
+                      <span style={{ color: "#4db87a", fontSize: 10.5, fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase" }}>Gamification Progress</span>
                     </div>
-                    <h2 style={{ fontFamily: "'Cormorant Garant', serif", fontSize: 26, fontWeight: 700, color: "#fff", lineHeight: 1.1 }}>
-                      Level {gamification.level} &mdash; {getLevelLabel(gamification.level)}
+                    <h2 style={{ fontFamily: "'Cormorant Garant', serif", fontSize: 28, fontWeight: 700, color: "#fff", lineHeight: 1.1 }}>
+                      Level {gamification.level} &mdash; <span style={{ color: "#4db87a" }}>{getLevelLabel(gamification.level)}</span>
                     </h2>
+                    <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12.5, marginTop: 5 }}>
+                      {gamification.totalXp?.toLocaleString()} XP total &nbsp;·&nbsp; #{gamification.rank} globally &nbsp;·&nbsp;
+                      {gamification.totalTreesPlanted > 0 && <span>🌳 {gamification.totalTreesPlanted} trees planted</span>}
+                    </p>
                   </div>
 
+                  {/* Stat mini-cards */}
                   <div className="flex gap-3 flex-wrap">
-                    {/* Rank badge */}
-                    <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: 14, padding: "10px 16px", textAlign: "center", border: "1px solid rgba(255,255,255,0.1)" }}>
-                      <p style={{ color: "#fff", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>#{gamification.rank}</p>
-                      <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginTop: 3 }}>Global Rank</p>
-                    </div>
-                    {/* Streak */}
-                    <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: 14, padding: "10px 16px", textAlign: "center", border: "1px solid rgba(255,255,255,0.1)" }}>
-                      <p style={{ color: "#fb923c", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>
-                        {gamification.streak > 0 ? `🔥 ${gamification.streak}d` : "—"}
-                      </p>
-                      <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginTop: 3 }}>Streak</p>
-                    </div>
-                    {/* Badge count */}
-                    <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: 14, padding: "10px 16px", textAlign: "center", border: "1px solid rgba(255,255,255,0.1)" }}>
-                      <p style={{ color: "#f59e0b", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>{gamification.badgeCount}</p>
-                      <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginTop: 3 }}>Badges</p>
-                    </div>
+                    {[
+                      { label: "Global Rank",  value: `#${gamification.rank}`,  color: "#fff",     bg: "rgba(255,255,255,0.08)" },
+                      { label: "Streak",        value: gamification.streak > 0 ? `🔥 ${gamification.streak}d` : "—", color: "#fb923c", bg: "rgba(251,146,60,0.10)" },
+                      { label: "Badges",        value: `${gamification.badgeCount}/${gamification.totalBadges ?? "?"}`, color: "#f59e0b", bg: "rgba(245,158,11,0.10)" },
+                      { label: "Trees",         value: gamification.totalTreesPlanted > 0 ? `🌳 ${gamification.totalTreesPlanted}` : "🌱 0", color: "#4db87a", bg: "rgba(77,184,122,0.10)" },
+                    ].map(({ label, value, color, bg }) => (
+                      <div key={label} style={{ background: bg, borderRadius: 14, padding: "10px 16px", textAlign: "center", border: "1px solid rgba(255,255,255,0.08)", minWidth: 72 }}>
+                        <p style={{ color, fontSize: 17, fontWeight: 700, lineHeight: 1, fontFamily: "'Outfit',sans-serif" }}>{value}</p>
+                        <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 9.5, marginTop: 4, textTransform: "uppercase", letterSpacing: 1 }}>{label}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* XP progress bar */}
-                <div className="mb-2">
+                {/* XP Bar */}
+                <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 11.5 }}>
-                      {gamification.xpInCurrentLevel.toLocaleString()} / {gamification.xpNeeded.toLocaleString()} XP to Level {gamification.level + 1}
+                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11.5 }}>
+                      {gamification.xpInCurrentLevel?.toLocaleString()} / {gamification.xpNeeded?.toLocaleString()} XP → Level {gamification.level + 1}
                     </span>
-                    <span style={{ color: "#4db87a", fontSize: 13, fontWeight: 700 }}>
-                      {gamification.totalXp.toLocaleString()} XP total
-                    </span>
+                    <span style={{ color: "#4db87a", fontSize: 12.5, fontWeight: 700 }}>{gamification.xpProgress ?? 0}%</span>
                   </div>
-                  <div style={{ height: 10, borderRadius: 10, background: "rgba(255,255,255,0.1)", overflow: "hidden" }}>
+                  <div style={{ height: 11, borderRadius: 12, background: "rgba(255,255,255,0.08)", overflow: "hidden", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.3)" }}>
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${gamification.xpProgress}%` }}
-                      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                      style={{
-                        height: "100%", borderRadius: 10,
-                        background: "linear-gradient(90deg, #4db87a, #2d6e3e)",
-                        boxShadow: "0 0 10px rgba(77,184,122,0.5)",
-                      }}
+                      animate={{ width: `${gamification.xpProgress ?? 0}%` }}
+                      transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ height: "100%", borderRadius: 12, background: "linear-gradient(90deg, #2d6e3e, #4db87a, #6ee7b7)", boxShadow: "0 0 14px rgba(77,184,122,0.5)" }}
                     />
                   </div>
                 </div>
@@ -498,104 +496,338 @@ export default function Profile() {
                 <div className="flex justify-end mt-4">
                   <Link to="/leaderboard" style={{
                     display: "inline-flex", alignItems: "center", gap: 6,
-                    background: "rgba(77,184,122,0.15)",
-                    border: "1px solid rgba(77,184,122,0.3)",
+                    background: "rgba(77,184,122,0.14)", border: "1px solid rgba(77,184,122,0.3)",
                     borderRadius: 10, padding: "7px 16px",
                     color: "#4db87a", fontSize: 12.5, fontWeight: 600, textDecoration: "none",
-                    transition: "background 0.2s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(77,184,122,0.25)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "rgba(77,184,122,0.15)"}
-                  >
-                    🏆 View Leaderboard →
+                  }}>
+                    🏆 View Full Leaderboard →
                   </Link>
                 </div>
               </div>
             </div>
 
-            {/* Badge Gallery */}
-            {gamification.allBadges?.length > 0 && (
-              <div className="bg-white border border-[#ede8de] rounded-3xl shadow-sm overflow-hidden mt-4">
-                <div className="flex items-center gap-3 px-6 py-5 border-b border-[#ede8de]">
-                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-base shrink-0">🏅</div>
-                  <div>
-                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">Badge Collection</h2>
-                    <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">{gamification.badgeCount} / {gamification.allBadges.length} badges earned</p>
+            {/* ── Points Breakdown ── */}
+            {gamification.xpBreakdown?.length > 0 && (
+              <div className="bg-white border border-[#ede8de] rounded-3xl shadow-sm overflow-hidden">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-[#ede8de]">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-base">📊</div>
+                    <div>
+                      <h2 className="text-[14px] font-semibold text-[#0c1e11]">Points Breakdown</h2>
+                      <p className="text-[11.5px] text-[#b5ac9e] font-light">XP earned per activity type</p>
+                    </div>
                   </div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#4db87a", background: "rgba(77,184,122,0.1)", padding: "3px 12px", borderRadius: 100, border: "1px solid rgba(77,184,122,0.2)" }}>
+                    {gamification.totalXp?.toLocaleString()} XP total
+                  </span>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 p-6">
-                  {gamification.allBadges.map(badge => (
+                <div className="divide-y divide-[#f7f3ec]">
+                  {gamification.xpBreakdown.map((row, i) => (
                     <motion.div
-                      key={badge.id}
-                      whileHover={badge.earned ? { scale: 1.08, y: -2 } : {}}
-                      title={badge.description}
-                      className="flex flex-col items-center gap-2 cursor-default"
+                      key={row.action}
+                      initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+                      className="flex items-center gap-4 px-6 py-3.5"
                     >
-                      <div style={{
-                        width: 56, height: 56, borderRadius: 16,
-                        background: badge.earned
-                          ? "linear-gradient(135deg, #d1fae5, #6ee7b7)"
-                          : "#f5f5f5",
-                        border: badge.earned ? "2px solid #4db87a" : "2px solid #e5e7eb",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 26,
-                        filter: badge.earned ? "none" : "grayscale(1) opacity(0.4)",
-                        boxShadow: badge.earned ? "0 4px 14px rgba(77,184,122,0.25)" : "none",
-                        transition: "all 0.2s",
-                      }}>
-                        {badge.earned ? badge.icon : "🔒"}
+                      {/* Activity label */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-semibold text-[#0c1e11] truncate">{row.label}</p>
+                        <p className="text-[11px] text-[#b5ac9e] mt-0.5">
+                          {row.count > 0 ? `${row.count}× completed` : "Not yet done"} &nbsp;·&nbsp; {row.xpEach} XP each
+                        </p>
                       </div>
-                      <p style={{
-                        fontSize: 10.5, fontWeight: badge.earned ? 600 : 400,
-                        color: badge.earned ? "#0c1e11" : "#b5ac9e",
-                        textAlign: "center", lineHeight: 1.3,
-                      }}>{badge.name}</p>
+                      {/* Mini bar */}
+                      <div className="hidden sm:block w-24">
+                        <div style={{ height: 5, borderRadius: 4, background: "#f0ebe2", overflow: "hidden" }}>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(100, (row.totalEarned / Math.max(gamification.totalXp, 1)) * 100)}%` }}
+                            transition={{ duration: 0.9, delay: 0.1 + i * 0.05 }}
+                            style={{ height: "100%", borderRadius: 4, background: "linear-gradient(90deg, #4db87a, #2d6e3e)" }}
+                          />
+                        </div>
+                      </div>
+                      {/* XP earned */}
+                      <span style={{
+                        fontSize: 14, fontWeight: 700, minWidth: 72, textAlign: "right",
+                        color: row.totalEarned > 0 ? "#4db87a" : "#d1d5db",
+                      }}>
+                        {row.totalEarned > 0 ? `+${row.totalEarned} XP` : "—"}
+                      </span>
                     </motion.div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Recent XP Activity */}
-            {gamification.recentTransactions?.length > 0 && (
-              <div className="bg-white border border-[#ede8de] rounded-3xl shadow-sm overflow-hidden mt-4">
-                <div className="flex items-center gap-3 px-6 py-5 border-b border-[#ede8de]">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base shrink-0">⚡</div>
-                  <div>
-                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">Recent XP Activity</h2>
-                    <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">Last {gamification.recentTransactions.length} XP events</p>
+            {/* ── Tree Milestone Badges (special section) ── */}
+            {(() => {
+              const treeBadges = gamification.allBadges?.filter(b => b.triggerType === "TOTAL_TREES") ?? [];
+              if (!treeBadges.length) return null;
+              const nextUnearned = treeBadges.find(b => !b.earned);
+              return (
+                <div className="bg-white border border-[#ede8de] rounded-3xl shadow-sm overflow-hidden">
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-[#ede8de] flex-wrap gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base">🌳</div>
+                      <div>
+                        <h2 className="text-[14px] font-semibold text-[#0c1e11]">Tree Milestone Badges</h2>
+                        <p className="text-[11.5px] text-[#b5ac9e] font-light">
+                          {gamification.totalTreesPlanted} trees planted &nbsp;·&nbsp;
+                          {treeBadges.filter(b => b.earned).length}/{treeBadges.length} milestones reached
+                        </p>
+                      </div>
+                    </div>
+                    {nextUnearned && (
+                      <div style={{ background: "rgba(77,184,122,0.08)", border: "1px solid rgba(77,184,122,0.2)", borderRadius: 10, padding: "6px 12px", fontSize: 11.5, color: "#1f6b3a" }}>
+                        Next: <strong>{nextUnearned.name}</strong> at {nextUnearned.threshold} trees
+                        &nbsp; ({Math.max(0, nextUnearned.threshold - gamification.totalTreesPlanted)} to go)
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Overall trees progress bar */}
+                  <div className="px-6 pt-4 pb-2">
+                    {nextUnearned && (
+                      <>
+                        <div className="flex justify-between mb-1.5 text-[11px] text-[#b5ac9e]">
+                          <span>Progress to <strong className="text-[#0c1e11]">{nextUnearned.name}</strong></span>
+                          <span>{gamification.totalTreesPlanted} / {nextUnearned.threshold} trees</span>
+                        </div>
+                        <div style={{ height: 8, borderRadius: 8, background: "#f0ebe2", overflow: "hidden", marginBottom: 16 }}>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${nextUnearned.progressPct ?? 0}%` }}
+                            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                            style={{ height: "100%", borderRadius: 8, background: "linear-gradient(90deg, #4db87a, #2d9e5c)" }}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Tree badge cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 px-6 pb-6">
+                    {treeBadges.map((badge, i) => {
+                      const pct = badge.progressPct ?? 0;
+                      const isNext = !badge.earned && nextUnearned?.name === badge.name;
+                      return (
+                        <motion.div
+                          key={badge.id}
+                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.05 + i * 0.06 }}
+                          whileHover={badge.earned ? { y: -4, scale: 1.03 } : { scale: 1.02 }}
+                          style={{
+                            borderRadius: 18, overflow: "hidden", position: "relative",
+                            background: badge.earned
+                              ? "linear-gradient(145deg, #0c1e11, #163d25)"
+                              : isNext
+                                ? "linear-gradient(145deg, #f7f3ec, #ede8de)"
+                                : "#fafafa",
+                            border: badge.earned
+                              ? "1.5px solid rgba(77,184,122,0.5)"
+                              : isNext
+                                ? "1.5px solid #c9a84c"
+                                : "1.5px solid #ede8de",
+                            boxShadow: badge.earned
+                              ? "0 8px 24px rgba(12,30,17,0.25)"
+                              : isNext
+                                ? "0 4px 16px rgba(201,168,76,0.2)"
+                                : "none",
+                            transition: "all 0.2s",
+                          }}
+                        >
+                          {/* Earned glow */}
+                          {badge.earned && (
+                            <div style={{ position: "absolute", top: "-20%", right: "-20%", width: 80, height: 80, borderRadius: "50%", background: "radial-gradient(circle, rgba(77,184,122,0.3), transparent)", pointerEvents: "none" }} />
+                          )}
+
+                          <div style={{ padding: "16px 14px", textAlign: "center" }}>
+                            {/* Badge icon */}
+                            <div style={{
+                              width: 52, height: 52, borderRadius: 14, margin: "0 auto 10px",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 28,
+                              background: badge.earned
+                                ? "rgba(77,184,122,0.2)"
+                                : isNext
+                                  ? "rgba(201,168,76,0.15)"
+                                  : "rgba(0,0,0,0.04)",
+                              filter: badge.earned ? "none" : "grayscale(0.6)",
+                              border: badge.earned ? "1px solid rgba(77,184,122,0.3)" : "1px solid rgba(0,0,0,0.07)",
+                            }}>
+                              {badge.earned ? badge.icon : "🔒"}
+                            </div>
+
+                            {/* Milestone label */}
+                            <p style={{
+                              fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase",
+                              color: badge.earned ? "#4db87a" : isNext ? "#c9a84c" : "#b5ac9e",
+                              marginBottom: 3,
+                            }}>
+                              {badge.threshold} Trees
+                            </p>
+                            <p style={{
+                              fontSize: 12, fontWeight: 700,
+                              color: badge.earned ? "#fff" : "#3d3128",
+                              lineHeight: 1.2,
+                            }}>
+                              {badge.name}
+                            </p>
+
+                            {/* Progress bar */}
+                            <div style={{ marginTop: 10, height: 4, borderRadius: 4, background: badge.earned ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.08)", overflow: "hidden" }}>
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{ duration: 1, delay: 0.1 + i * 0.06 }}
+                                style={{
+                                  height: "100%", borderRadius: 4,
+                                  background: badge.earned
+                                    ? "linear-gradient(90deg, #4db87a, #6ee7b7)"
+                                    : isNext
+                                      ? "linear-gradient(90deg, #c9a84c, #f0c040)"
+                                      : "#d1d5db",
+                                }}
+                              />
+                            </div>
+
+                            {/* Status line */}
+                            <p style={{ marginTop: 6, fontSize: 10, color: badge.earned ? "rgba(255,255,255,0.5)" : "#b5ac9e" }}>
+                              {badge.earned
+                                ? `✓ Earned ${badge.earnedAt ? new Date(badge.earnedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}`
+                                : `${Math.min(gamification.totalTreesPlanted, badge.threshold)} / ${badge.threshold}`}
+                            </p>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </div>
-                <div className="divide-y divide-[#f7f3ec]">
-                  {gamification.recentTransactions.map((tx, i) => (
+              );
+            })()}
+
+            {/* ── All Badges Gallery ── */}
+            {gamification.allBadges?.length > 0 && (
+              <div className="bg-white border border-[#ede8de] rounded-3xl shadow-sm overflow-hidden">
+                <div className="flex items-center gap-3 px-6 py-4 border-b border-[#ede8de]">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-base shrink-0">🏅</div>
+                  <div>
+                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">All Badges</h2>
+                    <p className="text-[11.5px] text-[#b5ac9e] font-light">{gamification.badgeCount} earned · {(gamification.totalBadges ?? gamification.allBadges.length) - gamification.badgeCount} locked</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 p-5">
+                  {gamification.allBadges.filter(b => b.triggerType !== "TOTAL_TREES").map((badge, i) => (
                     <motion.div
-                      key={tx.id || i}
-                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.04 }}
-                      className="flex items-center justify-between px-6 py-3.5"
+                      key={badge.id}
+                      initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }}
+                      whileHover={badge.earned ? { scale: 1.1, y: -3 } : { scale: 1.03 }}
+                      title={`${badge.description}\n${badge.earned ? "✓ Earned" : `Progress: ${badge.currentProgress}/${badge.threshold}`}`}
+                      className="flex flex-col items-center gap-2 cursor-default"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-sm">⚡</div>
-                        <div>
-                          <p className="text-[13px] font-semibold text-[#0c1e11]">{tx.description || tx.action}</p>
-                          <p className="text-[11px] text-[#b5ac9e] mt-0.5">
-                            {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}
-                          </p>
-                        </div>
+                      <div style={{
+                        width: 54, height: 54, borderRadius: 15, position: "relative",
+                        background: badge.earned ? "linear-gradient(135deg, #d1fae5, #6ee7b7)" : "#f3f4f6",
+                        border: badge.earned ? "2px solid #4db87a" : "2px solid #e5e7eb",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 24,
+                        filter: badge.earned ? "none" : "grayscale(1) opacity(0.45)",
+                        boxShadow: badge.earned ? "0 4px 14px rgba(77,184,122,0.3)" : "none",
+                        transition: "all 0.2s",
+                      }}>
+                        {badge.earned ? badge.icon : "🔒"}
+                        {/* Progress ring for unearned */}
+                        {!badge.earned && badge.progressPct > 0 && (
+                          <div style={{
+                            position: "absolute", bottom: -2, right: -2,
+                            width: 18, height: 18, borderRadius: "50%",
+                            background: "#4db87a", display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 9, color: "#fff", fontWeight: 700,
+                          }}>
+                            {badge.progressPct}%
+                          </div>
+                        )}
                       </div>
-                      <span style={{
-                        fontSize: 14, fontWeight: 700, color: "#4db87a",
-                        background: "rgba(77,184,122,0.1)",
-                        padding: "3px 10px", borderRadius: 100,
-                        border: "1px solid rgba(77,184,122,0.2)",
-                      }}>+{tx.xpAwarded} XP</span>
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: badge.earned ? 700 : 400, color: badge.earned ? "#0c1e11" : "#9ca3af", lineHeight: 1.3 }}>
+                          {badge.name}
+                        </p>
+                        {badge.earned && badge.earnedAt && (
+                          <p style={{ fontSize: 9, color: "#b5ac9e", marginTop: 1 }}>
+                            {new Date(badge.earnedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                          </p>
+                        )}
+                        {!badge.earned && badge.threshold > 1 && (
+                          <p style={{ fontSize: 9, color: "#9ca3af", marginTop: 1 }}>
+                            {badge.currentProgress}/{badge.threshold}
+                          </p>
+                        )}
+                      </div>
                     </motion.div>
                   ))}
                 </div>
               </div>
             )}
+
+            {/* ── Recent XP Activity ── */}
+            {gamification.recentTransactions?.length > 0 && (
+              <div className="bg-white border border-[#ede8de] rounded-3xl shadow-sm overflow-hidden">
+                <div className="flex items-center gap-3 px-6 py-4 border-b border-[#ede8de]">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base shrink-0">⚡</div>
+                  <div>
+                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">Recent XP Activity</h2>
+                    <p className="text-[11.5px] text-[#b5ac9e] font-light">Last {gamification.recentTransactions.length} XP events</p>
+                  </div>
+                </div>
+                <div className="divide-y divide-[#f7f3ec]">
+                  {gamification.recentTransactions.map((tx, i) => {
+                    const icon = {
+                      ADD_LAND: "🗺️", LAND_APPROVED: "✅", START_PLANTATION: "🌱",
+                      COMPLETE_PLANTATION: "🌳", ADD_REVIEW: "📋", GROWTH_UPDATE: "📈",
+                      VERIFY_LAND: "🔍", STREAK_BONUS: "🔥", WELCOME: "🎉",
+                    }[tx.action] || "⚡";
+                    return (
+                      <motion.div
+                        key={tx.id || i}
+                        initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
+                        className="flex items-center justify-between px-6 py-3.5"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div style={{
+                            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                            background: "linear-gradient(135deg, #d1fae5, #ecfdf5)",
+                            border: "1px solid #a7f3d0",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 15,
+                          }}>{icon}</div>
+                          <div className="min-w-0">
+                            <p className="text-[13px] font-semibold text-[#0c1e11] truncate">{tx.description || tx.action}</p>
+                            <p className="text-[10.5px] text-[#b5ac9e] mt-0.5">
+                              {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : ""}
+                            </p>
+                          </div>
+                        </div>
+                        <motion.span
+                          initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.1 + i * 0.04 }}
+                          style={{
+                            fontSize: 13.5, fontWeight: 800, flexShrink: 0,
+                            color: "#4db87a", background: "rgba(77,184,122,0.1)",
+                            padding: "4px 12px", borderRadius: 100,
+                            border: "1px solid rgba(77,184,122,0.2)",
+                          }}
+                        >
+                          +{tx.xpAwarded} XP
+                        </motion.span>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
           </motion.div>
         )}
+
 
         {/* ── LANDS TABLE ── */}
         <motion.div
