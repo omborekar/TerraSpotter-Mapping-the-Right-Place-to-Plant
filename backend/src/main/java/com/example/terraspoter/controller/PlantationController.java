@@ -21,10 +21,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/plantations")
-@CrossOrigin(
-        origins = "https://terraspotterfrontend-qtmta2ofv-omborekar1406-9636s-projects.vercel.app",
-        allowCredentials = "true"
-)
 @RequiredArgsConstructor
 public class PlantationController {
 

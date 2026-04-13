@@ -11,7 +11,7 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import LoadingSpinner from "./ui/LoadingSpinner";
+// Removed LoadingSpinner
 import PlantationForm from "./PlantationForm.jsx";
 import CompletePlantationModal from "./CompletePlantationModal.jsx";
 
@@ -227,7 +227,7 @@ export default function SiteDetail() {
   const avgRating = reviews.length
     ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1) : 0;
 
-  if (loading) return <LoadingSpinner text="Loading site details…" />;
+  if (loading) return <SiteDetailSkeleton />;
   if (!land) return (
     <div className="min-h-screen bg-[#f7f3ec] flex flex-col items-center justify-center gap-4 font-['Outfit',sans-serif]">
       <p className="text-red-500 text-sm">Land not found.</p>
@@ -668,5 +668,64 @@ export default function SiteDetail() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+// ─── Skeletons ────────────────────────────────────────────────
+const Bone = ({ className = "" }) => (
+  <div className={`rounded-xl bg-gradient-to-r from-[#f0ebe2] via-[#e8e2d8] to-[#f0ebe2] bg-[length:200%_100%] animate-pulse ${className}`} />
+);
+
+function SiteDetailSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#f7f3ec] font-['Outfit',sans-serif]">
+      <div className="max-w-[1180px] mx-auto px-5 sm:px-8 lg:px-10 py-8 sm:py-10 pb-24">
+        {/* Back Link */}
+        <Bone className="w-24 h-4 mb-7 bg-transparent animate-none opacity-50" />
+        
+        {/* Hero */}
+        <div className="mb-7 flex items-start justify-between gap-5 flex-wrap">
+          <div className="flex flex-col gap-3 flex-1 max-w-[600px]">
+            <Bone className="w-3/4 h-12 md:h-14" />
+            <Bone className="w-1/3 h-4" />
+            <div className="flex gap-2">
+              <Bone className="w-20 h-6 rounded-full" />
+              <Bone className="w-24 h-6 rounded-full" />
+            </div>
+            <Bone className="w-32 h-4 mt-1" />
+          </div>
+          <Bone className="w-[200px] h-12" />
+        </div>
+        
+        {/* Gallery */}
+        <div className="grid grid-cols-[2fr_1fr] grid-rows-[200px_200px] gap-2 mb-7 overflow-hidden rounded-2xl">
+           <Bone className="w-full h-full row-span-2 col-start-1" />
+           <Bone className="w-full h-full col-start-2 row-start-1" />
+           <Bone className="w-full h-full col-start-2 row-start-2" />
+        </div>
+        
+        {/* Tabs */}
+        <div className="flex gap-4 border-b border-[#e0d8cf] mb-6">
+           <Bone className="w-24 h-6 mb-2 bg-transparent animate-none" />
+           <Bone className="w-24 h-6 mb-2 bg-transparent animate-none" />
+        </div>
+        
+        {/* Grid cols */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_340px] gap-5 items-start">
+           <div className="flex flex-col gap-5">
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+               <Bone className="h-20" /><Bone className="h-20" /><Bone className="h-20" /><Bone className="h-20" />
+             </div>
+             <Bone className="h-[300px] rounded-2xl" />
+             <Bone className="h-[250px] rounded-2xl" />
+           </div>
+           
+           <div className="flex flex-col gap-4">
+             <Bone className="h-[220px] rounded-2xl" />
+             <Bone className="h-[300px] rounded-2xl" />
+           </div>
+        </div>
+      </div>
+    </div>
   );
 }

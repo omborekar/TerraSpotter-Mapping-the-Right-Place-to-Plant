@@ -188,8 +188,13 @@ public class LandController {
     }
     private final LandRepository landRepository;
     @GetMapping("/pending")
-    public List<Land> getPendingLands() {
+    public ResponseEntity<?> getPendingLands(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Not logged in (Admin check)"));
+
         List<Land> lands = landRepository.findByStatus("PENDING");
-        return lands;
+        return ResponseEntity.ok(lands);
     }
 }

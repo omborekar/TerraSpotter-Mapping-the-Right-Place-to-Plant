@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import LoadingSpinner from "./ui/LoadingSpinner";
+import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -194,7 +194,7 @@ export default function Leaderboard() {
     fetchAll();
   }, []);
 
-  if (loading) return <LoadingSpinner text="Loading leaderboard…" />;
+  if (loading) return <LeaderboardSkeleton />;
 
   return (
     <div style={{
@@ -335,6 +335,62 @@ function PodiumBlock({ row, height, delay, crown = false }) {
       }}>
         {rs.emoji}
       </div>
+      </div>
     </motion.div>
+  );
+}
+
+// ─── Skeletons ────────────────────────────────────────────────
+const Shimmer = ({ className = "" }) => (
+  <div className={`rounded-xl bg-gradient-to-r from-[#1c3a26] via-[#2a5238] to-[#1c3a26] bg-[length:200%_100%] animate-pulse ${className}`} />
+);
+
+function LeaderboardSkeleton() {
+  return (
+    <div style={{ minHeight: "100vh", background: "linear-gradient(160deg, #071408 0%, #0c1e11 40%, #0a1a0d 100%)", padding: "48px 16px 80px" }}>
+      <div style={{ maxWidth: 780, margin: "0 auto", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ textAlign: "center", marginBottom: 48, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Shimmer className="w-32 h-8 rounded-full mb-5" />
+          <Shimmer className="w-64 sm:w-96 h-12 mb-3" />
+          <Shimmer className="w-80 h-4" />
+        </div>
+        
+        {/* Podium Skeleton */}
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", gap: 16, marginBottom: 40 }}>
+          <div className="flex flex-col items-center gap-2 flex-1 max-w-[200px]">
+             <Shimmer className="w-13 h-13 rounded-full" />
+             <Shimmer className="w-16 h-3 mt-1" />
+             <Shimmer className="w-full h-[100px] rounded-t-[10px] rounded-b-none" />
+          </div>
+          <div className="flex flex-col items-center gap-2 flex-1 max-w-[200px]">
+             <Shimmer className="w-13 h-13 rounded-full" />
+             <Shimmer className="w-16 h-3 mt-1" />
+             <Shimmer className="w-full h-[130px] rounded-t-[10px] rounded-b-none" />
+          </div>
+          <div className="flex flex-col items-center gap-2 flex-1 max-w-[200px]">
+             <Shimmer className="w-13 h-13 rounded-full" />
+             <Shimmer className="w-16 h-3 mt-1" />
+             <Shimmer className="w-full h-[80px] rounded-t-[10px] rounded-b-none" />
+          </div>
+        </div>
+
+        {/* List Skeleton */}
+        {[...Array(5)].map((_, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 20px", borderRadius: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <Shimmer className="w-10 h-10 rounded-xl" />
+            <Shimmer className="w-11 h-11 rounded-full shrink-0" />
+            <div style={{ flex: 1 }}>
+               <Shimmer className="w-32 h-4 mb-2" />
+               <Shimmer className="w-full h-1.5" />
+            </div>
+            <div className="hidden sm:flex gap-8">
+               <Shimmer className="w-10 h-6" />
+               <Shimmer className="w-8 h-6" />
+               <Shimmer className="w-8 h-6" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

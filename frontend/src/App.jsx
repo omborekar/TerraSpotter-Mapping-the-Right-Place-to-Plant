@@ -27,6 +27,9 @@ import AdminPendingLands from "./components/AdminPendingLands";
 import GrowthTracker from "./components/GrowthTracker";
 import CommunityFeed from "./components/CommunityFeed";
 import Leaderboard from "./components/Leaderboard";
+import NotFound from "./components/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
+
 
 import "./App.css";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
@@ -66,6 +69,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
 
       {/* 🔥 PASS USER */}
       <Navbar user={user} />
@@ -110,6 +114,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* CATCH-ALL */}
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </Router>

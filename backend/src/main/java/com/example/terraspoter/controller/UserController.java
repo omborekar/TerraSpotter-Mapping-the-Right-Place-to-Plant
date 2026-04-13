@@ -18,11 +18,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(
-        origins = "https://terraspotterfrontend-qtmta2ofv-omborekar1406-9636s-projects.vercel.app",
-        allowCredentials = "true"
-)
-//@CrossOrigin(originPatterns = "*", allowCredentials = "true")
 public class UserController {
 
     private final UserRepository userRepository;

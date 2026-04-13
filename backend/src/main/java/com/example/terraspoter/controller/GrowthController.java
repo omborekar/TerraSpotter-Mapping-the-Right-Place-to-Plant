@@ -20,10 +20,6 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@CrossOrigin(
-        origins = "https://terraspotterfrontend-qtmta2ofv-omborekar1406-9636s-projects.vercel.app",
-        allowCredentials = "true"
-)
 @RequiredArgsConstructor
 public class GrowthController {
 

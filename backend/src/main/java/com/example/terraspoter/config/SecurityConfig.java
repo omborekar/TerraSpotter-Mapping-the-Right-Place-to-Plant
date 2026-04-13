@@ -15,11 +15,16 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -33,7 +38,7 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "https://*.vercel.app"
         ));
-        config.setAllowedOrigins(List.of("https://terraspotterfrontend-qtmta2ofv-omborekar1406-9636s-projects.vercel.app"));
+        config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

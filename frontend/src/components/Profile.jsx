@@ -8,7 +8,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, AreaChart, Area } from "recharts";
-import LoadingSpinner from "./ui/LoadingSpinner";
+// Removed LoadingSpinner
+
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -364,7 +365,7 @@ export default function Profile() {
   const approvedLands = lands.filter(l => l.status === "APPROVED").length;
   const totalTrees = completions.reduce((s, c) => s + (c.treesPlanted || 0), 0);
 
-  if (pageLoading) return <LoadingSpinner text="Loading profile…" />;
+  if (pageLoading) return <ProfileSkeleton />;
   if (!profile) return (
     <div className="min-h-screen bg-[#f7f3ec] flex items-center justify-center text-red-500 text-sm font-['Outfit',sans-serif]">
       Failed to load profile. Please refresh.
@@ -1038,3 +1039,25 @@ export default function Profile() {
     </div>
   );
 }
+
+// ─── Skeletons ────────────────────────────────────────────────
+function ProfileSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#f7f3ec] py-10 px-4 md:px-8 font-['Outfit',sans-serif]">
+      <div className="max-w-5xl mx-auto flex flex-col gap-5">
+        <Bone className="w-full h-32 md:h-40 rounded-3xl" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Bone className="w-full h-28 rounded-2xl" />
+          <Bone className="w-full h-28 rounded-2xl" />
+          <Bone className="w-full h-28 rounded-2xl" />
+          <Bone className="w-full h-28 rounded-2xl" />
+        </div>
+        <Bone className="w-full h-[400px] rounded-3xl" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Bone className="w-full h-64 rounded-3xl" />
+          <Bone className="w-full h-64 rounded-3xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
