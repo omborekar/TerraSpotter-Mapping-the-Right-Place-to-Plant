@@ -21,7 +21,7 @@ const Profile = lazy(() => import("./components/Profile"));
 const SiteDetail = lazy(() => import("./components/SiteDetail"));
 const ReviewsPage = lazy(() => import("./components/Reviewspage"));
 const About = lazy(() => import("./components/About"));
-const Contact = lazy(() => import("./components/Contact"));
+const Forum = lazy(() => import("./components/Forum"));
 const PlantationShowcase = lazy(() => import("./components/PlantationShowcase"));
 const AdminPendingLands = lazy(() => import("./components/AdminPendingLands"));
 const AdminLandDetail = lazy(() => import("./components/AdminLandDetail"));
@@ -84,7 +84,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route path="/forum" element={<Forum user={user} />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
 
           {/* LAND */}

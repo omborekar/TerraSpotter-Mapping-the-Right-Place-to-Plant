@@ -93,13 +93,13 @@ export default function Navbar() {
     { to: "/community",        label: "Community",   icon: "🌱" },
     { to: "/leaderboard",      label: "Leaderboard", icon: "🏆" },
     { to: "/about",            label: "About",       icon: "ℹ️" },
-    { to: "/contact",          label: "Contact",     icon: "📞" },
+    { to: "/forum",            label: "Forum",       icon: "💬" },
     ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: "Admin", icon: "⚙️" }] : []),
   ] : [
     { to: "/",            label: "Home",        icon: "🏡" },
     { to: "/leaderboard", label: "Leaderboard", icon: "🏆" },
     { to: "/about",       label: "About",       icon: "ℹ️" },
-    { to: "/contact",     label: "Contact",     icon: "📞" },
+    { to: "/forum",       label: "Forum",       icon: "💬" },
   ];
 
   const DD_ITEMS = NAV.filter(x => x.to !== "/").concat([{ to: "/profile", label: "My Profile", icon: "👤" }]);
