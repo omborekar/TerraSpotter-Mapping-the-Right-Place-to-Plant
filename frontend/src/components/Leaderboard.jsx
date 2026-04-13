@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -334,7 +333,6 @@ function PodiumBlock({ row, height, delay, crown = false }) {
         boxShadow: "0 -4px 20px rgba(0,0,0,0.2)",
       }}>
         {rs.emoji}
-      </div>
       </div>
     </motion.div>
   );
