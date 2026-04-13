@@ -241,6 +241,11 @@ export default function SiteDetail() {
     <>
       <Helmet>
         <title>{land?.title ? `${land.title} — TerraSpotter` : "Land details — TerraSpotter"}</title>
+        <meta property="og:title" content={land?.title ? `${land.title} — TerraSpotter` : "TerraSpotter Plantation Site"} />
+        <meta property="og:description" content={land?.description || "Explore this plantation site on TerraSpotter."} />
+        {images.length > 0 && <meta property="og:image" content={images[0].imageUrl} />}
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </Helmet>
 
