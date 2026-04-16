@@ -1,24 +1,42 @@
 {
   "navbar": {
     "home": "Home",
+    "tracker": "Submit",
     "browse": "Browse",
-    "tracker": "Tracker",
-    "forum": "Forum",
-    "reports": "Reports",
+    "reports": "History",
     "community": "Community",
+    "leaderboard": "Leaderboard",
     "about": "About",
-    "contact": "Contact",
-    "dashboard": "Dashboard",
-    "login": "Login",
-    "signup": "Sign Up",
-    "profile": "Profile",
+    "forum": "Forum",
     "admin": "Admin",
-    "logout": "Logout"
+    "login": "Sign in",
+    "signup": "Get started →",
+    "profile": "My Profile",
+    "logout": "Sign out"
   },
   "landing": {
-    "title": "Mapping the Right Place to Plant",
-    "subtitle": "Join TerraSpotter to identify, track, and celebrate tree planting initiatives worldwide. We empower communities to restore our earth, one strategic sapling at a time.",
-    "cta_start": "Start Planting Today",
-    "cta_explore": "Explore the Map"
+    "platform_label": "India's Land-to-Forest Platform",
+    "hero1": "Map it.",
+    "hero2": "Green it.",
+    "hero3": "Legacy built.",
+    "subtitle": "Submit barren land with polygon mapping. Get matched with volunteers. Watch India's green cover grow — one verified parcel at a time.",
+    "cta_start": "Submit land parcel →",
+    "cta_explore": "Browse all lands"
+  },
+  "main": {
+    "title": "Submit Land for Plantation",
+    "subtitle": "Mark boundaries, provide details, and upload photos to get matched with planting teams."
+  },
+  "login": {
+    "hero_superti": "Land for Green Futures",
+    "hero_line_1": "Every barren",
+    "hero_line_2": "plot deserves",
+    "hero_line_3": "to breathe.",
+    "hero_desc": "We transform unused, barren and roadside land into verified green ecosystems — driven by community, data, and purpose.",
+    "secure_sign_in": "Secure Sign-in",
+    "welcome_1": "Welcome",
+    "welcome_2": "back",
+    "instruction": "Sign in to your TerraSpotter workspace to continue your work.",
+    "submit_btn": "Sign in"
   }
 }

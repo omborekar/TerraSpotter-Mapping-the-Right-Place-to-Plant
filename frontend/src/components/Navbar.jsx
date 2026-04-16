@@ -407,7 +407,7 @@ export default function Navbar() {
 
         /* responsive */
         @media (max-width: 860px) {
-          .nv-links, .nv-ghost, .nv-vd, .nv-cta, .nv-pill { display: none !important; }
+          .nv-links, .nv-ghost, .nv-vd, .nv-cta, .nv-pill, .nv-ls-desk { display: none !important; }
           .nv-ham { display: flex; }
           .nv-inner { padding: 0 16px; }
           .nv-brand { margin-right: 0; }
@@ -435,7 +435,9 @@ export default function Navbar() {
             </nav>
 
             <div className="nv-right">
-              <LanguageSwitcher />
+              <div className="nv-ls-desk">
+                <LanguageSwitcher />
+              </div>
               {!user ? (
                 <>
                   <Link to="/login" className="nv-ghost">{t("navbar.login", "Sign in")}</Link>
@@ -566,6 +568,11 @@ export default function Navbar() {
 
                 {/* scrollable body */}
                 <div className="nv-dr-body">
+
+                  <div className="nv-dr-lbl">Language</div>
+                  <div style={{ padding: "4px 12px 16px" }}>
+                    <LanguageSwitcher />
+                  </div>
 
                   <div className="nv-dr-lbl">Navigation</div>
 

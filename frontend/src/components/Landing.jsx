@@ -178,10 +178,10 @@ export default function Landing() {
 
           <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-16 sm:py-20 grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0">
             {[
-              { label: "Lands mapped", value: stats?.totalLands, suffix: "" },
-              { label: "Verified sites", value: stats?.approvedLands, suffix: "" },
-              { label: "Trees planted", value: stats?.treesPlanted, suffix: "" },
-              { label: "Active volunteers", value: stats?.volunteers, suffix: "" },
+              { label: t("landing.stats_mapped", "Lands mapped"), value: stats?.totalLands, suffix: "" },
+              { label: t("landing.stats_verified", "Verified sites"), value: stats?.approvedLands, suffix: "" },
+              { label: t("landing.stats_planted", "Trees planted"), value: stats?.treesPlanted, suffix: "" },
+              { label: t("landing.stats_vols", "Active volunteers"), value: stats?.volunteers, suffix: "" },
             ].map((s, i) => (
               <FadeIn key={s.label} delay={i * 0.08} className="flex flex-col items-center lg:items-start text-center lg:text-left lg:px-10 lg:border-l lg:first:border-l-0 lg:border-[#e0d8cf]">
                 <div className="font-['Cormorant_Garant',serif] text-[52px] sm:text-[60px] font-semibold text-[#0c1e11] leading-none mb-2 tracking-[-1px]">
@@ -203,13 +203,13 @@ export default function Landing() {
               <div className="inline-flex items-center gap-2 mb-5">
                 <div className="w-8 h-px bg-[#4db87a]/40" />
                 <span className="text-[#4db87a] text-[11px] font-semibold tracking-[3px] uppercase">
-                  The process
+                  {t("landing.process_superti", "The process")}
                 </span>
                 <div className="w-8 h-px bg-[#4db87a]/40" />
               </div>
               <h2 className="font-['Cormorant_Garant',serif] text-[50px] sm:text-[60px] font-semibold text-white leading-[0.95] tracking-[-0.8px]">
-                From empty land<br />
-                to <em className="not-italic text-[#4db87a]">living forest</em>
+                {t("landing.process_line_1", "From empty land")}<br />
+                {t("landing.process_line_2", "to ")}<em className="not-italic text-[#4db87a]">{t("landing.process_line_3", "living forest")}</em>
               </h2>
             </FadeIn>
 
@@ -218,26 +218,26 @@ export default function Landing() {
                 {
                   step: "01",
                   icon: "🗺️",
-                  title: "Map the land",
-                  desc: "Draw a polygon boundary on our interactive map. Mark the exact parcel, add photos and ownership details.",
+                  title: t("landing.s1_t", "Map the land"),
+                  desc: t("landing.s1_d", "Draw a polygon boundary on our interactive map. Mark the exact parcel, add photos and ownership details."),
                 },
                 {
                   step: "02",
                   icon: "🔍",
-                  title: "Verification",
-                  desc: "Our team cross-checks your submission via satellite imagery, soil data, and climate APIs.",
+                  title: t("landing.s2_t", "Verification"),
+                  desc: t("landing.s2_d", "Our team cross-checks your submission via satellite imagery, soil data, and climate APIs."),
                 },
                 {
                   step: "03",
                   icon: "🌱",
-                  title: "Species matching",
-                  desc: "Native tree species are recommended based on soil type, rainfall patterns, and local ecology.",
+                  title: t("landing.s3_t", "Species matching"),
+                  desc: t("landing.s3_d", "Native tree species are recommended based on soil type, rainfall patterns, and local ecology."),
                 },
                 {
                   step: "04",
                   icon: "🤝",
-                  title: "Volunteer match",
-                  desc: "Verified land gets matched with local NGOs, government bodies, and community volunteers.",
+                  title: t("landing.s4_t", "Volunteer match"),
+                  desc: t("landing.s4_d", "Verified land gets matched with local NGOs, government bodies, and community volunteers."),
                 },
               ].map((s, i) => (
                 <FadeIn key={s.step} delay={i * 0.1} className="bg-[#0f2916] p-7 xl:p-9 flex flex-col gap-5 hover:bg-[#122e1a] transition-colors duration-300 group">
@@ -270,32 +270,32 @@ export default function Landing() {
               <FadeIn>
                 <div className="flex items-center gap-2 mb-7">
                   <div className="w-6 h-px bg-[#2d8a55]" />
-                  <span className="text-[#2d8a55] text-[11px] font-semibold tracking-[3px] uppercase">
-                    Environmental impact
+                <span className="text-[#2d8a55] text-[11px] font-semibold tracking-[3px] uppercase">
+                    {t("landing.impact_superti", "Environmental impact")}
                   </span>
                 </div>
                 <h2 className="font-['Cormorant_Garant',serif] text-[50px] sm:text-[58px] font-semibold text-[#0c1e11] leading-[0.93] tracking-[-0.8px] mb-7">
-                  Small plots.<br />
-                  <em className="not-italic text-[#2d8a55]">Massive impact.</em>
+                  {t("landing.impact_l1", "Small plots.")}<br />
+                  <em className="not-italic text-[#2d8a55]">{t("landing.impact_l2", "Massive impact.")}</em>
                 </h2>
                 <p className="text-[#6b5e4e] text-[15px] leading-[1.85] font-light mb-10 max-w-[400px]">
-                  Even a 500m² barren patch, when planted with native species, can reduce local surface temperature by 2–4°C, recharge groundwater, and capture carbon for decades.
+                  {t("landing.impact_desc", "Even a 500m² barren patch, when planted with native species, can reduce local surface temperature by 2–4°C, recharge groundwater, and capture carbon for decades.")}
                 </p>
                 <Link
                   to="/plantationShowcase"
                   className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#0c1e11] no-underline border-b-2 border-[#4db87a] pb-0.5 hover:text-[#2d8a55] transition-colors"
                 >
-                  View the showcase →
+                  {t("landing.impact_cta", "View the showcase →")}
                 </Link>
               </FadeIn>
 
               {/* Right: feature cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { icon: "🌡️", title: "2–4°C cooler", desc: "Plantation sites reduce surrounding surface temperature within 6 months." },
-                  { icon: "💧", title: "Groundwater up", desc: "Native roots improve aquifer recharge rates in barren and rocky terrain." },
-                  { icon: "🌬️", title: "CO₂ captured", desc: "Each verified tree sequesters ~21kg CO₂ annually — for decades." },
-                  { icon: "🦋", title: "Biodiversity", desc: "Native species selections support local pollinators and bird habitats." },
+                  { icon: "🌡️", title: t("landing.f1_t", "2–4°C cooler"), desc: t("landing.f1_d", "Plantation sites reduce surrounding surface temperature within 6 months.") },
+                  { icon: "💧", title: t("landing.f2_t", "Groundwater up"), desc: t("landing.f2_d", "Native roots improve aquifer recharge rates in barren and rocky terrain.") },
+                  { icon: "🌬️", title: t("landing.f3_t", "CO₂ captured"), desc: t("landing.f3_d", "Each verified tree sequesters ~21kg CO₂ annually — for decades.") },
+                  { icon: "🦋", title: t("landing.f4_t", "Biodiversity"), desc: t("landing.f4_d", "Native species selections support local pollinators and bird habitats.") },
                 ].map((f, i) => (
                   <FadeIn key={f.title} delay={i * 0.08}>
                     <div className="p-6 rounded-2xl bg-white border border-[#e8e2d8] hover:border-[#4db87a]/30 hover:shadow-[0_8px_32px_rgba(77,184,122,0.1)] transition-all duration-300 group h-full">
@@ -326,27 +326,27 @@ export default function Landing() {
             <FadeIn>
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-[#4db87a]/20 bg-[#4db87a]/8 text-[#4db87a] text-[11.5px] font-semibold tracking-[2px] uppercase mb-9">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#4db87a] animate-pulse" />
-                Join the community
+                {t("landing.comm_superti", "Join the community")}
               </div>
               <h2 className="font-['Cormorant_Garant',serif] text-[52px] sm:text-[68px] xl:text-[76px] font-semibold text-white leading-[0.9] tracking-[-1.2px] mb-7">
-                Own land?<br />
-                <em className="not-italic text-[#4db87a]">Make it count.</em>
+                {t("landing.comm_l1", "Own land?")}<br />
+                <em className="not-italic text-[#4db87a]">{t("landing.comm_l2", "Make it count.")}</em>
               </h2>
               <p className="text-white/45 text-[16px] leading-[1.85] font-light mb-12 max-w-[500px] mx-auto">
-                Whether it's a roadside strip or a vacant plot — every boundary you draw brings India one step closer to its green future.
+                {t("landing.comm_desc", "Whether it's a roadside strip or a vacant plot — every boundary you draw brings India one step closer to its green future.")}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to="/signup"
                   className="px-9 py-4 rounded-xl bg-[#4db87a] text-[#0c1e11] text-[15.5px] font-semibold no-underline hover:bg-[#5dcf8a] transition-all duration-200 shadow-[0_6px_32px_rgba(77,184,122,0.4)] active:scale-[0.97] whitespace-nowrap"
                 >
-                  Create free account →
+                  {t("landing.comm_cta1", "Create free account →")}
                 </Link>
                 <Link
                   to="/community"
                   className="px-9 py-4 rounded-xl border border-white/15 text-white/65 text-[15.5px] font-medium no-underline hover:text-white hover:border-white/35 hover:bg-white/[0.05] transition-all duration-200 whitespace-nowrap"
                 >
-                  Explore community
+                  {t("landing.comm_cta2", "Explore community")}
                 </Link>
               </div>
             </FadeIn>

@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -157,6 +158,7 @@ function Steps({ step }) {
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
 
   const [form, setForm] = useState({
@@ -824,11 +826,15 @@ export default function Signup() {
               <span className="su-logo-mark">🌿</span>
               TerraSpotter
             </div>
-            <h1>Join the<br /><em>green network</em></h1>
-            <p className="su-left-desc">
-              TerraSpotter brings structure, transparency, and intelligence
-              to community-driven afforestation across India.
-            </p>
+          <h1>
+            {t("signup.hero_line_1", "Your legacy")}<br />
+            {t("signup.hero_line_2", "starts with a")}<br />
+            <em className="not-italic text-[#4db87a]">{t("signup.hero_line_3", "single boundary.")}</em>
+          </h1>
+
+          <p className="su-left-desc">
+            {t("signup.hero_desc", "Join India's fastest-growing afforestation network. Draw your land, connect with volunteers, and track the growth.")}
+          </p>
             <div className="su-perks">
               {[
                 ["Submit & track land parcels", "Map boundaries, upload photos, and get matched with planting teams automatically."],
@@ -865,8 +871,8 @@ export default function Signup() {
                   exit={{ opacity: 0, x: 24 }}
                   transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>
 
-                  <h1 className="su-form-title">Create account</h1>
-                  <p className="su-form-sub">Free forever — takes 60 seconds</p>
+                  <h2 className="su-form-title">{t("signup.create_acc", "Create account")}</h2>
+                  <p className="su-form-sub">{t("signup.sub", "Transform your barren land into a lush forest.")}</p>
 
                   {errors.api && <div className="su-api-err">⚠ {errors.api}</div>}
 

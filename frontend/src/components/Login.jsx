@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -21,6 +22,7 @@ function fmt(n) {
 }
 
 export default function Login() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -131,18 +133,18 @@ export default function Login() {
               <div className="flex items-center gap-2 mb-8">
                 <div className="w-8 h-px bg-[#4db87a]/60" />
                 <span className="text-[#4db87a] text-[11px] font-semibold tracking-[3px] uppercase">
-                  Land for Green Futures
+                {t("login.hero_superti", "Land for Green Futures")}
                 </span>
               </div>
 
               <h1 className="font-['Cormorant_Garant',serif] text-[68px] xl:text-[76px] font-semibold text-white leading-[0.92] tracking-[-1px] mb-8">
-                Every barren<br />
-                plot deserves<br />
-                <em className="not-italic text-[#4db87a]">to breathe.</em>
+                {t("login.hero_line_1", "Every barren")}<br />
+                {t("login.hero_line_2", "plot deserves")}<br />
+                <em className="not-italic text-[#4db87a]">{t("login.hero_line_3", "to breathe.")}</em>
               </h1>
 
               <p className="text-white/40 text-[15px] leading-[1.85] font-light max-w-[340px]">
-                We transform unused, barren and roadside land into verified green ecosystems — driven by community, data, and purpose.
+                {t("login.hero_desc", "We transform unused, barren and roadside land into verified green ecosystems — driven by community, data, and purpose.")}
               </p>
             </motion.div>
 
@@ -219,13 +221,13 @@ export default function Login() {
             <div className="mb-10">
               <span className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a] mb-4">
                 <span className="w-4 h-px bg-[#4db87a]" />
-                Secure Sign-in
+                {t("login.secure_sign_in", "Secure Sign-in")}
               </span>
               <h2 className="font-['Cormorant_Garant',serif] text-[42px] font-semibold text-[#0c1e11] leading-[1.05] tracking-[-0.5px]">
-                Welcome<br />back
+                {t("login.welcome_1", "Welcome")}<br />{t("login.welcome_2", "back")}
               </h2>
               <p className="text-[#7a6d5e] text-sm mt-3 font-light leading-relaxed">
-                Sign in to your TerraSpotter workspace to continue your work.
+                {t("login.instruction", "Sign in to your TerraSpotter workspace to continue your work.")}
               </p>
             </div>
 
@@ -320,7 +322,7 @@ export default function Login() {
                   </>
                 ) : (
                   <>
-                    <span>Sign in</span>
+                    <span>{t("login.submit_btn", "Sign in")}</span>
                     <span className="text-[#4db87a]">→</span>
                   </>
                 )}
