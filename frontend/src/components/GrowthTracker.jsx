@@ -38,6 +38,7 @@ const BoneDark = ({ className = "" }) => (
 
 // ─── SVG Growth Chart ─────────────────────────────────────────
 function GrowthChart({ updates }) {
+  const { t } = useTranslation();
   if (!updates || updates.length < 2) return null;
   const W = 800, H = 200, PAD = 48;
   const heights = updates.map(u => u.averageHeightCm || 0);
@@ -169,6 +170,7 @@ function TimelineCard({ update, onImageClick }) {
 
 // ─── Submit Modal ─────────────────────────────────────────────
 function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ averageHeightCm: "", survivalRate: 75, healthStatus: "Healthy", notes: "" });
   const [photos, setPhotos] = useState([]);
   const [dragOver, setDragOver] = useState(false);

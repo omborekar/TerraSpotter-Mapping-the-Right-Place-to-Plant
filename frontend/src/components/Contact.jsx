@@ -294,8 +294,7 @@ const statTiles = dbStats ? [
               {t("auto.auto_98", "Together, we")}<br />{t("auto.auto_99", "grow")} <em>{t("auto.auto_100", "forests")}</em>
             </motion.h1>
             <motion.p className="ct-hero-sub" variants={itemVariants}>
-              {t("auto.auto_101", "TerraSpotter is powered entirely by its users — landowners, planters, and nature lovers like you.
-              Anyone can sign up, submit land, and join a plantation drive. No gatekeeping, just green action.")}
+              {t("auto.auto_101", "TerraSpotter is powered entirely by its users — landowners, planters, and nature lovers like you. Anyone can sign up, submit land, and join a plantation drive. No gatekeeping, just green action.")}
             </motion.p>
           </div>
 

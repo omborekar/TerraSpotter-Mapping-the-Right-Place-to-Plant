@@ -90,6 +90,7 @@ const InfoRow = ({ label, value }) => value ? (
 
 // ─── Write review ─────────────────────────────────────────────
 function WriteReview({ landId, onPosted }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ rating: 0, feasibilityNote: "", permissionNote: "", body: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");

@@ -57,6 +57,7 @@ function XpBar({ xp, level, maxXp }) {
 }
 
 function LeaderCard({ row, index, currentUserId }) {
+  const { t } = useTranslation();
   const rs = getRankStyle(row.rank);
   const isMe = row.userId === currentUserId;
 
@@ -236,8 +237,7 @@ export default function Leaderboard() {
             <span style={{ color: "#4db87a" }}>{t("auto.auto_206", "Leaderboard")}</span>
           </h1>
           <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", maxWidth: 480, margin: "0 auto" }}>
-            {t("auto.auto_207", "Top environmental champions ranked by XP earned through land submissions,
-            plantations, reviews, and community action.")}
+            {t("auto.auto_207", "Top environmental champions ranked by XP earned through land submissions, plantations, reviews, and community action.")}
           </p>
 
           {myRank && (

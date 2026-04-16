@@ -80,6 +80,7 @@ function ReviewCard({ review }) {
 
 // ─── Write review ─────────────────────────────────────────────
 function WriteReview({ landId, onPosted }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ rating: 0, feasibilityNote: "", permissionNote: "", body: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -169,6 +170,7 @@ function WriteReview({ landId, onPosted }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function ReviewsPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [land, setLand] = useState(null);

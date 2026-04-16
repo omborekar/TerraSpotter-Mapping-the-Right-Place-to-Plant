@@ -50,6 +50,7 @@ const BoneDark = ({ className = "" }) => (
 
 // ─── Animated counter ─────────────────────────────────────────
 function Counter({ target, suffix = "" }) {
+  const { t } = useTranslation();
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const seen = useRef(false);
@@ -79,6 +80,7 @@ function Counter({ target, suffix = "" }) {
 
 // ─── Review Modal ─────────────────────────────────────────────
 function ReviewModal({ completionId, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [comment, setComment] = useState("");
@@ -181,6 +183,7 @@ function ReviewModal({ completionId, onClose, onSuccess }) {
 
 // ─── Feed Card ────────────────────────────────────────────────
 function FeedCard({ update, distStr, onClick, onReview, onGrowth }) {
+  const { t } = useTranslation();
   const images = update.images || [];
   const thumbSrc = images[0] || null;
   const avgRating = update.reviews?.length

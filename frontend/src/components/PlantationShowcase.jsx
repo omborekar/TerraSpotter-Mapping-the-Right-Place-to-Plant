@@ -34,6 +34,7 @@ const StarRow = ({ value = 0, size = 14 }) => (
 
 // ─── Animated counter ─────────────────────────────────────────
 function Counter({ target }) {
+  const { t } = useTranslation();
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const seen = useRef(false);
@@ -230,6 +231,7 @@ export default function PlantationShowcase() {
 
 // ─── Plantation Row ───────────────────────────────────────────
 function PlantationRow({ plantation, onClick }) {
+  const { t } = useTranslation();
   const avgRating = plantation.reviews?.length
     ? (plantation.reviews.reduce((s, r) => s + r.rating, 0) / plantation.reviews.length).toFixed(1)
     : null;
@@ -330,6 +332,7 @@ function PlantationRow({ plantation, onClick }) {
 
 // ─── Detail Modal ─────────────────────────────────────────────
 function DetailModal({ plantation, onClose, onReview }) {
+  const { t } = useTranslation();
   const [cur, setCur] = useState(0);
   const images = plantation.images || [];
   const avgRating = plantation.reviews?.length
@@ -457,6 +460,7 @@ function DetailModal({ plantation, onClose, onReview }) {
 
 // ─── Review Modal ─────────────────────────────────────────────
 function ReviewModal({ plantation, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [comment, setComment] = useState("");

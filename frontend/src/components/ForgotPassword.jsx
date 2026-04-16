@@ -73,6 +73,7 @@ function ErrorBox({ message }) {
 }
 
 function SubmitBtn({ loading, label }) {
+  const { t } = useTranslation();
   return (
     <button
       type="submit"
@@ -90,6 +91,7 @@ function SubmitBtn({ loading, label }) {
 }
 
 function StrengthBar({ password }) {
+  const { t } = useTranslation();
   if (!password) return null;
   let s = 0;
   if (password.length >= 8) s++;

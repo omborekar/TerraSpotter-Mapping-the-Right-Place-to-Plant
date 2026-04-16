@@ -54,8 +54,8 @@ public class ForumController {
             map.put("title", q.getTitle());
             map.put("content", q.getContent());
             map.put("createdAt", q.getCreatedAt());
-            map.put("authorName", q.getAuthor().getFullName());
-            map.put("authorAvatar", q.getAuthor().getProfilePictureUrl());
+            map.put("authorName", q.getAuthor().getFname() + " " + q.getAuthor().getLname());
+            map.put("authorAvatar", null);
             map.put("replyCount", replyRepo.findByQuestionIdOrderByCreatedAtAsc(q.getId()).size());
             return map;
         }).collect(Collectors.toList());
@@ -74,8 +74,8 @@ public class ForumController {
             map.put("id", r.getId());
             map.put("content", r.getContent());
             map.put("createdAt", r.getCreatedAt());
-            map.put("authorName", r.getAuthor().getFullName());
-            map.put("authorAvatar", r.getAuthor().getProfilePictureUrl());
+            map.put("authorName", r.getAuthor().getFname() + " " + r.getAuthor().getLname());
+            map.put("authorAvatar", null);
             // optionally if author is admin, etc.
             return map;
         }).collect(Collectors.toList());
@@ -85,8 +85,8 @@ public class ForumController {
         map.put("title", q.getTitle());
         map.put("content", q.getContent());
         map.put("createdAt", q.getCreatedAt());
-        map.put("authorName", q.getAuthor().getFullName());
-        map.put("authorAvatar", q.getAuthor().getProfilePictureUrl());
+        map.put("authorName", q.getAuthor().getFname() + " " + q.getAuthor().getLname());
+        map.put("authorAvatar", null);
         map.put("replies", repliesDto);
 
         return ResponseEntity.ok(map);

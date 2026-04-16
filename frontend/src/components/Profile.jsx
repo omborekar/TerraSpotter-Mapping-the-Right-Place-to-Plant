@@ -46,6 +46,7 @@ const StatCard = ({ label, value, accent, icon }) => (
 
 // ─── Password strength bar ────────────────────────────────────
 function StrengthBar({ pw }) {
+  const { t } = useTranslation();
   if (!pw) return null;
   let s = 0;
   if (pw.length >= 8) s++;
@@ -70,6 +71,7 @@ function StrengthBar({ pw }) {
 
 // ─── Change Password Modal (OTP flow) ─────────────────────────
 function ChangePasswordModal({ email, onClose }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState("send");    // send | otp | reset | done
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [pws, setPws] = useState({ pw: "", confirm: "" });

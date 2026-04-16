@@ -148,6 +148,7 @@ const PolygonIcon = ({ size = 16 }) => (
 
 // ─── Sidebar content ──────────────────────────────────────────
 const SidebarContent = ({ compact = false, dbStats }) => {
+  const { t } = useTranslation();
   const formatNum = (num) => {
     if (!num) return "0";
     return num > 999 ? (num / 1000).toFixed(1) + "k" : String(num);
