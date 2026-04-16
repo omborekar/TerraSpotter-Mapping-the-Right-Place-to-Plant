@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -15,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
  * the toast state after `duration` ms.
  */
 export default function XpToast({ xp, action, badges = [], levelUp = null, onDismiss }) {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -118,7 +120,7 @@ export default function XpToast({ xp, action, badges = [], levelUp = null, onDis
             >
               <span style={{ fontSize: 18 }}>🏅</span>
               <div>
-                <p style={{ color: "#0c1e11", fontSize: 12, fontWeight: 700 }}>Badge Unlocked!</p>
+                <p style={{ color: "#0c1e11", fontSize: 12, fontWeight: 700 }}>{t("auto.auto_382", "Badge Unlocked!")}</p>
                 <p style={{ color: "#4db87a", fontSize: 13, fontWeight: 600 }}>{badge}</p>
               </div>
             </motion.div>

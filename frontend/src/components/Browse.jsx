@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -101,7 +102,7 @@ const ImageStrip = ({ landId, onOpenGallery, compact = false }) => {
   if (images.length === 0) return (
     <div className={`flex flex-col items-center justify-center gap-2 bg-[#f2ede3] ${h} w-full`}>
       <span className="text-3xl opacity-30">🌿</span>
-      <p className="text-xs text-[#b5ac9e] font-['Outfit',sans-serif]">No photos yet</p>
+      <p className="text-xs text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_38", "No photos yet")}</p>
     </div>
   );
 
@@ -142,7 +143,7 @@ const ImageStrip = ({ landId, onOpenGallery, compact = false }) => {
 
       {/* Hover pill */}
       <span className="absolute bottom-3 right-3 z-10 bg-[#0b1d10]/75 backdrop-blur-sm text-white text-[11px] font-semibold px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 font-['Outfit',sans-serif]">
-        View all →
+        {t("auto.auto_40", "View all →")}
       </span>
     </div>
   );
@@ -180,18 +181,18 @@ const GridCard = ({ land, onOpenGallery, onNavigate }) => {
         {/* Metrics */}
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-[#f7f3ec] rounded-xl px-3 py-2.5 flex flex-col">
-            <span className="text-[10px] text-[#b5ac9e] uppercase tracking-[1.2px] font-semibold font-['Outfit',sans-serif] mb-0.5">Area</span>
+            <span className="text-[10px] text-[#b5ac9e] uppercase tracking-[1.2px] font-semibold font-['Outfit',sans-serif] mb-0.5">{t("auto.auto_41", "Area")}</span>
             <span className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11] leading-tight">
               {land.areaSqm ? Number(land.areaSqm).toLocaleString() : "—"}
-              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif] font-normal ml-1">m²</span>
+              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif] font-normal ml-1">{t("auto.auto_42", "m²")}</span>
             </span>
           </div>
           {approxTrees ? (
             <div className="bg-[#f7f3ec] rounded-xl px-3 py-2.5 flex flex-col">
-              <span className="text-[10px] text-[#b5ac9e] uppercase tracking-[1.2px] font-semibold font-['Outfit',sans-serif] mb-0.5">~Trees</span>
+              <span className="text-[10px] text-[#b5ac9e] uppercase tracking-[1.2px] font-semibold font-['Outfit',sans-serif] mb-0.5">{t("auto.auto_43", "~Trees")}</span>
               <span className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#2d8a55] leading-tight">
                 {approxTrees}
-                <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif] font-normal ml-1">est.</span>
+                <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif] font-normal ml-1">{t("auto.auto_44", "est.")}</span>
               </span>
             </div>
           ) : <div />}
@@ -211,7 +212,7 @@ const GridCard = ({ land, onOpenGallery, onNavigate }) => {
           )}
           {land.permissionStatus?.toLowerCase().includes("yes") && (
             <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 font-['Outfit',sans-serif]">
-              ✅ Permitted
+              {t("auto.auto_45", "✅ Permitted")}
             </span>
           )}
         </div>
@@ -227,7 +228,7 @@ const GridCard = ({ land, onOpenGallery, onNavigate }) => {
             onClick={() => onNavigate(land.id)}
             className="w-full py-3 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold font-['Outfit',sans-serif] hover:bg-[#163d25] transition-colors duration-200 cursor-pointer flex items-center justify-center gap-2 group-hover:bg-[#163d25]"
           >
-            View site
+            {t("auto.auto_46", "View site")}
             <span className="text-[#4db87a]">→</span>
           </button>
         </div>
@@ -273,7 +274,7 @@ const ListCard = ({ land, onOpenGallery, onNavigate }) => {
               <span className="font-['Cormorant_Garant',serif] text-[17px] font-semibold text-[#0c1e11]">
                 {Number(land.areaSqm).toLocaleString()}
               </span>
-              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">m²</span>
+              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_47", "m²")}</span>
             </div>
           )}
           {approxTrees && (
@@ -281,7 +282,7 @@ const ListCard = ({ land, onOpenGallery, onNavigate }) => {
               <span className="w-px h-3 bg-[#e0d8cf]" />
               <div className="flex items-baseline gap-1">
                 <span className="font-['Cormorant_Garant',serif] text-[17px] font-semibold text-[#2d8a55]">~{approxTrees}</span>
-                <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">trees</span>
+                <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_48", "trees")}</span>
               </div>
             </>
           )}
@@ -296,7 +297,7 @@ const ListCard = ({ land, onOpenGallery, onNavigate }) => {
           )}
           {land.permissionStatus?.toLowerCase().includes("yes") && (
             <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 font-['Outfit',sans-serif] hidden sm:inline-flex">
-              ✅ Permitted
+              {t("auto.auto_49", "✅ Permitted")}
             </span>
           )}
         </div>
@@ -312,7 +313,7 @@ const ListCard = ({ land, onOpenGallery, onNavigate }) => {
             onClick={() => onNavigate(land.id)}
             className="py-2.5 px-5 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold font-['Outfit',sans-serif] hover:bg-[#163d25] transition-colors duration-200 cursor-pointer inline-flex items-center gap-2"
           >
-            View site <span className="text-[#4db87a]">→</span>
+            {t("auto.auto_50", "View site")} <span className="text-[#4db87a]">→</span>
           </button>
         </div>
       </div>
@@ -322,6 +323,7 @@ const ListCard = ({ land, onOpenGallery, onNavigate }) => {
 
 // ─── Main ─────────────────────────────────────────────────────
 const Browse = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [lands, setLands] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -381,7 +383,7 @@ const Browse = () => {
   return (
     <>
       <Helmet>
-        <title>TerraSpotter — Browse Sites</title>
+        <title>{t("auto.auto_52", "TerraSpotter — Browse Sites")}</title>
         <meta name="description" content="Browse plantation sites available for afforestation." />
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
@@ -411,15 +413,15 @@ const Browse = () => {
               <div className="inline-flex items-center gap-2 mb-5">
                 <div className="w-5 h-px bg-[#4db87a]/50" />
                 <span className="text-[#4db87a] text-[10.5px] font-semibold tracking-[3px] uppercase">
-                  Plantation sites
+                  {t("auto.auto_53", "Plantation sites")}
                 </span>
               </div>
               <h1 className="font-['Cormorant_Garant',serif] text-[44px] sm:text-[56px] font-semibold text-white leading-[0.92] tracking-[-0.8px] mb-4">
-                Browse available<br />
-                <em className="not-italic text-[#4db87a]">land parcels</em>
+                {t("auto.auto_54", "Browse available")}<br />
+                <em className="not-italic text-[#4db87a]">{t("auto.auto_55", "land parcels")}</em>
               </h1>
               <p className="text-white/40 text-[14.5px] leading-relaxed max-w-[420px] font-light">
-                Explore verified sites across India ready for afforestation — filter by type, location, and more.
+                {t("auto.auto_56", "Explore verified sites across India ready for afforestation — filter by type, location, and more.")}
               </p>
             </motion.div>
 
@@ -433,12 +435,12 @@ const Browse = () => {
               >
                 <div>
                   <span className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#4db87a]">{lands.length}</span>
-                  <span className="text-white/30 text-[12px] ml-2 uppercase tracking-[1px]">Total sites</span>
+                  <span className="text-white/30 text-[12px] ml-2 uppercase tracking-[1px]">{t("auto.auto_57", "Total sites")}</span>
                 </div>
                 <div className="w-px h-6 bg-white/10" />
                 <div>
                   <span className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#4db87a]">{filtered.length}</span>
-                  <span className="text-white/30 text-[12px] ml-2 uppercase tracking-[1px]">Showing</span>
+                  <span className="text-white/30 text-[12px] ml-2 uppercase tracking-[1px]">{t("auto.auto_58", "Showing")}</span>
                 </div>
               </motion.div>
             )}
@@ -522,10 +524,10 @@ const Browse = () => {
                 <div className="flex items-center flex-wrap gap-4 px-4 py-3.5 bg-emerald-50 border border-emerald-200/80 rounded-xl text-sm text-emerald-800">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-medium">Within <strong>{pinRadius} km</strong> of {pinLocation.lat.toFixed(4)}, {pinLocation.lng.toFixed(4)}</span>
+                    <span className="font-medium">{t("auto.auto_59", "Within")} <strong>{pinRadius} km</strong> of {pinLocation.lat.toFixed(4)}, {pinLocation.lng.toFixed(4)}</span>
                   </div>
                   <div className="flex items-center gap-3 ml-auto">
-                    <span className="text-xs text-emerald-600 font-medium">Radius</span>
+                    <span className="text-xs text-emerald-600 font-medium">{t("auto.auto_60", "Radius")}</span>
                     <input
                       type="range" min={10} max={200} step={10}
                       value={pinRadius}
@@ -537,7 +539,7 @@ const Browse = () => {
                       onClick={() => { setPinLocation(null); setPinRadius(50); }}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors cursor-pointer"
                     >
-                      Clear
+                      {t("auto.auto_61", "Clear")}
                     </button>
                   </div>
                 </div>
@@ -548,7 +550,7 @@ const Browse = () => {
           {/* Filter chips */}
           {statusTypes.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10.5px] font-semibold text-[#b5ac9e] uppercase tracking-[1.5px] mr-1">Filter:</span>
+              <span className="text-[10.5px] font-semibold text-[#b5ac9e] uppercase tracking-[1.5px] mr-1">{t("auto.auto_62", "Filter:")}</span>
               {["All", ...statusTypes].map(type => (
                 <button
                   key={type}
@@ -584,10 +586,10 @@ const Browse = () => {
               </div>
               <div>
                 <h3 className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#0c1e11] mb-2">
-                  No sites found
+                  {t("auto.auto_63", "No sites found")}
                 </h3>
                 <p className="text-[13.5px] text-[#b5ac9e] max-w-xs leading-relaxed">
-                  Try adjusting your search terms, filters, or proximity radius.
+                  {t("auto.auto_64", "Try adjusting your search terms, filters, or proximity radius.")}
                 </p>
               </div>
               {(search || activeFilter || pinLocation) && (
@@ -595,7 +597,7 @@ const Browse = () => {
                   onClick={() => { setSearch(""); setActiveFilter(""); setPinLocation(null); }}
                   className="text-[13px] font-semibold text-[#2d8a55] border border-emerald-200 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 transition-colors cursor-pointer"
                 >
-                  Clear all filters
+                  {t("auto.auto_65", "Clear all filters")}
                 </button>
               )}
             </div>
@@ -652,10 +654,10 @@ const Browse = () => {
               <div className="flex items-center justify-between px-6 py-4 border-b border-[#ede8de] shrink-0">
                 <div>
                   <h3 className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11]">
-                    Drop a pin to search nearby
+                    {t("auto.auto_66", "Drop a pin to search nearby")}
                   </h3>
                   <p className="text-[12.5px] text-[#b5ac9e] mt-0.5 font-['Outfit',sans-serif]">
-                    Click anywhere on the map to set your search location
+                    {t("auto.auto_67", "Click anywhere on the map to set your search location")}
                   </p>
                 </div>
                 <button

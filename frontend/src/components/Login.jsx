@@ -74,7 +74,7 @@ export default function Login() {
   return (
     <>
       <Helmet>
-        <title>TerraSpotter — Sign In</title>
+        <title>{t("login.page_title", "TerraSpotter — Sign In")}</title>
         <meta name="description" content="Sign in to your TerraSpotter account." />
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
@@ -318,7 +318,7 @@ export default function Login() {
                 {loading ? (
                   <>
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Signing in…</span>
+                    <span>{t("login.signing_in", "Signing in…")}</span>
                   </>
                 ) : (
                   <>

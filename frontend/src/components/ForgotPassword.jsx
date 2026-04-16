@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -81,7 +82,7 @@ function SubmitBtn({ loading, label }) {
       {loading ? (
         <>
           <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          Please wait…
+          {t("auto.auto_137", "Please wait…")}
         </>
       ) : label}
     </button>
@@ -113,6 +114,7 @@ function StrengthBar({ password }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function ForgotPassword() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState("email");
   const [email, setEmail] = useState("");
@@ -189,7 +191,7 @@ export default function ForgotPassword() {
   return (
     <>
       <Helmet>
-        <title>TerraSpotter — Reset Password</title>
+        <title>{t("auto.auto_139", "TerraSpotter — Reset Password")}</title>
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
@@ -216,7 +218,7 @@ export default function ForgotPassword() {
             <Link to="/" className="inline-flex items-center gap-3 no-underline group">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-base shadow-[0_0_20px_rgba(77,184,122,0.4)]">🌿</div>
               <span className="font-['Cormorant_Garant',serif] font-semibold text-xl text-white/80 tracking-wide group-hover:text-white transition-colors">
-                TerraSpotter
+                {t("auto.auto_140", "TerraSpotter")}
               </span>
             </Link>
           </div>
@@ -227,15 +229,15 @@ export default function ForgotPassword() {
             <div className="flex items-center gap-2 mb-7">
               <div className="w-8 h-px bg-[#4db87a]/50" />
               <span className="text-[#4db87a] text-[11px] font-semibold tracking-[3px] uppercase font-['Outfit',sans-serif]">
-                Account Security
+                {t("auto.auto_141", "Account Security")}
               </span>
             </div>
             <h2 className="font-['Cormorant_Garant',serif] text-[58px] xl:text-[64px] font-semibold text-white leading-[0.92] tracking-[-0.8px] mb-6">
-              Roots run deep.<br />
-              <em className="not-italic text-[#4db87a]">So does security.</em>
+              {t("auto.auto_142", "Roots run deep.")}<br />
+              <em className="not-italic text-[#4db87a]">{t("auto.auto_143", "So does security.")}</em>
             </h2>
             <p className="text-white/40 text-[14.5px] leading-[1.85] font-light max-w-[340px]">
-              Reset your password safely. Your account — and the land you help protect — stays yours.
+              {t("auto.auto_144", "Reset your password safely. Your account — and the land you help protect — stays yours.")}
             </p>
 
             {/* Security badges */}
@@ -255,7 +257,7 @@ export default function ForgotPassword() {
           {/* Footer */}
           <div className="relative z-10">
             <p className="text-white/18 text-xs tracking-wide font-['Outfit',sans-serif]">
-              © 2026 TerraSpotter · Afforestation Intelligence Platform
+              {t("auto.auto_145", "© 2026 TerraSpotter · Afforestation Intelligence Platform")}
             </p>
           </div>
         </motion.div>
@@ -276,7 +278,7 @@ export default function ForgotPassword() {
             {/* Mobile brand */}
             <div className="lg:hidden mb-8 flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d6e3e] to-[#4db87a] flex items-center justify-center text-base">🌿</div>
-              <span className="font-['Cormorant_Garant',serif] font-semibold text-xl text-[#0c1e11]">TerraSpotter</span>
+              <span className="font-['Cormorant_Garant',serif] font-semibold text-xl text-[#0c1e11]">{t("auto.auto_146", "TerraSpotter")}</span>
             </div>
 
             {/* Back link */}
@@ -284,7 +286,7 @@ export default function ForgotPassword() {
               to="/login"
               className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-[#b5ac9e] hover:text-[#4db87a] transition-colors mb-8 no-underline font-['Outfit',sans-serif]"
             >
-              ← Back to Login
+              {t("auto.auto_147", "← Back to Login")}
             </Link>
 
             {/* Progress dots */}
@@ -297,10 +299,10 @@ export default function ForgotPassword() {
                 <motion.div key="email" {...slide}>
                   <Eyebrow label="Password Recovery" />
                   <h1 className="font-['Cormorant_Garant',serif] text-[38px] font-semibold text-[#0c1e11] leading-[1.0] tracking-[-0.5px] mb-2">
-                    Forgot your<br />password?
+                    {t("auto.auto_148", "Forgot your")}<br />{t("auto.auto_149", "password?")}
                   </h1>
                   <p className="text-[13.5px] text-[#7a6d5e] mb-8 leading-relaxed font-light">
-                    Enter your registered email and we'll send a 4-digit verification code.
+                    {t("auto.auto_150", "Enter your registered email and we'll send a 4-digit verification code.")}
                   </p>
                   <AnimatePresence>{error && <ErrorBox message={error} />}</AnimatePresence>
                   <form onSubmit={handleSendOtp} noValidate className="flex flex-col gap-5">
@@ -321,10 +323,10 @@ export default function ForgotPassword() {
                 <motion.div key="otp" {...slide}>
                   <Eyebrow label="Verification" />
                   <h1 className="font-['Cormorant_Garant',serif] text-[38px] font-semibold text-[#0c1e11] leading-[1.0] tracking-[-0.5px] mb-2">
-                    Check your inbox
+                    {t("auto.auto_151", "Check your inbox")}
                   </h1>
                   <p className="text-[13.5px] text-[#7a6d5e] mb-1 leading-relaxed font-light">
-                    We sent a 4-digit code to
+                    {t("auto.auto_152", "We sent a 4-digit code to")}
                   </p>
                   <p className="text-[14px] font-semibold text-[#4db87a] mb-8 truncate font-['Outfit',sans-serif]">{email}</p>
 
@@ -352,7 +354,7 @@ export default function ForgotPassword() {
 
                     <div className="flex items-center gap-3">
                       <div className="flex-1 h-px bg-[#e0d8cf]" />
-                      <span className="text-[11.5px] text-[#b5ac9e] font-medium font-['Outfit',sans-serif]">or</span>
+                      <span className="text-[11.5px] text-[#b5ac9e] font-medium font-['Outfit',sans-serif]">{t("auto.auto_153", "or")}</span>
                       <div className="flex-1 h-px bg-[#e0d8cf]" />
                     </div>
 
@@ -361,7 +363,7 @@ export default function ForgotPassword() {
                       onClick={() => { setOtp(["", "", "", ""]); setStep("email"); setError(""); }}
                       className="text-center text-[13px] text-[#b5ac9e] hover:text-[#4db87a] transition-colors font-medium font-['Outfit',sans-serif] cursor-pointer"
                     >
-                      ← Try a different email
+                      {t("auto.auto_154", "← Try a different email")}
                     </button>
                   </form>
                 </motion.div>
@@ -372,10 +374,10 @@ export default function ForgotPassword() {
                 <motion.div key="reset" {...slide}>
                   <Eyebrow label="New Password" />
                   <h1 className="font-['Cormorant_Garant',serif] text-[38px] font-semibold text-[#0c1e11] leading-[1.0] tracking-[-0.5px] mb-2">
-                    Set a new<br />password
+                    {t("auto.auto_155", "Set a new")}<br />{t("auto.auto_156", "password")}
                   </h1>
                   <p className="text-[13.5px] text-[#7a6d5e] mb-8 leading-relaxed font-light">
-                    Choose something strong — at least 8 characters.
+                    {t("auto.auto_157", "Choose something strong — at least 8 characters.")}
                   </p>
 
                   <AnimatePresence>{error && <ErrorBox message={error} />}</AnimatePresence>
@@ -445,21 +447,21 @@ export default function ForgotPassword() {
 
                   <div className="inline-flex items-center gap-2 mb-5">
                     <div className="w-4 h-px bg-[#4db87a]" />
-                    <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a] font-['Outfit',sans-serif]">Success</span>
+                    <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a] font-['Outfit',sans-serif]">{t("auto.auto_158", "Success")}</span>
                     <div className="w-4 h-px bg-[#4db87a]" />
                   </div>
 
                   <h1 className="font-['Cormorant_Garant',serif] text-[38px] font-semibold text-[#0c1e11] mb-3 tracking-[-0.5px] leading-tight">
-                    Password reset!
+                    {t("auto.auto_159", "Password reset!")}
                   </h1>
                   <p className="text-[13.5px] text-[#7a6d5e] mb-9 leading-relaxed font-light max-w-[280px] mx-auto">
-                    Your password has been updated. Sign in with your new credentials.
+                    {t("auto.auto_160", "Your password has been updated. Sign in with your new credentials.")}
                   </p>
                   <button
                     onClick={() => navigate("/login")}
                     className="w-full h-12 rounded-xl bg-[#0c1e11] text-white text-[14.5px] font-semibold font-['Outfit',sans-serif] flex items-center justify-center gap-2 hover:bg-[#163d25] transition-all cursor-pointer shadow-[0_4px_16px_rgba(12,30,17,0.25)]"
                   >
-                    Back to login <span className="text-[#4db87a]">→</span>
+                    {t("auto.auto_161", "Back to login")} <span className="text-[#4db87a]">→</span>
                   </button>
                 </motion.div>
               )}

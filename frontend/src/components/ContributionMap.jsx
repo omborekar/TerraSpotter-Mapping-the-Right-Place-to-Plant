@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -58,6 +59,7 @@ const TILES = {
 
 // ─── Main ─────────────────────────────────────────────────────
 const ContributionMap = ({ locations = [] }) => {
+  const { t } = useTranslation();
   const [tileKey, setTileKey] = useState("satellite");
 
   const planted = locations.filter(l => l.planted).length;
@@ -77,7 +79,7 @@ const ContributionMap = ({ locations = [] }) => {
           </div>
           <div>
             <h3 className="font-['Cormorant_Garant',serif] text-[16px] font-semibold text-white leading-tight">
-              Contribution Map
+              {t("auto.auto_133", "Contribution Map")}
             </h3>
             <p className="text-[10.5px] text-white/35">
               {locations.length} land parcel{locations.length !== 1 ? "s" : ""} mapped
@@ -189,7 +191,7 @@ const ContributionMap = ({ locations = [] }) => {
             <div className="bg-[#0c1e11]/80 backdrop-blur-sm border border-[#4db87a]/20 rounded-2xl px-6 py-5 text-center">
               <div className="text-3xl mb-2">🗺️</div>
               <p className="text-[13px] font-medium text-white/60 font-['Outfit',sans-serif]">
-                No land parcels mapped yet
+                {t("auto.auto_134", "No land parcels mapped yet")}
               </p>
             </div>
           </div>
@@ -201,13 +203,13 @@ const ContributionMap = ({ locations = [] }) => {
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-[#4db87a]" />
           <span className="text-[11.5px] font-medium text-[#5c5044] font-['Outfit',sans-serif]">
-            <strong className="text-[#0c1e11]">{planted}</strong> planted
+            <strong className="text-[#0c1e11]">{planted}</strong> {t("auto.auto_135", "planted")}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-[#c9a84c]" />
           <span className="text-[11.5px] font-medium text-[#5c5044] font-['Outfit',sans-serif]">
-            <strong className="text-[#0c1e11]">{pending}</strong> pending
+            <strong className="text-[#0c1e11]">{pending}</strong> {t("auto.auto_136", "pending")}
           </span>
         </div>
         <div className="ml-auto text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">

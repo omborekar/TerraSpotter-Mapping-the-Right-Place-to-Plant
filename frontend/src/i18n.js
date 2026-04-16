@@ -5,6 +5,8 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en.json';
 import hi from './locales/hi.json';
 import mr from './locales/mr.json';
+import es from './locales/es.json';
+import de from './locales/de.json';
 
 i18n
   .use(LanguageDetector)
@@ -14,10 +16,12 @@ i18n
       en: { translation: en },
       hi: { translation: hi },
       mr: { translation: mr },
+      es: { translation: es },
+      de: { translation: de },
     },
     fallbackLng: 'en',
     interpolation: {
-      escapeValue: false, // react already safes from xss
+      escapeValue: false,
     },
   });
 

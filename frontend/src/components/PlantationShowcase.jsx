@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -57,6 +58,7 @@ function Counter({ target }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function PlantationShowcase() {
+  const { t } = useTranslation();
   const [plantations, setPlantations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
@@ -98,11 +100,11 @@ export default function PlantationShowcase() {
             <div className="flex items-center gap-3 mb-7">
               <div className="w-8 h-px bg-[#4db87a]/50" />
               <span className="text-[10px] font-semibold tracking-[3px] uppercase text-[#4db87a]/70">
-                TerraSpotter — Green Legacy Archive
+                {t("auto.auto_267", "TerraSpotter — Green Legacy Archive")}
               </span>
             </div>
             <h1 className="font-['Cormorant_Garant',serif] text-[clamp(56px,9vw,108px)] font-semibold text-white leading-[0.88] tracking-[-2px] mb-6">
-              Where land<br /><em className="not-italic text-[#c9a84c]">becomes forest</em>
+              {t("auto.auto_268", "Where land")}<br /><em className="not-italic text-[#c9a84c]">{t("auto.auto_269", "becomes forest")}</em>
             </h1>
             <div className="w-14 h-px bg-white/20 mb-10" />
           </motion.div>
@@ -186,9 +188,9 @@ export default function PlantationShowcase() {
               <TreePine size={28} strokeWidth={1} className="text-[#b5ac9e]" />
             </div>
             <h3 className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#0c1e11]">
-              No records yet
+              {t("auto.auto_270", "No records yet")}
             </h3>
-            <p className="text-[13.5px] text-[#b5ac9e] font-light">Be the first to complete a plantation.</p>
+            <p className="text-[13.5px] text-[#b5ac9e] font-light">{t("auto.auto_271", "Be the first to complete a plantation.")}</p>
           </div>
         ) : (
           <motion.div
@@ -258,7 +260,7 @@ function PlantationRow({ plantation, onClick }) {
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#f2ede3]">
             <TreePine size={36} strokeWidth={1} className="text-[#b5ac9e]" />
-            <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">No photos</span>
+            <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_273", "No photos")}</span>
           </div>
         )}
       </div>
@@ -300,13 +302,13 @@ function PlantationRow({ plantation, onClick }) {
               <div className="font-['Cormorant_Garant',serif] text-[38px] font-semibold text-[#0c1e11] leading-none">
                 {(plantation.treesPlanted || 0).toLocaleString()}
               </div>
-              <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#b5ac9e] mt-1.5">Trees</div>
+              <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#b5ac9e] mt-1.5">{t("auto.auto_274", "Trees")}</div>
             </div>
             <div>
               <div className="font-['Cormorant_Garant',serif] text-[38px] font-semibold text-[#0c1e11] leading-none">
                 {plantation.reviews?.length || 0}
               </div>
-              <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#b5ac9e] mt-1.5">Reviews</div>
+              <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#b5ac9e] mt-1.5">{t("auto.auto_275", "Reviews")}</div>
             </div>
           </div>
           {avgRating && (
@@ -319,7 +321,7 @@ function PlantationRow({ plantation, onClick }) {
 
         {/* Hover CTA */}
         <div className="absolute bottom-10 right-14 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 hidden lg:flex items-center gap-2 bg-[#0c1e11] text-white text-[10px] font-semibold tracking-[0.15em] uppercase px-4 py-2.5 rounded-sm">
-          View Record <ChevronRight size={12} />
+          {t("auto.auto_276", "View Record")} <ChevronRight size={12} />
         </div>
       </div>
     </motion.article>
@@ -380,7 +382,7 @@ function DetailModal({ plantation, onClose, onReview }) {
         <div className="px-8 sm:px-12 py-10 sm:py-12">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-6 h-px bg-[#2d8a55]" />
-            <span className="text-[10px] font-semibold tracking-[2.5px] uppercase text-[#2d8a55]">Field Report</span>
+            <span className="text-[10px] font-semibold tracking-[2.5px] uppercase text-[#2d8a55]">{t("auto.auto_278", "Field Report")}</span>
           </div>
           <h2 className="font-['Cormorant_Garant',serif] text-[clamp(28px,4.5vw,50px)] font-semibold text-[#0c1e11] leading-[0.95] tracking-[-0.5px] mb-6">
             {plantation.title}
@@ -423,7 +425,7 @@ function DetailModal({ plantation, onClose, onReview }) {
             onClick={onReview}
             className="w-full py-4 bg-[#0c1e11] text-white text-[11px] font-semibold tracking-[0.18em] uppercase font-['Outfit',sans-serif] flex items-center justify-center gap-2.5 hover:bg-[#163d25] transition-colors cursor-pointer mb-10 rounded-sm"
           >
-            <Star size={13} strokeWidth={1.5} /> Write a Review
+            <Star size={13} strokeWidth={1.5} /> {t("auto.auto_279", "Write a Review")}
           </button>
 
           {plantation.reviews?.length > 0 && (
@@ -511,14 +513,14 @@ function ReviewModal({ plantation, onClose, onSuccess }) {
 
           <div className="inline-flex items-center gap-2 mb-5">
             <div className="w-4 h-px bg-[#4db87a]" />
-            <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a]">Review</span>
+            <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a]">{t("auto.auto_280", "Review")}</span>
           </div>
           <h2 className="font-['Cormorant_Garant',serif] text-[32px] font-semibold text-[#0c1e11] mb-6 leading-tight tracking-[-0.3px]">
-            Leave a Review
+            {t("auto.auto_281", "Leave a Review")}
           </h2>
 
           <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3">
-            Rating <span className="text-red-500">*</span>
+            {t("auto.auto_282", "Rating")} <span className="text-red-500">*</span>
           </label>
           <div className="flex gap-2 mb-6">
             {[1, 2, 3, 4, 5].map(s => (
@@ -535,7 +537,7 @@ function ReviewModal({ plantation, onClose, onSuccess }) {
           </div>
 
           <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3">
-            Your Review <span className="text-red-500">*</span>
+            {t("auto.auto_283", "Your Review")} <span className="text-red-500">*</span>
           </label>
           <textarea
             value={comment} onChange={e => setComment(e.target.value)}
@@ -544,7 +546,7 @@ function ReviewModal({ plantation, onClose, onSuccess }) {
           />
 
           <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3">
-            Photos (Optional)
+            {t("auto.auto_284", "Photos (Optional)")}
           </label>
           {photos.length < 5 && (
             <div
@@ -552,7 +554,7 @@ function ReviewModal({ plantation, onClose, onSuccess }) {
               className="border border-dashed border-[#e0d8cf] rounded-none py-5 px-4 text-center cursor-pointer bg-[#f2ede3] hover:border-[#4db87a]/50 hover:bg-emerald-50/40 transition-all mb-3"
             >
               <Camera size={20} className="mx-auto text-[#b5ac9e] mb-1.5" />
-              <div className="text-[12px] text-[#8a7d6e]">Click to upload</div>
+              <div className="text-[12px] text-[#8a7d6e]">{t("auto.auto_285", "Click to upload")}</div>
               <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={e => addFiles(e.target.files)} />
             </div>
           )}
@@ -579,13 +581,13 @@ function ReviewModal({ plantation, onClose, onSuccess }) {
           <div className="flex gap-3 mt-2">
             <button onClick={onClose} disabled={submitting}
               className="flex-1 py-3.5 border border-[#e0d8cf] bg-transparent text-[#8a7d6e] text-[11px] font-semibold tracking-[0.1em] uppercase cursor-pointer hover:border-[#0c1e11] hover:text-[#0c1e11] transition-all rounded-sm">
-              Cancel
+              {t("auto.auto_286", "Cancel")}
             </button>
             <button onClick={handleSubmit} disabled={submitting}
               className="flex-1 py-3.5 bg-[#0c1e11] text-white text-[11px] font-semibold tracking-[0.1em] uppercase cursor-pointer hover:bg-[#163d25] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 rounded-sm">
               {submitting
-                ? <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Submitting…</>
-                : <><Check size={13} />Submit Review</>}
+                ? <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />{t("auto.auto_287", "Submitting…")}</>
+                : <><Check size={13} />{t("auto.auto_288", "Submit Review")}</>}
             </button>
           </div>
         </div>

@@ -810,7 +810,7 @@ export default function Signup() {
       `}</style>
 
       <Helmet>
-        <title>TerraSpotter — Sign up</title>
+        <title>{t("signup.page_title", "TerraSpotter — Sign up")}</title>
         <meta name="description" content="Create a free TerraSpotter account to submit land and join planting." />
       </Helmet>
 
@@ -1002,14 +1002,14 @@ export default function Signup() {
 
                     <div className="otp-resend">
                       {resendSecs > 0
-                        ? <span>Resend in <strong>{resendSecs}s</strong></span>
-                        : <span>Didn't get it? <button onClick={handleResend}>Resend OTP</button></span>
+                        ? <span>{t("signup.resend_in", "Resend in")} <strong>{resendSecs}s</strong></span>
+                        : <span>{t("signup.didnt_get", "Didn't get it?")} <button onClick={handleResend}>{t("signup.resend_otp", "Resend OTP")}</button></span>
                       }
                     </div>
                     <div>
                       <button className="otp-back"
                         onClick={() => { setStep(0); setOtp(""); setOtpError(""); }}>
-                        ← Back to edit details
+                        ← {t("signup.back_edit", "Back to edit details")}
                       </button>
                     </div>
                   </div>

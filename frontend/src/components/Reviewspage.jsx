@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -109,16 +110,16 @@ function WriteReview({ landId, onPosted }) {
     <div className="bg-white border border-[#ede8de] rounded-2xl p-6 sm:p-8">
       <div className="inline-flex items-center gap-2 mb-5">
         <div className="w-4 h-px bg-[#4db87a]" />
-        <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a] font-['Outfit',sans-serif]">Your Review</span>
+        <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a] font-['Outfit',sans-serif]">{t("auto.auto_329", "Your Review")}</span>
       </div>
-      <h3 className="font-['Cormorant_Garant',serif] text-[22px] font-semibold text-[#0c1e11] mb-1">✍️ Write a Review</h3>
+      <h3 className="font-['Cormorant_Garant',serif] text-[22px] font-semibold text-[#0c1e11] mb-1">{t("auto.auto_330", "✍️ Write a Review")}</h3>
       <p className="text-[12.5px] text-[#8a7d6e] mb-6 font-light font-['Outfit',sans-serif]">
-        Rate this site's feasibility and share your experience
+        {t("auto.auto_331", "Rate this site's feasibility and share your experience")}
       </p>
 
       <div className="mb-5">
         <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3 font-['Outfit',sans-serif]">
-          Rating <span className="text-red-500">*</span>
+          {t("auto.auto_332", "Rating")} <span className="text-red-500">*</span>
         </label>
         <StarRating value={form.rating} onChange={v => set("rating", v)} />
       </div>
@@ -126,19 +127,19 @@ function WriteReview({ landId, onPosted }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <div className="flex flex-col gap-1.5">
           <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
-            Feasibility Note
+            {t("auto.auto_333", "Feasibility Note")}
           </label>
           <select className={selCls} value={form.feasibilityNote} onChange={e => set("feasibilityNote", e.target.value)}>
-            <option value="">— Select —</option>
+            <option value="">{t("auto.auto_334", "— Select —")}</option>
             {["Highly feasible", "Feasible with preparation", "Needs soil treatment", "Water access issue", "Not feasible currently"].map(o => <option key={o}>{o}</option>)}
           </select>
         </div>
         <div className="flex flex-col gap-1.5">
           <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
-            Permission Status
+            {t("auto.auto_335", "Permission Status")}
           </label>
           <select className={selCls} value={form.permissionNote} onChange={e => set("permissionNote", e.target.value)}>
-            <option value="">— Select —</option>
+            <option value="">{t("auto.auto_336", "— Select —")}</option>
             {["Permission confirmed", "Permission in process", "Verbal permission only", "No permission yet", "Government / public land"].map(o => <option key={o}>{o}</option>)}
           </select>
         </div>
@@ -146,7 +147,7 @@ function WriteReview({ landId, onPosted }) {
 
       <div className="mb-5 flex flex-col gap-1.5">
         <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
-          Detailed Review
+          {t("auto.auto_337", "Detailed Review")}
         </label>
         <textarea
           className={selCls + " resize-none min-h-[90px] leading-relaxed"}
@@ -156,7 +157,7 @@ function WriteReview({ landId, onPosted }) {
       </div>
 
       {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200/80 rounded-xl text-[12.5px] text-red-700 font-medium font-['Outfit',sans-serif]">⚠️ {error}</div>}
-      {success && <div className="mb-4 px-4 py-3 bg-emerald-50 border border-emerald-200/80 rounded-xl text-[12.5px] text-emerald-700 font-semibold font-['Outfit',sans-serif]">✅ Review posted successfully!</div>}
+      {success && <div className="mb-4 px-4 py-3 bg-emerald-50 border border-emerald-200/80 rounded-xl text-[12.5px] text-emerald-700 font-semibold font-['Outfit',sans-serif]">{t("auto.auto_338", "✅ Review posted successfully!")}</div>}
 
       <button onClick={handlePost} disabled={submitting || !form.rating}
         className="px-7 py-3 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold font-['Outfit',sans-serif] cursor-pointer hover:bg-[#163d25] disabled:opacity-45 disabled:cursor-not-allowed transition-all active:scale-[0.98]">
@@ -200,11 +201,11 @@ export default function ReviewsPage() {
         <div className="max-w-[860px] mx-auto px-5 sm:px-8 py-8 sm:py-10 pb-24">
           <button onClick={() => navigate(-1)}
             className="inline-flex items-center gap-2 text-[13px] font-medium text-[#b5ac9e] hover:text-[#0c1e11] transition-colors mb-7 cursor-pointer bg-none border-none">
-            ← Back
+            {t("auto.auto_340", "← Back")}
           </button>
 
           {loading ? (
-            <div className="text-center py-16 text-[#b5ac9e] font-light">Loading…</div>
+            <div className="text-center py-16 text-[#b5ac9e] font-light">{t("auto.auto_341", "Loading…")}</div>
           ) : (
             <>
               {/* Breadcrumb */}
@@ -213,17 +214,17 @@ export default function ReviewsPage() {
                   {land?.title || "Land"}
                 </Link>
                 <span>›</span>
-                <span>Reviews</span>
+                <span>{t("auto.auto_342", "Reviews")}</span>
               </div>
 
               {/* Hero */}
               <div className="mb-8">
                 <div className="inline-flex items-center gap-2 mb-4">
                   <div className="w-4 h-px bg-[#4db87a]" />
-                  <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a]">Community</span>
+                  <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a]">{t("auto.auto_343", "Community")}</span>
                 </div>
                 <h1 className="font-['Cormorant_Garant',serif] text-[36px] sm:text-[44px] font-semibold text-[#0c1e11] leading-[0.95] tracking-[-0.5px] mb-2">
-                  Site Reviews
+                  {t("auto.auto_344", "Site Reviews")}
                 </h1>
                 <p className="text-[13.5px] text-[#8a7d6e] font-light leading-relaxed">
                   {land?.title} — community assessments on feasibility & planting permissions
@@ -265,7 +266,7 @@ export default function ReviewsPage() {
                 {reviews.length === 0 ? (
                   <div className="text-center py-16 flex flex-col items-center gap-3">
                     <span className="text-4xl opacity-30">🌿</span>
-                    <p className="text-[14px] text-[#b5ac9e] font-light">No reviews yet. Be the first to assess this site!</p>
+                    <p className="text-[14px] text-[#b5ac9e] font-light">{t("auto.auto_345", "No reviews yet. Be the first to assess this site!")}</p>
                   </div>
                 ) : (
                   reviews.map((rv, i) => <ReviewCard key={rv.id ?? i} review={rv} />)

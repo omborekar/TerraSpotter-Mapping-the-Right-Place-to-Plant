@@ -76,7 +76,7 @@ export default function Landing() {
   return (
     <>
       <Helmet>
-        <title>TerraSpotter — Land for Green Futures</title>
+        <title>{t("landing.page_title", "TerraSpotter — Land for Green Futures")}</title>
         <meta name="description" content="Map barren land. Connect with volunteers. Build India's green future." />
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -80,7 +81,7 @@ function MiniStars({ value = 0, count = 0 }) {
 }
 
 // ─── Info row ─────────────────────────────────────────────────
-const InfoRow = ({ label, value }) => value ? (
+const InfoRow = ({ label, value }) => {t("auto.auto_346", "value ? (")}
   <div className="flex flex-col gap-1 py-3 border-b border-[#f0ebe2] last:border-0">
     <span className="text-[10.5px] font-semibold uppercase tracking-[0.8px] text-[#b5ac9e] font-['Outfit',sans-serif]">{label}</span>
     <span className="text-[13.5px] font-medium text-[#0c1e11] font-['Outfit',sans-serif]">{value}</span>
@@ -117,42 +118,42 @@ function WriteReview({ landId, onPosted }) {
 
   return (
     <div className="bg-[#f7f3ec] border border-[#ede8de] rounded-2xl p-5 sm:p-6">
-      <h3 className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11] mb-1">✍️ Write a Review</h3>
-      <p className="text-[12.5px] text-[#8a7d6e] mb-5 font-light">Rate this site's feasibility and share your on-ground experience</p>
+      <h3 className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11] mb-1">{t("auto.auto_347", "✍️ Write a Review")}</h3>
+      <p className="text-[12.5px] text-[#8a7d6e] mb-5 font-light">{t("auto.auto_348", "Rate this site's feasibility and share your on-ground experience")}</p>
 
       <div className="mb-4">
         <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-2">
-          Rating <span className="text-red-500">*</span>
+          {t("auto.auto_349", "Rating")} <span className="text-red-500">*</span>
         </label>
         <StarRating value={form.rating} onChange={v => set("rating", v)} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">Feasibility Note</label>
+          <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">{t("auto.auto_350", "Feasibility Note")}</label>
           <select className={inputCls} value={form.feasibilityNote} onChange={e => set("feasibilityNote", e.target.value)}>
-            <option value="">— Select —</option>
+            <option value="">{t("auto.auto_351", "— Select —")}</option>
             {["Highly feasible", "Feasible with preparation", "Needs soil treatment", "Water access issue", "Not feasible currently"].map(o => <option key={o}>{o}</option>)}
           </select>
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">Permission Status</label>
+          <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">{t("auto.auto_352", "Permission Status")}</label>
           <select className={inputCls} value={form.permissionNote} onChange={e => set("permissionNote", e.target.value)}>
-            <option value="">— Select —</option>
+            <option value="">{t("auto.auto_353", "— Select —")}</option>
             {["Permission confirmed", "Permission in process", "Verbal permission only", "No permission yet", "Government / public land"].map(o => <option key={o}>{o}</option>)}
           </select>
         </div>
       </div>
 
       <div className="mb-4 flex flex-col gap-1.5">
-        <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">Detailed Review</label>
+        <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">{t("auto.auto_354", "Detailed Review")}</label>
         <textarea className={inputCls + " resize-none min-h-[80px] leading-relaxed"}
           placeholder="Describe the site conditions, access, soil quality, what you observed…"
           value={form.body} onChange={e => set("body", e.target.value)} />
       </div>
 
       {error && <div className="mb-3 px-4 py-2.5 bg-red-50 border border-red-200/80 rounded-xl text-[12px] text-red-700 font-medium font-['Outfit',sans-serif]">⚠️ {error}</div>}
-      {success && <div className="mb-3 px-4 py-2.5 bg-emerald-50 border border-emerald-200/80 rounded-xl text-[12px] text-emerald-700 font-semibold font-['Outfit',sans-serif]">✅ Review posted!</div>}
+      {success && <div className="mb-3 px-4 py-2.5 bg-emerald-50 border border-emerald-200/80 rounded-xl text-[12px] text-emerald-700 font-semibold font-['Outfit',sans-serif]">{t("auto.auto_355", "✅ Review posted!")}</div>}
 
       <button onClick={handlePost} disabled={submitting || !form.rating}
         className="mt-1 px-6 py-2.5 rounded-xl bg-[#0c1e11] text-white text-[13px] font-semibold font-['Outfit',sans-serif] cursor-pointer hover:bg-[#163d25] disabled:opacity-45 disabled:cursor-not-allowed transition-all active:scale-[0.98]">
@@ -175,6 +176,7 @@ const TAB_REVIEWS = "reviews";
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function SiteDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -230,8 +232,8 @@ export default function SiteDetail() {
   if (loading) return <SiteDetailSkeleton />;
   if (!land) return (
     <div className="min-h-screen bg-[#f7f3ec] flex flex-col items-center justify-center gap-4 font-['Outfit',sans-serif]">
-      <p className="text-red-500 text-sm">Land not found.</p>
-      <button onClick={() => navigate(-1)} className="px-5 py-2.5 rounded-xl bg-[#0c1e11] text-white text-sm font-semibold cursor-pointer">← Go back</button>
+      <p className="text-red-500 text-sm">{t("auto.auto_358", "Land not found.")}</p>
+      <button onClick={() => navigate(-1)} className="px-5 py-2.5 rounded-xl bg-[#0c1e11] text-white text-sm font-semibold cursor-pointer">{t("auto.auto_359", "← Go back")}</button>
     </div>
   );
 
@@ -255,7 +257,7 @@ export default function SiteDetail() {
           {/* Back */}
           <button onClick={() => navigate(-1)}
             className="inline-flex items-center gap-2 text-[13px] font-medium text-[#b5ac9e] hover:text-[#0c1e11] transition-colors mb-7 cursor-pointer bg-none border-none">
-            ← Back to browse
+            {t("auto.auto_361", "← Back to browse")}
           </button>
 
           {/* Hero */}
@@ -292,12 +294,12 @@ export default function SiteDetail() {
               {isUnderPlant ? (
                 <button onClick={() => setCompleteOpen(true)}
                   className="px-5 py-3 rounded-xl bg-gradient-to-br from-[#16a34a] to-[#0c1e11] text-white text-[13.5px] font-semibold cursor-pointer hover:opacity-90 transition-all active:scale-[0.98] shadow-[0_4px_16px_rgba(12,30,17,0.2)] flex items-center gap-2">
-                  ✅ Mark Plantation Complete
+                  {t("auto.auto_362", "✅ Mark Plantation Complete")}
                 </button>
               ) : land.landStatus !== "Plantation Complete" ? (
                 <button onClick={() => setPlantOpen(true)}
                   className="px-5 py-3 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold cursor-pointer hover:bg-[#163d25] transition-all active:scale-[0.98] shadow-[0_4px_16px_rgba(12,30,17,0.2)]">
-                  🌱 I want to plant here
+                  {t("auto.auto_363", "🌱 I want to plant here")}
                 </button>
               ) : null}
             </div>
@@ -308,7 +310,7 @@ export default function SiteDetail() {
             <div className="flex items-center gap-3 px-5 py-3.5 mb-6 bg-emerald-50 border border-emerald-200/80 rounded-xl text-[13.5px] text-emerald-800 font-medium">
               <span className="text-xl">🌿</span>
               <div>
-                <strong>Plantation in progress</strong>
+                <strong>{t("auto.auto_364", "Plantation in progress")}</strong>
                 {land.plantationDetail && (
                   <span className="ml-2 font-normal text-emerald-700">
                     — {land.plantationDetail.teamSize} volunteers · {land.plantationDetail.treesToPlant} trees planned
@@ -320,7 +322,7 @@ export default function SiteDetail() {
           {land.landStatus === "Plantation Complete" && (
             <div className="flex items-center gap-3 px-5 py-3.5 mb-6 bg-sky-50 border border-sky-200/80 rounded-xl text-[13.5px] text-sky-800 font-medium">
               <span className="text-xl">🎉</span>
-              <strong>Plantation complete!</strong>
+              <strong>{t("auto.auto_365", "Plantation complete!")}</strong>
               {land.completionDetail && (
                 <span className="font-normal ml-1">— {land.completionDetail.treesPlanted} trees planted</span>
               )}
@@ -331,7 +333,7 @@ export default function SiteDetail() {
           {images.length === 0 ? (
             <div className="h-[200px] rounded-2xl bg-[#f2ede3] border border-[#ede8de] flex flex-col items-center justify-center gap-2 mb-7">
               <span className="text-3xl opacity-30">📷</span>
-              <span className="text-[13px] text-[#b5ac9e]">No photos uploaded yet</span>
+              <span className="text-[13px] text-[#b5ac9e]">{t("auto.auto_366", "No photos uploaded yet")}</span>
             </div>
           ) : (
             <motion.div
@@ -412,8 +414,8 @@ export default function SiteDetail() {
                       <div className="flex items-center gap-3 pb-4 border-b border-[#f0ebe2] mb-4">
                         <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base shrink-0">🌍</div>
                         <div>
-                          <h3 className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11]">Land Details</h3>
-                          <p className="text-[12px] text-[#b5ac9e] font-light">Physical characteristics and access info</p>
+                          <h3 className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11]">{t("auto.auto_367", "Land Details")}</h3>
+                          <p className="text-[12px] text-[#b5ac9e] font-light">{t("auto.auto_368", "Physical characteristics and access info")}</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
@@ -438,8 +440,8 @@ export default function SiteDetail() {
                       <div className="flex items-center gap-3 pb-4 border-b border-[#f0ebe2] mb-4">
                         <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base shrink-0">🌿</div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11]">Recommended Species</h3>
-                          <p className="text-[12px] text-[#b5ac9e] font-light">ML-powered, based on soil, water & climate</p>
+                          <h3 className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#0c1e11]">{t("auto.auto_369", "Recommended Species")}</h3>
+                          <p className="text-[12px] text-[#b5ac9e] font-light">{t("auto.auto_370", "ML-powered, based on soil, water & climate")}</p>
                         </div>
                         <button
                           onClick={handleRefreshRecs}
@@ -471,7 +473,7 @@ export default function SiteDetail() {
                       ) : recs.length === 0 ? (
                         <div className="text-center py-8 border-2 border-dashed border-[#e0d8cf] rounded-xl">
                           <span className="text-3xl block mb-2 opacity-40">🌱</span>
-                          <p className="text-[13px] text-[#b5ac9e]">No recommendations yet.<br />Click Refresh to fetch from ML model.</p>
+                          <p className="text-[13px] text-[#b5ac9e]">{t("auto.auto_371", "No recommendations yet.")}<br />{t("auto.auto_372", "Click Refresh to fetch from ML model.")}</p>
                         </div>
                       ) : (
                         <div className="flex flex-col gap-2">
@@ -505,11 +507,11 @@ export default function SiteDetail() {
                     <div className="bg-white border border-[#ede8de] rounded-2xl p-5 sm:p-6 flex flex-col gap-5">
                       <div className="flex items-center justify-between flex-wrap gap-3">
                         <div>
-                          <h3 className="font-['Cormorant_Garant',serif] text-[20px] font-semibold text-[#0c1e11]">⭐ Community Reviews</h3>
-                          <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">Feasibility & permission assessments from the field</p>
+                          <h3 className="font-['Cormorant_Garant',serif] text-[20px] font-semibold text-[#0c1e11]">{t("auto.auto_373", "⭐ Community Reviews")}</h3>
+                          <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">{t("auto.auto_374", "Feasibility & permission assessments from the field")}</p>
                         </div>
                         <Link to={`/lands/${id}/reviews`} className="text-[12.5px] font-semibold text-[#4db87a] no-underline hover:text-[#2d8a55] transition-colors">
-                          See all ↗
+                          {t("auto.auto_375", "See all ↗")}
                         </Link>
                       </div>
 
@@ -518,7 +520,7 @@ export default function SiteDetail() {
                           <div className="font-['Cormorant_Garant',serif] text-[44px] font-semibold text-[#0c1e11] leading-none">{avgRating}</div>
                           <div>
                             <MiniStars value={Number(avgRating)} count={reviews.length} />
-                            <div className="text-[11px] text-[#b5ac9e] mt-1">avg. community rating</div>
+                            <div className="text-[11px] text-[#b5ac9e] mt-1">{t("auto.auto_376", "avg. community rating")}</div>
                           </div>
                         </div>
                       )}
@@ -526,7 +528,7 @@ export default function SiteDetail() {
                       {reviews.length === 0 ? (
                         <div className="text-center py-8 text-[13.5px] text-[#b5ac9e]">
                           <span className="text-3xl block mb-2 opacity-40">🌿</span>
-                          No reviews yet — be the first to assess this site!
+                          {t("auto.auto_377", "No reviews yet — be the first to assess this site!")}
                         </div>
                       ) : (
                         <div className="flex flex-col gap-3">
@@ -579,7 +581,7 @@ export default function SiteDetail() {
                     </MapContainer>
                   </div>
                 ) : (
-                  <div className="h-[140px] bg-[#f2ede3] flex items-center justify-center text-[13px] text-[#b5ac9e]">📍 No coordinates</div>
+                  <div className="h-[140px] bg-[#f2ede3] flex items-center justify-center text-[13px] text-[#b5ac9e]">{t("auto.auto_378", "📍 No coordinates")}</div>
                 )}
 
                 <div className="p-5 flex flex-col gap-0">
@@ -601,19 +603,19 @@ export default function SiteDetail() {
                   {isUnderPlant ? (
                     <button onClick={() => setCompleteOpen(true)}
                       className="w-full py-3.5 rounded-xl bg-gradient-to-br from-[#16a34a] to-[#0c1e11] text-white text-[13.5px] font-semibold cursor-pointer hover:opacity-90 transition-all flex items-center justify-center gap-2">
-                      ✅ Mark Plantation Complete
+                      {t("auto.auto_379", "✅ Mark Plantation Complete")}
                     </button>
                   ) : land.landStatus !== "Plantation Complete" ? (
                     <button onClick={() => setPlantOpen(true)}
                       className="w-full py-3.5 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold cursor-pointer hover:bg-[#163d25] transition-all">
-                      🌱 I want to plant here
+                      {t("auto.auto_380", "🌱 I want to plant here")}
                     </button>
                   ) : null}
 
                   <button
                     onClick={() => { navigator.clipboard?.writeText(window.location.href); alert("Link copied!"); }}
                     className="w-full py-3 rounded-xl border border-[#e0d8cf] bg-white text-[#0c1e11] text-[13px] font-medium cursor-pointer hover:border-[#0c1e11] transition-all">
-                    🔗 Share this land
+                    {t("auto.auto_381", "🔗 Share this land")}
                   </button>
                 </div>
               </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -128,15 +129,15 @@ function ReviewModal({ completionId, onClose, onSuccess }) {
           <div className="inline-flex items-center gap-2 mb-4">
             <div className="w-4 h-px bg-[#4db87a]" />
             <span className="text-[10px] font-semibold tracking-[2.5px] uppercase text-[#4db87a] font-['Outfit',sans-serif]">
-              Community Review
+              {t("auto.auto_68", "Community Review")}
             </span>
           </div>
           <h2 className="font-['Cormorant_Garant',serif] text-[30px] font-semibold text-[#0c1e11] mb-6 leading-tight">
-            Share your experience
+            {t("auto.auto_69", "Share your experience")}
           </h2>
 
           <label className="block text-[10.5px] font-semibold text-[#8a7d6e] uppercase tracking-[1.2px] mb-3 font-['Outfit',sans-serif]">
-            Overall rating
+            {t("auto.auto_70", "Overall rating")}
           </label>
           <div className="flex gap-2 mb-6">
             {[1, 2, 3, 4, 5].map(v => (
@@ -154,7 +155,7 @@ function ReviewModal({ completionId, onClose, onSuccess }) {
           </div>
 
           <label className="block text-[10.5px] font-semibold text-[#8a7d6e] uppercase tracking-[1.2px] mb-3 font-['Outfit',sans-serif]">
-            Your observations (optional)
+            {t("auto.auto_71", "Your observations (optional)")}
           </label>
           <textarea
             className="w-full min-h-[96px] px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none resize-vertical mb-6 font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 transition-all leading-relaxed placeholder:text-[#c8bfb4]"
@@ -169,7 +170,7 @@ function ReviewModal({ completionId, onClose, onSuccess }) {
             className="w-full py-3.5 bg-[#0c1e11] text-white rounded-xl text-[14px] font-semibold font-['Outfit',sans-serif] cursor-pointer hover:bg-[#163d25] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(12,30,17,0.2)]"
           >
             {loading ? (
-              <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting…</>
+              <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> {t("auto.auto_72", "Submitting…")}</>
             ) : "Submit Review"}
           </button>
         </div>
@@ -207,7 +208,7 @@ function FeedCard({ update, distStr, onClick, onReview, onGrowth }) {
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-2 bg-[#f2ede3]">
             <TreePine size={36} strokeWidth={1} className="text-[#b5ac9e]" />
-            <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">No photos</span>
+            <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_74", "No photos")}</span>
           </div>
         )}
         {/* Overlays */}
@@ -247,7 +248,7 @@ function FeedCard({ update, distStr, onClick, onReview, onGrowth }) {
           <div className="flex items-center gap-1.5 text-[11.5px] text-[#8a7d6e] font-['Outfit',sans-serif]">
             <TreePine size={12} className="opacity-50" />
             <span className="font-semibold text-[#0c1e11]">{(update.treesPlanted || 0).toLocaleString()}</span>
-            <span>trees</span>
+            <span>{t("auto.auto_75", "trees")}</span>
           </div>
           <div className="flex items-center gap-1.5 text-[11.5px] text-[#8a7d6e] font-['Outfit',sans-serif]">
             <Users size={12} className="opacity-50" />
@@ -269,14 +270,14 @@ function FeedCard({ update, distStr, onClick, onReview, onGrowth }) {
           className="py-2.5 rounded-xl border-[1.5px] border-[#e0d8cf] bg-white text-[12px] font-semibold text-[#0c1e11] font-['Outfit',sans-serif] cursor-pointer hover:border-[#4db87a]/50 hover:text-[#2d8a55] transition-all duration-200 flex items-center justify-center gap-2"
         >
           <Star size={12} />
-          Add Review
+          {t("auto.auto_76", "Add Review")}
         </button>
         <button
           onClick={onGrowth}
           className="py-2.5 rounded-xl bg-[#0c1e11] text-[12px] font-semibold text-white font-['Outfit',sans-serif] cursor-pointer hover:bg-[#163d25] transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_2px_10px_rgba(12,30,17,0.2)]"
         >
           <TrendingUp size={12} />
-          Track Growth
+          {t("auto.auto_77", "Track Growth")}
         </button>
       </div>
     </motion.article>
@@ -285,6 +286,7 @@ function FeedCard({ update, distStr, onClick, onReview, onGrowth }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function CommunityFeed() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [plantations, setPlantations] = useState([]);
   const [stats, setStats] = useState(null);
@@ -364,13 +366,13 @@ export default function CommunityFeed() {
             <div className="flex items-center gap-3 mb-7">
               <div className="w-8 h-px bg-[#4db87a]/50" />
               <span className="text-[10px] font-semibold tracking-[3px] uppercase text-[#4db87a]/70">
-                TerraSpotter — Community Pulse
+                {t("auto.auto_78", "TerraSpotter — Community Pulse")}
               </span>
             </div>
 
             <h1 className="font-['Cormorant_Garant',serif] text-[clamp(52px,9vw,104px)] font-semibold text-white leading-[0.88] tracking-[-2px] mb-6">
-              Watching forests<br />
-              <em className="not-italic text-[#c9a84c]">come alive</em>
+              {t("auto.auto_79", "Watching forests")}<br />
+              <em className="not-italic text-[#c9a84c]">{t("auto.auto_80", "come alive")}</em>
             </h1>
 
             <div className="w-14 h-px bg-white/20 mb-10" />
@@ -466,10 +468,10 @@ export default function CommunityFeed() {
             </div>
             <div>
               <h3 className="font-['Cormorant_Garant',serif] text-[30px] font-semibold text-[#0c1e11] mb-2">
-                No completed plantations yet
+                {t("auto.auto_81", "No completed plantations yet")}
               </h3>
               <p className="text-[13.5px] text-[#b5ac9e] max-w-xs leading-relaxed font-light">
-                Completed plantations will appear here once they've been recorded.
+                {t("auto.auto_82", "Completed plantations will appear here once they've been recorded.")}
               </p>
             </div>
           </div>

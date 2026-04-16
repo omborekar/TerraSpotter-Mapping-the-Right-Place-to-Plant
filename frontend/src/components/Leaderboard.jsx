@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -86,7 +87,7 @@ function LeaderCard({ row, index, currentUserId }) {
           fontSize: 9, fontWeight: 700, color: "#fff",
           padding: "2px 8px", borderRadius: "0 16px 0 8px",
           letterSpacing: 1.2, textTransform: "uppercase",
-        }}>YOU</div>
+        }}>{t("auto.auto_199", "YOU")}</div>
       )}
 
       {/* Rank badge */}
@@ -142,19 +143,19 @@ function LeaderCard({ row, index, currentUserId }) {
           <p style={{ fontSize: 18, fontWeight: 700, color: "#4db87a", lineHeight: 1, fontFamily: "'Outfit',sans-serif" }}>
             {row.totalXp.toLocaleString()}
           </p>
-          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>XP</p>
+          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{t("auto.auto_200", "XP")}</p>
         </div>
         <div style={{ textAlign: "right" }}>
           <p style={{ fontSize: 18, fontWeight: 700, color: "#f59e0b", lineHeight: 1, fontFamily: "'Outfit',sans-serif" }}>
             {row.badgeCount}
           </p>
-          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>Badges</p>
+          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{t("auto.auto_201", "Badges")}</p>
         </div>
         <div style={{ textAlign: "right" }}>
           <p style={{ fontSize: 16, fontWeight: 700, color: "#fb923c", lineHeight: 1, fontFamily: "'Outfit',sans-serif" }}>
             {row.streak > 0 ? `🔥${row.streak}` : "—"}
           </p>
-          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>Streak</p>
+          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{t("auto.auto_202", "Streak")}</p>
         </div>
       </div>
     </motion.div>
@@ -162,6 +163,7 @@ function LeaderCard({ row, index, currentUserId }) {
 }
 
 export default function Leaderboard() {
+  const { t } = useTranslation();
   const [board, setBoard]   = useState([]);
   const [myId,   setMyId]   = useState(null);
   const [loading, setLoading] = useState(true);
@@ -220,7 +222,7 @@ export default function Leaderboard() {
             borderRadius: 100, padding: "6px 18px", marginBottom: 20 }}>
             <span style={{ fontSize: 14 }}>🏆</span>
             <span style={{ fontSize: 11, fontWeight: 700, color: "#4db87a", letterSpacing: 2, textTransform: "uppercase" }}>
-              TerraSpotter Rankings
+              {t("auto.auto_204", "TerraSpotter Rankings")}
             </span>
           </div>
 
@@ -230,12 +232,12 @@ export default function Leaderboard() {
             fontWeight: 700, color: "#fff",
             lineHeight: 1.1, marginBottom: 14,
           }}>
-            Community&nbsp;
-            <span style={{ color: "#4db87a" }}>Leaderboard</span>
+            {t("auto.auto_205", "Community&nbsp;")}
+            <span style={{ color: "#4db87a" }}>{t("auto.auto_206", "Leaderboard")}</span>
           </h1>
           <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", maxWidth: 480, margin: "0 auto" }}>
-            Top environmental champions ranked by XP earned through land submissions,
-            plantations, reviews, and community action.
+            {t("auto.auto_207", "Top environmental champions ranked by XP earned through land submissions,
+            plantations, reviews, and community action.")}
           </p>
 
           {myRank && (
@@ -251,7 +253,7 @@ export default function Leaderboard() {
             >
               <span style={{ fontSize: 16 }}>📍</span>
               <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
-                Your current rank: <strong style={{ color: "#4db87a" }}>#{myRank}</strong>
+                {t("auto.auto_208", "Your current rank:")} <strong style={{ color: "#4db87a" }}>#{myRank}</strong>
               </span>
             </motion.div>
           )}
@@ -278,7 +280,7 @@ export default function Leaderboard() {
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {board.length === 0 ? (
             <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "60px 0", fontSize: 14 }}>
-              No rankings yet — start contributing to earn XP!
+              {t("auto.auto_209", "No rankings yet — start contributing to earn XP!")}
             </div>
           ) : (
             board.map((row, i) => (
@@ -293,7 +295,7 @@ export default function Leaderboard() {
             color: "rgba(255,255,255,0.4)", fontSize: 13, textDecoration: "none",
             display: "inline-flex", alignItems: "center", gap: 6,
           }}>
-            ← Back to Profile
+            {t("auto.auto_210", "← Back to Profile")}
           </Link>
         </div>
       </div>

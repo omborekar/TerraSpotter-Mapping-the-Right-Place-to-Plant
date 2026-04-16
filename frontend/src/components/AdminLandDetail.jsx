@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -87,6 +88,7 @@ function SectionCard({ title, children }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function AdminLandDetail({ landId, user, onBack, onVote, voting: externalVoting }) {
+  const { t } = useTranslation();
   const [land, setLand] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -135,7 +137,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
         onClick={onBack}
         className="px-5 py-2.5 rounded-xl bg-[#0f2916] border border-white/12 text-white/70 text-sm font-medium hover:text-white hover:border-white/25 transition-all cursor-pointer"
       >
-        ← Back to Queue
+        {t("auto.auto_18", "← Back to Queue")}
       </button>
     </div>
   );
@@ -157,7 +159,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Back to Queue
+            {t("auto.auto_20", "Back to Queue")}
           </button>
 
           <div className="flex items-center gap-2">
@@ -264,7 +266,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
             ) : (
               <div className="bg-[#0f2916] border border-white/[0.07] rounded-2xl h-[220px] flex flex-col items-center justify-center gap-3">
                 <span className="text-4xl opacity-20">🌍</span>
-                <span className="text-[10px] tracking-[0.15em] uppercase text-white/25 font-['Outfit',sans-serif]">No images uploaded</span>
+                <span className="text-[10px] tracking-[0.15em] uppercase text-white/25 font-['Outfit',sans-serif]">{t("auto.auto_21", "No images uploaded")}</span>
               </div>
             )}
 
@@ -355,13 +357,13 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
                 className="bg-[#0f2916] border border-[#4db87a]/20 rounded-2xl p-5"
               >
                 <div className="text-[9px] font-semibold tracking-[0.22em] uppercase text-[#4db87a] mb-2 font-['Outfit',sans-serif]">
-                  Admin · Decision
+                  {t("auto.auto_22", "Admin · Decision")}
                 </div>
                 <h3 className="font-['Cormorant_Garant',serif] text-[20px] font-semibold text-white mb-1.5">
-                  Cast Your Vote
+                  {t("auto.auto_23", "Cast Your Vote")}
                 </h3>
                 <p className="text-[12.5px] text-white/35 leading-relaxed mb-5 font-['Outfit',sans-serif] font-light">
-                  Review all details carefully before approving or rejecting this submission.
+                  {t("auto.auto_24", "Review all details carefully before approving or rejecting this submission.")}
                 </p>
                 <div className="flex flex-col gap-2.5">
                   <button
@@ -439,7 +441,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#0c1e11] border border-white/10 rounded-xl text-[12px] font-semibold text-[#4db87a] no-underline hover:border-[#4db87a]/30 hover:bg-[#4db87a]/8 transition-all font-['Outfit',sans-serif]"
                   >
-                    ↗ Open in Maps
+                    {t("auto.auto_25", "↗ Open in Maps")}
                   </a>
                 </div>
               </Panel>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -91,7 +92,7 @@ function GrowthChart({ updates }) {
           <div className="w-3 h-3 rounded-full bg-[#0c1e11]" /> Avg Height (cm) — max {maxH}
         </div>
         <div className="flex items-center gap-2 text-[11px] text-[#8a7d6e] font-['Outfit',sans-serif]">
-          <div className="w-3 h-3 rounded-full bg-[#c9a84c]" /> Survival Rate (%)
+          <div className="w-3 h-3 rounded-full bg-[#c9a84c]" /> {t("auto.auto_176", "Survival Rate (%)")}
         </div>
       </div>
     </div>
@@ -240,10 +241,10 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-3">
               <span className="text-sm">🌱</span>
-              <span className="text-[11px] font-semibold tracking-[2px] uppercase text-white/75">Growth Update</span>
+              <span className="text-[11px] font-semibold tracking-[2px] uppercase text-white/75">{t("auto.auto_177", "Growth Update")}</span>
             </div>
             <h2 className="font-['Cormorant_Garant',serif] text-[24px] sm:text-[26px] font-semibold text-white leading-tight mb-1">
-              Submit Growth Update
+              {t("auto.auto_178", "Submit Growth Update")}
             </h2>
             <p className="text-[13px] text-white/45 font-light">
               {landTitle || "Plantation Site"} — document the current state
@@ -257,7 +258,7 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
           {/* Health status */}
           <div className="flex flex-col gap-2">
             <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">
-              Health Status <span className="text-red-500">*</span>
+              {t("auto.auto_179", "Health Status")} <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2 flex-wrap">
               {HEALTH_OPTIONS.map(h => (
@@ -279,19 +280,19 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">
-                Avg Height (cm) <span className="text-red-500">*</span>
+                {t("auto.auto_180", "Avg Height (cm)")} <span className="text-red-500">*</span>
               </label>
               <input
                 type="number" min="1" placeholder="e.g. 45"
                 value={form.averageHeightCm} onChange={e => set("averageHeightCm", e.target.value)}
                 className={inputCls}
               />
-              <span className="text-[11px] text-[#b5ac9e]">Approximate average height</span>
+              <span className="text-[11px] text-[#b5ac9e]">{t("auto.auto_181", "Approximate average height")}</span>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">
-                Survival Rate
+                {t("auto.auto_182", "Survival Rate")}
               </label>
               <div className="flex items-center gap-3">
                 <input
@@ -304,14 +305,14 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
                   {form.survivalRate}%
                 </span>
               </div>
-              <span className="text-[11px] text-[#b5ac9e]">% of trees that survived</span>
+              <span className="text-[11px] text-[#b5ac9e]">{t("auto.auto_183", "% of trees that survived")}</span>
             </div>
           </div>
 
           {/* Notes */}
           <div className="flex flex-col gap-1.5">
             <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">
-              Field Notes
+              {t("auto.auto_184", "Field Notes")}
             </label>
             <textarea
               placeholder="e.g. New shoots visible on most trees. Some insect damage on the eastern perimeter…"
@@ -323,8 +324,8 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
           {/* Photo uploader */}
           <div>
             <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3">
-              Photos
-              <span className="normal-case tracking-normal font-normal text-[#b5ac9e] ml-2">(up to 5 images)</span>
+              {t("auto.auto_185", "Photos")}
+              <span className="normal-case tracking-normal font-normal text-[#b5ac9e] ml-2">{t("auto.auto_186", "(up to 5 images)")}</span>
             </label>
             {photos.length < 5 && (
               <div
@@ -336,8 +337,8 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
                   }`}
               >
                 <div className="text-3xl mb-2">📸</div>
-                <div className="text-[13px] font-medium text-[#5c5044]">Click or drag photos here</div>
-                <div className="text-[11.5px] text-[#b5ac9e] mt-1">JPG, PNG, WEBP — show the plantation growth</div>
+                <div className="text-[13px] font-medium text-[#5c5044]">{t("auto.auto_187", "Click or drag photos here")}</div>
+                <div className="text-[11.5px] text-[#b5ac9e] mt-1">{t("auto.auto_188", "JPG, PNG, WEBP — show the plantation growth")}</div>
                 <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={e => addFiles(e.target.files)} />
               </div>
             )}
@@ -370,12 +371,12 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
         <div className="flex items-center justify-end gap-3 px-7 sm:px-8 py-5 border-t border-[#ede8de]">
           <button onClick={onClose} disabled={submitting}
             className="px-5 py-2.5 rounded-xl border-[1.5px] border-[#e0d8cf] bg-white text-[13.5px] font-medium text-[#8a7d6e] hover:border-[#0c1e11] hover:text-[#0c1e11] transition-all cursor-pointer disabled:opacity-50">
-            Cancel
+            {t("auto.auto_189", "Cancel")}
           </button>
           <button onClick={handleSubmit} disabled={submitting}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold hover:bg-[#163d25] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-[0_4px_16px_rgba(12,30,17,0.2)]">
             {submitting ? (
-              <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Uploading…</>
+              <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />{t("auto.auto_190", "Uploading…")}</>
             ) : "🌱 Submit Update"}
           </button>
         </div>
@@ -386,6 +387,7 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function GrowthTracker() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [updates, setUpdates] = useState([]);
@@ -428,21 +430,21 @@ export default function GrowthTracker() {
             onClick={() => navigate(-1)}
             className="inline-flex items-center gap-2 text-[12px] font-medium text-white/40 hover:text-white transition-colors mb-7 cursor-pointer bg-none border-none"
           >
-            <ArrowLeft size={14} /> Back to site
+            <ArrowLeft size={14} /> {t("auto.auto_191", "Back to site")}
           </button>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
             <div className="flex items-center gap-2 mb-5">
               <div className="w-5 h-px bg-[#4db87a]/50" />
               <span className="text-[10px] font-semibold tracking-[3px] uppercase text-[#4db87a]/70 font-['Outfit',sans-serif]">
-                Community Growth Tracker
+                {t("auto.auto_192", "Community Growth Tracker")}
               </span>
             </div>
 
             <h1 className="font-['Cormorant_Garant',serif] text-[clamp(36px,6vw,68px)] font-semibold text-white leading-[0.92] tracking-[-1px] mb-3">
               {loading
                 ? <BoneDark className="h-14 w-1/2 inline-block" />
-                : <>{landInfo?.title || "Plantation Site"} —{" "}<em className="not-italic text-[#c9a84c]">Growth Journal</em></>
+                : <>{landInfo?.title || "Plantation Site"} —{" "}<em className="not-italic text-[#c9a84c]">{t("auto.auto_193", "Growth Journal")}</em></>
               }
             </h1>
 
@@ -497,7 +499,7 @@ export default function GrowthTracker() {
             onClick={() => setShowModal(true)}
             className="inline-flex items-center gap-2 h-9 px-5 rounded-full bg-[#0c1e11] text-[#f7f3ec] text-[12px] font-semibold font-['Outfit',sans-serif] cursor-pointer hover:bg-[#163d25] transition-all duration-200 shadow-[0_2px_12px_rgba(12,30,17,0.2)]"
           >
-            <Plus size={13} /> Submit Update
+            <Plus size={13} /> {t("auto.auto_194", "Submit Update")}
           </button>
         </div>
       </div>
@@ -507,7 +509,7 @@ export default function GrowthTracker() {
         <div className="max-w-[1320px] mx-auto px-6 sm:px-10 xl:px-16 pt-12 pb-4">
           <div className="flex items-center gap-4 mb-6">
             <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#b5ac9e] font-['Outfit',sans-serif] whitespace-nowrap">
-              Growth Progression
+              {t("auto.auto_195", "Growth Progression")}
             </span>
             <div className="flex-1 h-px bg-[#e0d8cf]" />
           </div>
@@ -543,16 +545,16 @@ export default function GrowthTracker() {
             </div>
             <div>
               <h3 className="font-['Cormorant_Garant',serif] text-[28px] font-semibold text-[#0c1e11] mb-2">
-                No growth updates yet
+                {t("auto.auto_196", "No growth updates yet")}
               </h3>
               <p className="text-[13.5px] text-[#b5ac9e] max-w-xs leading-relaxed font-light mb-6">
-                Be the first to document how this plantation is growing!
+                {t("auto.auto_197", "Be the first to document how this plantation is growing!")}
               </p>
               <button
                 onClick={() => setShowModal(true)}
                 className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-[#0c1e11] text-[#f7f3ec] text-[13px] font-semibold font-['Outfit',sans-serif] cursor-pointer hover:bg-[#163d25] transition-all"
               >
-                <Plus size={13} /> Submit First Update
+                <Plus size={13} /> {t("auto.auto_198", "Submit First Update")}
               </button>
             </div>
           </div>

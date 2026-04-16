@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -11,6 +12,7 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 // PlantationForm — modal shown before marking land "Under Plantation"
 // Props: land (needs .id, .title), onClose(), onSuccess()
 export default function PlantationForm({ land, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     plannedDate: "",
     teamSize: "",
@@ -150,7 +152,7 @@ export default function PlantationForm({ land, onClose, onSuccess }) {
 
           <div className="pf-header">
             <button className="pf-close" onClick={onClose}>✕</button>
-            <h2>🌳 Start Plantation</h2>
+            <h2>{t("auto.auto_250", "🌳 Start Plantation")}</h2>
             <p>{land?.title || "This land"} — fill in the details before marking active</p>
           </div>
 
@@ -158,43 +160,43 @@ export default function PlantationForm({ land, onClose, onSuccess }) {
             <div className="pf-grid">
 
               <div className="pf-field">
-                <label className="pf-label">Planned Date <span className="pf-req">*</span></label>
+                <label className="pf-label">{t("auto.auto_251", "Planned Date")} <span className="pf-req">*</span></label>
                 <input type="date" className="pf-input"
                   value={form.plannedDate} onChange={e => set("plannedDate", e.target.value)}
                   min={new Date().toISOString().split("T")[0]} />
               </div>
 
               <div className="pf-field">
-                <label className="pf-label">Team Size <span className="pf-req">*</span></label>
+                <label className="pf-label">{t("auto.auto_252", "Team Size")} <span className="pf-req">*</span></label>
                 <input type="number" className="pf-input" placeholder="e.g. 8"
                   min="1" max="500"
                   value={form.teamSize} onChange={e => set("teamSize", e.target.value)} />
-                <span className="pf-hint">No. of volunteers</span>
+                <span className="pf-hint">{t("auto.auto_253", "No. of volunteers")}</span>
               </div>
 
               <div className="pf-field">
-                <label className="pf-label">Trees to Plant <span className="pf-req">*</span></label>
+                <label className="pf-label">{t("auto.auto_254", "Trees to Plant")} <span className="pf-req">*</span></label>
                 <input type="number" className="pf-input" placeholder="e.g. 120"
                   min="1"
                   value={form.treesToPlant} onChange={e => set("treesToPlant", e.target.value)} />
               </div>
 
               <div className="pf-field">
-                <label className="pf-label">Planting Method</label>
+                <label className="pf-label">{t("auto.auto_255", "Planting Method")}</label>
                 <select className="pf-select"
                   value={form.method} onChange={e => set("method", e.target.value)}>
-                  <option value="">— Select —</option>
-                  <option value="Pit Planting">Pit Planting</option>
-                  <option value="Miyawaki Method">Miyawaki Method</option>
-                  <option value="Broadcast Seeding">Broadcast Seeding</option>
-                  <option value="Sapling Transplant">Sapling Transplant</option>
-                  <option value="Agro-forestry">Agro-forestry</option>
-                  <option value="Other">Other</option>
+                  <option value="">{t("auto.auto_256", "— Select —")}</option>
+                  <option value="Pit Planting">{t("auto.auto_257", "Pit Planting")}</option>
+                  <option value="Miyawaki Method">{t("auto.auto_258", "Miyawaki Method")}</option>
+                  <option value="Broadcast Seeding">{t("auto.auto_259", "Broadcast Seeding")}</option>
+                  <option value="Sapling Transplant">{t("auto.auto_260", "Sapling Transplant")}</option>
+                  <option value="Agro-forestry">{t("auto.auto_261", "Agro-forestry")}</option>
+                  <option value="Other">{t("auto.auto_262", "Other")}</option>
                 </select>
               </div>
 
               <div className="pf-field full">
-                <label className="pf-label">Additional Notes</label>
+                <label className="pf-label">{t("auto.auto_263", "Additional Notes")}</label>
                 <textarea className="pf-textarea"
                   placeholder="e.g. We'll be bringing saplings from the nursery, need water tanker support…"
                   value={form.notes} onChange={e => set("notes", e.target.value)} />
@@ -208,9 +210,9 @@ export default function PlantationForm({ land, onClose, onSuccess }) {
           </div>
 
           <div className="pf-footer">
-            <button className="pf-btn-cancel" onClick={onClose}>Cancel</button>
+            <button className="pf-btn-cancel" onClick={onClose}>{t("auto.auto_264", "Cancel")}</button>
             <button className="pf-btn-submit" onClick={handleSubmit} disabled={submitting}>
-              {submitting ? <><div className="pf-spin" /> Marking…</> : "🌿 Mark as Under Plantation →"}
+              {submitting ? <><div className="pf-spin" /> {t("auto.auto_265", "Marking…")}</> : "🌿 Mark as Under Plantation →"}
             </button>
           </div>
         </motion.div>

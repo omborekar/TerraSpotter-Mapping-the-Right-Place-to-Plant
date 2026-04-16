@@ -179,11 +179,11 @@ const SidebarContent = ({ compact = false, dbStats }) => {
               🌿
             </span>
             <span className="font-['Cormorant_Garant',serif] text-white text-2xl font-semibold tracking-tight">
-              Terra<span className="text-[#4db87a]">Spotter</span>
+              {t("auto.auto_211", "Terra")}<span className="text-[#4db87a]">{t("auto.auto_212", "Spotter")}</span>
             </span>
           </div>
           <p className="text-white/30 text-[10px] tracking-[2px] uppercase mt-1.5 ml-12 font-['Outfit',sans-serif]">
-            Land for Green Futures
+            {t("auto.auto_213", "Land for Green Futures")}
           </p>
         </div>
       )}
@@ -212,7 +212,7 @@ const SidebarContent = ({ compact = false, dbStats }) => {
 
       <div className={compact ? "" : "border-t border-white/[0.08] pt-6"}>
         {!compact && (
-          <p className="text-white/30 text-[10px] uppercase tracking-[2px] font-semibold mb-4 font-['Outfit',sans-serif]">What happens next</p>
+          <p className="text-white/30 text-[10px] uppercase tracking-[2px] font-semibold mb-4 font-['Outfit',sans-serif]">{t("auto.auto_214", "What happens next")}</p>
         )}
         <ol className={`flex flex-col gap-2.5 ${compact ? "hidden sm:flex" : ""}`}>
           {process.map((item, i) => (
@@ -421,7 +421,7 @@ const Main = () => {
   return (
     <>
       <Helmet>
-        <title>TerraSpotter — Submit Land</title>
+        <title>{t("auto.auto_215", "TerraSpotter — Submit Land")}</title>
         <meta name="description" content="Submit a land parcel for afforestation: draw boundary, upload photos, add details." />
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
@@ -492,14 +492,14 @@ const Main = () => {
                 </motion.div>
                 <div className="flex-1 min-w-0">
                   <h2 className="font-['Cormorant_Garant',serif] text-2xl font-semibold text-[#0c1e11] mb-2">
-                    Land Submitted!
+                    {t("auto.auto_216", "Land Submitted!")}
                   </h2>
                   <p className="text-sm text-[#8a7d6e] leading-relaxed mb-5 font-['Outfit',sans-serif] font-light">
-                    Thanks for your contribution. Every boundary drawn brings India closer to a greener future 🌿
+                    {t("auto.auto_217", "Thanks for your contribution. Every boundary drawn brings India closer to a greener future 🌿")}
                   </p>
                   <div className="flex gap-3 flex-wrap">
-                    <BtnSecondary onClick={resetForm}>Close</BtnSecondary>
-                    <BtnPrimary onClick={resetForm}>+ Add Another</BtnPrimary>
+                    <BtnSecondary onClick={resetForm}>{t("auto.auto_218", "Close")}</BtnSecondary>
+                    <BtnPrimary onClick={resetForm}>{t("auto.auto_219", "+ Add Another")}</BtnPrimary>
                   </div>
                 </div>
               </div>
@@ -542,10 +542,10 @@ const Main = () => {
               🌿
             </span>
             <span className="font-['Cormorant_Garant',serif] text-white text-xl font-semibold">
-              Terra<span className="text-[#4db87a]">Spotter</span>
+              {t("auto.auto_220", "Terra")}<span className="text-[#4db87a]">{t("auto.auto_221", "Spotter")}</span>
             </span>
             <span className="ml-auto text-white/25 text-[9.5px] tracking-[1.5px] uppercase font-['Outfit',sans-serif]">
-              Land for Green Futures
+              {t("auto.auto_222", "Land for Green Futures")}
             </span>
           </div>
           <div className="grid grid-cols-4 gap-2 relative z-10 mb-4">
@@ -656,7 +656,7 @@ const Main = () => {
                   </div>
 
                   <div className="flex justify-end pt-3 border-t border-[#ede8de]">
-                    <BtnPrimary onClick={nextStep}>Continue to Owner Info →</BtnPrimary>
+                    <BtnPrimary onClick={nextStep}>{t("auto.auto_223", "Continue to Owner Info →")}</BtnPrimary>
                   </div>
                 </motion.div>
               )}
@@ -689,22 +689,22 @@ const Main = () => {
                     <Field label="Ownership Type" required error={errors.ownershipType}>
                       <select className={sc(errors.ownershipType)}
                         value={owner.ownershipType} onChange={e => setOwner({ ...owner, ownershipType: e.target.value })}>
-                        <option value="">Select type</option>
+                        <option value="">{t("auto.auto_224", "Select type")}</option>
                         {["Private", "Government", "Trust / NGO", "Panchayat", "Religious Body", "Other"].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </Field>
                     <Field label="Permission to Plant?" required error={errors.permission}>
                       <select className={sc(errors.permission)}
                         value={owner.permission} onChange={e => setOwner({ ...owner, permission: e.target.value })}>
-                        <option value="">Select status</option>
+                        <option value="">{t("auto.auto_225", "Select status")}</option>
                         {["Yes — confirmed in writing", "Yes — verbal agreement", "Pending approval", "No"].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </Field>
                   </div>
 
                   <div className="flex justify-between items-center pt-3 border-t border-[#ede8de]">
-                    <BtnSecondary onClick={prevStep}>← Back</BtnSecondary>
-                    <BtnPrimary onClick={nextStep}>Continue to Land Details →</BtnPrimary>
+                    <BtnSecondary onClick={prevStep}>{t("auto.auto_226", "← Back")}</BtnSecondary>
+                    <BtnPrimary onClick={nextStep}>{t("auto.auto_227", "Continue to Land Details →")}</BtnPrimary>
                   </div>
                 </motion.div>
               )}
@@ -721,14 +721,14 @@ const Main = () => {
                     <Field label="Land Status" required error={errors.landStatus}>
                       <select className={sc(errors.landStatus)}
                         value={land.status} onChange={e => setLand({ ...land, status: e.target.value })}>
-                        <option value="">Select status</option>
+                        <option value="">{t("auto.auto_228", "Select status")}</option>
                         {["Vacant", "Barren", "Roadside Strip", "Open Ground", "Agricultural (unused)", "Industrial Wasteland"].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </Field>
                     <Field label="Soil Type">
                       <select className={sc(false)}
                         value={land.soilType} onChange={e => setLand({ ...land, soilType: e.target.value })}>
-                        <option value="">Select soil type</option>
+                        <option value="">{t("auto.auto_229", "Select soil type")}</option>
                         {["Black cotton soil", "Red laterite", "Alluvial", "Sandy", "Rocky / Gravelly", "Unknown"].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </Field>
@@ -738,14 +738,14 @@ const Main = () => {
                     <Field label="Water Availability" required error={errors.waterAvailable}>
                       <select className={sc(errors.waterAvailable)}
                         value={land.waterAvailable} onChange={e => setLand({ ...land, waterAvailable: e.target.value })}>
-                        <option value="">Select</option>
+                        <option value="">{t("auto.auto_230", "Select")}</option>
                         {["Yes — borewell", "Yes — canal / river nearby", "Seasonal only", "No"].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </Field>
                     <Field label="Watering Frequency" required error={errors.waterFrequency}>
                       <select className={sc(errors.waterFrequency)}
                         value={land.waterFrequency} onChange={e => setLand({ ...land, waterFrequency: e.target.value })}>
-                        <option value="">Select</option>
+                        <option value="">{t("auto.auto_231", "Select")}</option>
                         {["Daily", "Alternate days", "Weekly", "Monthly", "Irregular"].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </Field>
@@ -755,7 +755,7 @@ const Main = () => {
                     <Field label="Road Access">
                       <select className={sc(false)}
                         value={land.accessRoad} onChange={e => setLand({ ...land, accessRoad: e.target.value })}>
-                        <option value="">Select</option>
+                        <option value="">{t("auto.auto_232", "Select")}</option>
                         {["Direct road access", "Nearby (within 500m)", "Remote / no access road"].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </Field>
@@ -783,8 +783,8 @@ const Main = () => {
                   </Field>
 
                   <div className="flex justify-between items-center pt-3 border-t border-[#ede8de]">
-                    <BtnSecondary onClick={prevStep}>← Back</BtnSecondary>
-                    <BtnPrimary onClick={nextStep}>Continue to Photos →</BtnPrimary>
+                    <BtnSecondary onClick={prevStep}>{t("auto.auto_233", "← Back")}</BtnSecondary>
+                    <BtnPrimary onClick={nextStep}>{t("auto.auto_234", "Continue to Photos →")}</BtnPrimary>
                   </div>
                 </motion.div>
               )}
@@ -801,8 +801,8 @@ const Main = () => {
                     <div className="border-2 border-dashed border-[#e0d8cf] rounded-2xl p-8 sm:p-10 flex flex-col items-center gap-3 text-center bg-[#f7f3ec] hover:border-[#4db87a]/50 hover:bg-emerald-50/40 transition-all duration-200">
                       <span className="text-4xl">📂</span>
                       <div>
-                        <h4 className="text-sm font-semibold text-[#0c1e11] mb-1 font-['Outfit',sans-serif]">Click to choose photos</h4>
-                        <p className="text-xs text-[#b5ac9e] leading-relaxed font-['Outfit',sans-serif]">JPG, PNG, WEBP · Max 20MB per file · Min 3 required</p>
+                        <h4 className="text-sm font-semibold text-[#0c1e11] mb-1 font-['Outfit',sans-serif]">{t("auto.auto_235", "Click to choose photos")}</h4>
+                        <p className="text-xs text-[#b5ac9e] leading-relaxed font-['Outfit',sans-serif]">{t("auto.auto_236", "JPG, PNG, WEBP · Max 20MB per file · Min 3 required")}</p>
                       </div>
                       <input type="file" multiple accept="image/*" hidden onChange={handleFileChange} />
                     </div>
@@ -818,7 +818,7 @@ const Main = () => {
                       <span className="text-xs text-red-500 font-medium font-['Outfit',sans-serif]">{3 - files.length} more required</span>
                     )}
                     {files.length >= 3 && (
-                      <span className="text-xs text-[#4db87a] font-semibold font-['Outfit',sans-serif]">✓ Minimum met</span>
+                      <span className="text-xs text-[#4db87a] font-semibold font-['Outfit',sans-serif]">{t("auto.auto_237", "✓ Minimum met")}</span>
                     )}
                   </div>
 
@@ -845,9 +845,9 @@ const Main = () => {
                   )}
 
                   <div className="flex justify-between items-center pt-3 border-t border-[#ede8de]">
-                    <BtnSecondary onClick={prevStep}>← Back</BtnSecondary>
+                    <BtnSecondary onClick={prevStep}>{t("auto.auto_238", "← Back")}</BtnSecondary>
                     <BtnPrimary onClick={submitLand} disabled={submitting}>
-                      {submitting ? <><Spinner /> Submitting…</> : "Submit Land 🌱"}
+                      {submitting ? <><Spinner /> {t("auto.auto_239", "Submitting…")}</> : "Submit Land 🌱"}
                     </BtnPrimary>
                   </div>
                 </motion.div>
@@ -892,7 +892,7 @@ const Main = () => {
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-['Cormorant_Garant',serif] text-white font-semibold text-[17px] sm:text-[19px] leading-tight">
-                      Draw Land Boundary
+                      {t("auto.auto_240", "Draw Land Boundary")}
                     </h3>
                     {polygonCoords ? (
                       <p className="text-[11.5px] text-[#4db87a] font-medium mt-0.5 font-['Outfit',sans-serif]">
@@ -900,7 +900,7 @@ const Main = () => {
                       </p>
                     ) : (
                       <p className="text-[11.5px] text-white/35 mt-0.5 font-['Outfit',sans-serif] hidden sm:block">
-                        Use GPS to find your land, then draw a polygon around it
+                        {t("auto.auto_241", "Use GPS to find your land, then draw a polygon around it")}
                       </p>
                     )}
                   </div>
@@ -920,12 +920,12 @@ const Main = () => {
                     {locatingGps ? (
                       <>
                         <span className="w-3.5 h-3.5 border-2 border-[#4db87a]/30 border-t-[#4db87a] rounded-full animate-spin" />
-                        <span className="hidden sm:inline">Locating…</span>
+                        <span className="hidden sm:inline">{t("auto.auto_242", "Locating…")}</span>
                       </>
                     ) : (
                       <>
                         <GpsIcon size={14} />
-                        <span className="hidden sm:inline">My Location</span>
+                        <span className="hidden sm:inline">{t("auto.auto_243", "My Location")}</span>
                       </>
                     )}
                   </button>
@@ -939,8 +939,8 @@ const Main = () => {
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <path d="M2.5 7l3.5 3.5 5.5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
-                      <span className="hidden sm:inline">Confirm boundary</span>
-                      <span className="sm:hidden">Confirm</span>
+                      <span className="hidden sm:inline">{t("auto.auto_244", "Confirm boundary")}</span>
+                      <span className="sm:hidden">{t("auto.auto_245", "Confirm")}</span>
                     </button>
                   )}
 
@@ -1026,7 +1026,7 @@ const Main = () => {
                           onClick={() => setMapOpen(false)}
                           className="ml-2 px-3 py-1.5 rounded-xl bg-[#4db87a] text-[#0c1e11] text-[11.5px] font-bold font-['Outfit',sans-serif] hover:bg-[#5dcf8a] transition-colors cursor-pointer"
                         >
-                          Confirm →
+                          {t("auto.auto_246", "Confirm →")}
                         </button>
                       </div>
                     </motion.div>

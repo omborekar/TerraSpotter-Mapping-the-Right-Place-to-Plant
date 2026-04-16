@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -45,6 +46,7 @@ const itemVariants = {
 };
 
 export default function About() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState([
     { value: "2,400+", label: "Hectares Mapped",   icon: "⬡" },
     { value: "180+",   label: "Verified Sites",    icon: "◎" },
@@ -506,7 +508,7 @@ export default function About() {
       `}</style>
 
       <Helmet>
-        <title>TerraSpotter — About</title>
+        <title>{t("auto.auto_1", "TerraSpotter — About")}</title>
         <meta name="description" content="About TerraSpotter — mission, team, and timeline." />
       </Helmet>
 
@@ -526,7 +528,7 @@ export default function About() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              Reforestation Platform
+              {t("auto.auto_2", "Reforestation Platform")}
             </motion.div>
 
             <motion.h1
@@ -534,7 +536,7 @@ export default function About() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              Turning idle land into<br /><em>living forests</em>
+              {t("auto.auto_3", "Turning idle land into")}<br /><em>{t("auto.auto_4", "living forests")}</em>
             </motion.h1>
 
             <motion.p
@@ -543,7 +545,7 @@ export default function About() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.22 }}
             >
-              TerraSpotter identifies and activates barren land for plantation using real data and community-driven effort across Maharashtra.
+              {t("auto.auto_5", "TerraSpotter identifies and activates barren land for plantation using real data and community-driven effort across Maharashtra.")}
             </motion.p>
 
             <motion.div
@@ -552,8 +554,8 @@ export default function About() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.34 }}
             >
-              <Link to="/browse" className="ab-btn-primary">Browse Sites →</Link>
-              <Link to="/main" className="ab-btn-ghost">Submit Land</Link>
+              <Link to="/browse" className="ab-btn-primary">{t("auto.auto_6", "Browse Sites →")}</Link>
+              <Link to="/main" className="ab-btn-ghost">{t("auto.auto_7", "Submit Land")}</Link>
             </motion.div>
           </motion.div>
 
@@ -584,8 +586,8 @@ export default function About() {
             viewport={{ once: true, margin: "-60px" }}
             variants={containerVariants}
           >
-            <motion.div className="ab-section-label" variants={itemVariants}>What We Stand For</motion.div>
-            <motion.h2 className="ab-section-title" variants={itemVariants}>Our Values</motion.h2>
+            <motion.div className="ab-section-label" variants={itemVariants}>{t("auto.auto_8", "What We Stand For")}</motion.div>
+            <motion.h2 className="ab-section-title" variants={itemVariants}>{t("auto.auto_9", "Our Values")}</motion.h2>
             <div className="ab-values-grid">
               {values.map((v, i) => (
                 <motion.div key={i} className="ab-value-card" variants={itemVariants}>
@@ -605,8 +607,8 @@ export default function About() {
             viewport={{ once: true, margin: "-60px" }}
             variants={containerVariants}
           >
-            <motion.div className="ab-section-label" variants={itemVariants}>How We Got Here</motion.div>
-            <motion.h2 className="ab-section-title" variants={itemVariants}>Our Journey</motion.h2>
+            <motion.div className="ab-section-label" variants={itemVariants}>{t("auto.auto_10", "How We Got Here")}</motion.div>
+            <motion.h2 className="ab-section-title" variants={itemVariants}>{t("auto.auto_11", "Our Journey")}</motion.h2>
             <div className="ab-timeline">
               {timeline.map((t, i) => (
                 <motion.div key={i} className="ab-tl-item" variants={itemVariants}>
@@ -627,8 +629,8 @@ export default function About() {
             viewport={{ once: true, margin: "-60px" }}
             variants={containerVariants}
           >
-            <motion.div className="ab-section-label" variants={itemVariants}>The People</motion.div>
-            <motion.h2 className="ab-section-title" variants={itemVariants}>Meet the Team</motion.h2>
+            <motion.div className="ab-section-label" variants={itemVariants}>{t("auto.auto_12", "The People")}</motion.div>
+            <motion.h2 className="ab-section-title" variants={itemVariants}>{t("auto.auto_13", "Meet the Team")}</motion.h2>
             <div className="ab-team-grid">
               {team.map((t, i) => (
                 <motion.div key={i} className="ab-team-card" variants={itemVariants}>
@@ -651,11 +653,11 @@ export default function About() {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             <div>
-              <h3>Ready to make a difference?</h3>
-              <p>Submit a barren plot in your community and help us build a greener Maharashtra — one tree at a time.</p>
+              <h3>{t("auto.auto_14", "Ready to make a difference?")}</h3>
+              <p>{t("auto.auto_15", "Submit a barren plot in your community and help us build a greener Maharashtra — one tree at a time.")}</p>
             </div>
             <Link to="/main" className="ab-btn-primary" style={{ flexShrink: 0 }}>
-              Submit Land →
+              {t("auto.auto_16", "Submit Land →")}
             </Link>
           </motion.div>
         </div>

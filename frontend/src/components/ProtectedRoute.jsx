@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -11,6 +12,7 @@ import LoadingSpinner from "./ui/LoadingSpinner";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const ProtectedRoute = ({ children }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
 

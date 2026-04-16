@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -10,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function CompletePlantationModal({ land, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ treesPlanted: "", moreCapacity: "", notes: "" });
   const [photos, setPhotos] = useState([]);
   const [dragOver, setDragOver] = useState(false);
@@ -87,11 +89,11 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-3">
               <span className="text-sm">🌳</span>
               <span className="text-[11px] font-semibold tracking-[2px] uppercase text-white/75 font-['Outfit',sans-serif]">
-                Mark Complete
+                {t("auto.auto_83", "Mark Complete")}
               </span>
             </div>
             <h2 className="font-['Cormorant_Garant',serif] text-[22px] sm:text-[26px] font-semibold text-white leading-tight mb-1">
-              Plantation Complete!
+              {t("auto.auto_84", "Plantation Complete!")}
             </h2>
             <p className="text-[13px] text-white/45 font-['Outfit',sans-serif] font-light">
               {land?.title || "This site"} — submit proof photos and final details
@@ -105,8 +107,8 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
           {/* Photo uploader */}
           <div>
             <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3 font-['Outfit',sans-serif]">
-              Photo Proof <span className="text-red-500">*</span>
-              <span className="normal-case tracking-normal font-normal text-[#b5ac9e] ml-2">(up to 5 images)</span>
+              {t("auto.auto_85", "Photo Proof")} <span className="text-red-500">*</span>
+              <span className="normal-case tracking-normal font-normal text-[#b5ac9e] ml-2">{t("auto.auto_86", "(up to 5 images)")}</span>
             </label>
 
             {photos.length < 5 && (
@@ -122,10 +124,10 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
               >
                 <div className="text-3xl mb-2">📸</div>
                 <div className="text-[13.5px] font-medium text-[#5c5044] font-['Outfit',sans-serif]">
-                  Click or drag photos here
+                  {t("auto.auto_87", "Click or drag photos here")}
                 </div>
                 <div className="text-[12px] text-[#b5ac9e] mt-1 font-['Outfit',sans-serif]">
-                  JPG, PNG, WEBP — show the planted area
+                  {t("auto.auto_88", "JPG, PNG, WEBP — show the planted area")}
                 </div>
                 <input
                   ref={fileRef} type="file" accept="image/*" multiple hidden
@@ -155,31 +157,31 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
-                Trees Planted <span className="text-red-500">*</span>
+                {t("auto.auto_89", "Trees Planted")} <span className="text-red-500">*</span>
               </label>
               <input
                 type="number" min="1" placeholder="e.g. 95"
                 value={form.treesPlanted} onChange={e => set("treesPlanted", e.target.value)}
                 className="w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all"
               />
-              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">Actual number planted today</span>
+              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_90", "Actual number planted today")}</span>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
-                More Can Be Planted
+                {t("auto.auto_91", "More Can Be Planted")}
               </label>
               <input
                 type="number" min="0" placeholder="e.g. 40"
                 value={form.moreCapacity} onChange={e => set("moreCapacity", e.target.value)}
                 className="w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all"
               />
-              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">Remaining capacity estimate</span>
+              <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_92", "Remaining capacity estimate")}</span>
             </div>
 
             <div className="flex flex-col gap-1.5 sm:col-span-2">
               <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] font-['Outfit',sans-serif]">
-                Field Notes
+                {t("auto.auto_93", "Field Notes")}
               </label>
               <textarea
                 placeholder="e.g. Soil was rocky in the north corner, water access good from the canal. Recommend native shrubs for perimeter…"
@@ -209,7 +211,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
             disabled={submitting}
             className="px-5 py-2.5 rounded-xl border-[1.5px] border-[#e0d8cf] bg-white text-[13.5px] font-medium text-[#8a7d6e] font-['Outfit',sans-serif] hover:border-[#0c1e11] hover:text-[#0c1e11] transition-all cursor-pointer disabled:opacity-50"
           >
-            Cancel
+            {t("auto.auto_94", "Cancel")}
           </button>
           <button
             onClick={handleSubmit}
@@ -219,7 +221,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
             {submitting ? (
               <>
                 <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Uploading…
+                {t("auto.auto_95", "Uploading…")}
               </>
             ) : "✅ Mark Plantation Complete"}
           </button>

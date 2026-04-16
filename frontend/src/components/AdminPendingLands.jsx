@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -43,7 +44,7 @@ function CardImage({ landId }) {
   if (status === "empty" || !thumb) return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#0c1e11]">
       <span className="text-3xl opacity-20">🌍</span>
-      <span className="text-[9px] tracking-[0.12em] uppercase text-white/20 font-['Outfit',sans-serif]">No photos</span>
+      <span className="text-[9px] tracking-[0.12em] uppercase text-white/20 font-['Outfit',sans-serif]">{t("auto.auto_26", "No photos")}</span>
     </div>
   );
 
@@ -110,6 +111,7 @@ function Tag({ children }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 export default function AdminPendingLands() {
+  const { t } = useTranslation();
   const [lands, setLands] = useState([]);
   const [user, setUser] = useState(null);
   const [sessionLoading, setSessionLoad] = useState(true);
@@ -173,14 +175,14 @@ export default function AdminPendingLands() {
   if (!user?.role) return (
     <div className="min-h-screen bg-[#0b1d10] flex flex-col items-center justify-center gap-4 font-['Outfit',sans-serif]">
       <span className="text-5xl">🔒</span>
-      <p className="text-white/40 text-sm">No active session</p>
+      <p className="text-white/40 text-sm">{t("auto.auto_29", "No active session")}</p>
     </div>
   );
 
   if (user.role !== "ADMIN") return (
     <div className="min-h-screen bg-[#0b1d10] flex flex-col items-center justify-center gap-4 font-['Outfit',sans-serif]">
       <span className="text-5xl">🚫</span>
-      <p className="text-white/40 text-sm">Access Denied — Admins only</p>
+      <p className="text-white/40 text-sm">{t("auto.auto_30", "Access Denied — Admins only")}</p>
     </div>
   );
 
@@ -223,11 +225,11 @@ export default function AdminPendingLands() {
             <div className="flex items-center gap-2 mb-3">
               <div className="w-px h-3 bg-[#4db87a]/50" />
               <span className="text-[10px] font-semibold tracking-[0.28em] uppercase text-[#4db87a]/70 font-['Outfit',sans-serif]">
-                Admin · Land Review Queue
+                {t("auto.auto_32", "Admin · Land Review Queue")}
               </span>
             </div>
             <h1 className="font-['Cormorant_Garant',serif] text-[clamp(28px,4vw,42px)] font-semibold text-white leading-[0.95] tracking-[-0.5px]">
-              Review Queue
+              {t("auto.auto_33", "Review Queue")}
             </h1>
           </div>
 
@@ -324,7 +326,7 @@ export default function AdminPendingLands() {
             </div>
             <div>
               <h3 className="font-['Cormorant_Garant',serif] text-[26px] font-semibold text-white/60 mb-1">
-                Queue empty
+                {t("auto.auto_34", "Queue empty")}
               </h3>
               <p className="text-[13px] text-white/25 font-['Outfit',sans-serif]">
                 No {filter !== "ALL" ? filter.toLowerCase() + " " : ""}submissions found.
@@ -357,12 +359,12 @@ export default function AdminPendingLands() {
                     <CardImage landId={land.id} />
                     {land.status === "APPROVED" && (
                       <div className="absolute inset-0 bg-[#4db87a]/12 flex items-center justify-center">
-                        <span className="text-[10px] tracking-[0.12em] uppercase font-semibold text-[#4db87a] font-['Outfit',sans-serif]">✓ Approved</span>
+                        <span className="text-[10px] tracking-[0.12em] uppercase font-semibold text-[#4db87a] font-['Outfit',sans-serif]">{t("auto.auto_35", "✓ Approved")}</span>
                       </div>
                     )}
                     {land.status === "REJECTED" && (
                       <div className="absolute inset-0 bg-red-500/10 flex items-center justify-center">
-                        <span className="text-[10px] tracking-[0.12em] uppercase font-semibold text-red-400 font-['Outfit',sans-serif]">✕ Rejected</span>
+                        <span className="text-[10px] tracking-[0.12em] uppercase font-semibold text-red-400 font-['Outfit',sans-serif]">{t("auto.auto_36", "✕ Rejected")}</span>
                       </div>
                     )}
                   </div>
@@ -414,7 +416,7 @@ export default function AdminPendingLands() {
                           onClick={() => setSelectedId(land.id)}
                           className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#0c1e11] border border-white/10 rounded-xl text-[12px] font-semibold text-white/60 font-['Outfit',sans-serif] hover:text-[#4db87a] hover:border-[#4db87a]/30 hover:bg-[#4db87a]/8 transition-all duration-150 cursor-pointer"
                         >
-                          ↗ Full Detail
+                          {t("auto.auto_37", "↗ Full Detail")}
                         </button>
                         {submitterName && (
                           <span className="flex items-center gap-2 text-[11px] text-white/25 font-['Outfit',sans-serif]">

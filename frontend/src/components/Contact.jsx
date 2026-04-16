@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -56,6 +57,7 @@ function CountUp({ target, suffix = "" }) {
 }
 
 export default function Contact() {
+  const { t } = useTranslation();
   const [form, setForm]       = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent]       = useState(false);
   const [sending, setSending] = useState(false);
@@ -275,7 +277,7 @@ const statTiles = dbStats ? [
       `}</style>
 
       <Helmet>
-        <title>TerraSpotter — Contact</title>
+        <title>{t("auto.auto_96", "TerraSpotter — Contact")}</title>
         <meta name="description" content="Contact TerraSpotter — reach out, FAQs, and support." />
       </Helmet>
 
@@ -286,19 +288,19 @@ const statTiles = dbStats ? [
         <motion.div className="ct-hero" variants={containerVariants} initial="hidden" animate="visible">
           <div>
             <motion.div className="ct-eyebrow" variants={itemVariants}>
-              <span className="ct-eyebrow-dot" /> Community Platform
+              <span className="ct-eyebrow-dot" /> {t("auto.auto_97", "Community Platform")}
             </motion.div>
             <motion.h1 variants={itemVariants}>
-              Together, we<br />grow <em>forests</em>
+              {t("auto.auto_98", "Together, we")}<br />{t("auto.auto_99", "grow")} <em>{t("auto.auto_100", "forests")}</em>
             </motion.h1>
             <motion.p className="ct-hero-sub" variants={itemVariants}>
-              TerraSpotter is powered entirely by its users — landowners, planters, and nature lovers like you.
-              Anyone can sign up, submit land, and join a plantation drive. No gatekeeping, just green action.
+              {t("auto.auto_101", "TerraSpotter is powered entirely by its users — landowners, planters, and nature lovers like you.
+              Anyone can sign up, submit land, and join a plantation drive. No gatekeeping, just green action.")}
             </motion.p>
           </div>
 
           <motion.div className="ct-stats-panel" variants={itemVariants}>
-            <div className="ct-stats-panel-label">Our community — live from Everywhere</div>
+            <div className="ct-stats-panel-label">{t("auto.auto_102", "Our community — live from Everywhere")}</div>
 
             {/* Loading skeleton */}
             {!dbStats && !statsError && (
@@ -309,7 +311,7 @@ const statTiles = dbStats ? [
 
             {/* Error */}
             {statsError && (
-              <div className="ct-stats-error">Could not load live stats right now.</div>
+              <div className="ct-stats-error">{t("auto.auto_103", "Could not load live stats right now.")}</div>
             )}
 
             {/* Live tiles */}
@@ -327,7 +329,7 @@ const statTiles = dbStats ? [
             )}
 
             <div className="ct-join-note">
-              <strong>One account, full access.</strong> Every user can submit land, volunteer at planting events, and propose drives — all under a single login. No roles, no barriers.
+              <strong>{t("auto.auto_104", "One account, full access.")}</strong> {t("auto.auto_105", "Every user can submit land, volunteer at planting events, and propose drives — all under a single login. No roles, no barriers.")}
             </div>
           </motion.div>
         </motion.div>
@@ -339,42 +341,42 @@ const statTiles = dbStats ? [
             {sent ? (
               <div className="ct-success">
                 <div className="ct-success-ring">🌿</div>
-                <h3>Message received!</h3>
-                <p>Thanks for reaching out. A community member will get back to you within 24 hours.</p>
+                <h3>{t("auto.auto_106", "Message received!")}</h3>
+                <p>{t("auto.auto_107", "Thanks for reaching out. A community member will get back to you within 24 hours.")}</p>
               </div>
             ) : (
               <>
-                <div className="ct-form-title">Send us a message</div>
-                <div className="ct-form-sub">Have a question or want to get involved? We read every message.</div>
+                <div className="ct-form-title">{t("auto.auto_108", "Send us a message")}</div>
+                <div className="ct-form-sub">{t("auto.auto_109", "Have a question or want to get involved? We read every message.")}</div>
 
                 <div className="ct-form-row">
                   <div className="ct-field">
-                    <label className="ct-label">Your Name <span className="ct-req">*</span></label>
+                    <label className="ct-label">{t("auto.auto_110", "Your Name")} <span className="ct-req">*</span></label>
                     <input className="ct-input" placeholder="Full name"
                       value={form.name} onChange={e => set("name", e.target.value)} />
                   </div>
                   <div className="ct-field">
-                    <label className="ct-label">Email <span className="ct-req">*</span></label>
+                    <label className="ct-label">{t("auto.auto_111", "Email")} <span className="ct-req">*</span></label>
                     <input className="ct-input" type="email" placeholder="you@example.com"
                       value={form.email} onChange={e => set("email", e.target.value)} />
                   </div>
                 </div>
 
                 <div className="ct-field">
-                  <label className="ct-label">What's this about?</label>
+                  <label className="ct-label">{t("auto.auto_112", "What's this about?")}</label>
                   <select className="ct-select" value={form.subject} onChange={e => set("subject", e.target.value)}>
-                    <option value="">— Choose a topic —</option>
-                    <option value="land">I have land to submit</option>
-                    <option value="volunteer">I want to join a plantation</option>
-                    <option value="event">I want to organise an event</option>
-                    <option value="ngo">NGO / Organisation partnership</option>
-                    <option value="tech">Something isn't working</option>
-                    <option value="other">Something else</option>
+                    <option value="">{t("auto.auto_113", "— Choose a topic —")}</option>
+                    <option value="land">{t("auto.auto_114", "I have land to submit")}</option>
+                    <option value="volunteer">{t("auto.auto_115", "I want to join a plantation")}</option>
+                    <option value="event">{t("auto.auto_116", "I want to organise an event")}</option>
+                    <option value="ngo">{t("auto.auto_117", "NGO / Organisation partnership")}</option>
+                    <option value="tech">{t("auto.auto_118", "Something isn't working")}</option>
+                    <option value="other">{t("auto.auto_119", "Something else")}</option>
                   </select>
                 </div>
 
                 <div className="ct-field">
-                  <label className="ct-label">Message <span className="ct-req">*</span></label>
+                  <label className="ct-label">{t("auto.auto_120", "Message")} <span className="ct-req">*</span></label>
                   <textarea className="ct-textarea"
                     placeholder="Tell us what's on your mind — the more detail, the better we can help…"
                     value={form.message} onChange={e => set("message", e.target.value)} />
@@ -391,7 +393,7 @@ const statTiles = dbStats ? [
 
           <motion.div className="ct-sidebar" variants={itemVariants}>
             <div className="ct-info-card">
-              <div className="ct-card-label">Reach us directly</div>
+              <div className="ct-card-label">{t("auto.auto_121", "Reach us directly")}</div>
               {contacts.map((c, i) => (
                 <div key={i} className="ct-contact-item">
                   <div className="ct-contact-icon">{c.icon}</div>
@@ -406,7 +408,7 @@ const statTiles = dbStats ? [
             </div>
 
             <div className="ct-hours-card">
-              <div className="ct-hours-head">⏱ When we respond</div>
+              <div className="ct-hours-head">{t("auto.auto_122", "⏱ When we respond")}</div>
               {[
                 { day: "Monday – Friday", time: "9 AM – 6 PM" },
                 { day: "Saturday",        time: "10 AM – 3 PM" },
@@ -420,8 +422,8 @@ const statTiles = dbStats ? [
             </div>
 
             <div className="ct-open-card">
-              <h4>🌳 Open to Everyone</h4>
-              <p>Sign up as a user and you can submit land, volunteer at events, and propose plantation drives — all from one account. The community runs itself.</p>
+              <h4>{t("auto.auto_123", "🌳 Open to Everyone")}</h4>
+              <p>{t("auto.auto_124", "Sign up as a user and you can submit land, volunteer at events, and propose plantation drives — all from one account. The community runs itself.")}</p>
             </div>
           </motion.div>
         </motion.div>
@@ -429,8 +431,8 @@ const statTiles = dbStats ? [
         {/* faq */}
         <motion.div className="ct-faq-section" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={containerVariants}>
           <motion.div className="ct-faq-head" variants={itemVariants}>
-            <h2 className="ct-faq-title">Common questions<br />from the community</h2>
-            <p className="ct-faq-sub">Can't find what you need? Send us a message above.</p>
+            <h2 className="ct-faq-title">{t("auto.auto_125", "Common questions")}<br />{t("auto.auto_126", "from the community")}</h2>
+            <p className="ct-faq-sub">{t("auto.auto_127", "Can't find what you need? Send us a message above.")}</p>
           </motion.div>
           <div className="ct-faq-list">
             {faqs.map((f, i) => (
@@ -460,12 +462,12 @@ const statTiles = dbStats ? [
           initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
           <div className="ct-cta-text">
-            <h3>Ready to make your mark?</h3>
-            <p>Submit a barren plot, join a planting event, or propose a drive in your area. One account is all you need.</p>
+            <h3>{t("auto.auto_128", "Ready to make your mark?")}</h3>
+            <p>{t("auto.auto_129", "Submit a barren plot, join a planting event, or propose a drive in your area. One account is all you need.")}</p>
           </div>
           <div className="ct-cta-actions">
-            <a href="/main" className="ct-cta-btn-primary">Submit Land →</a>
-            <a href="/browse" className="ct-cta-btn-ghost">Browse Sites</a>
+            <a href="/main" className="ct-cta-btn-primary">{t("auto.auto_130", "Submit Land →")}</a>
+            <a href="/browse" className="ct-cta-btn-ghost">{t("auto.auto_131", "Browse Sites")}</a>
           </div>
         </motion.div>
       </div>

@@ -436,7 +436,7 @@ export default function Navbar() {
 
             <div className="nv-right">
               <div className="nv-ls-desk">
-                <LanguageSwitcher />
+                <LanguageSwitcher dark={true} />
               </div>
               {!user ? (
                 <>
@@ -569,12 +569,12 @@ export default function Navbar() {
                 {/* scrollable body */}
                 <div className="nv-dr-body">
 
-                  <div className="nv-dr-lbl">Language</div>
+                  <div className="nv-dr-lbl">{t("navbar.language", "Language")}</div>
                   <div style={{ padding: "4px 12px 16px" }}>
-                    <LanguageSwitcher />
+                    <LanguageSwitcher dark={false} />
                   </div>
 
-                  <div className="nv-dr-lbl">Navigation</div>
+                  <div className="nv-dr-lbl">{t("navbar.navigation", "Navigation")}</div>
 
                   {NAV.map(({ to, label, icon }) => (
                     <button
@@ -591,7 +591,7 @@ export default function Navbar() {
                   {user && (
                     <>
                       <div className="nv-dr-sep" />
-                      <div className="nv-dr-lbl">Account</div>
+                      <div className="nv-dr-lbl">{t("navbar.account", "Account")}</div>
 
                       <button className="nv-dr-row" onClick={() => drawerGo("/profile")}>
                         <span className="nv-dr-ico">👤</span>

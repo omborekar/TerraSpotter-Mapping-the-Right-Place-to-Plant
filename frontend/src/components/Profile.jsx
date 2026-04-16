@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -144,7 +145,7 @@ function ChangePasswordModal({ email, onClose }) {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-3">
               <span className="text-sm">🔐</span>
-              <span className="text-[11px] font-semibold tracking-[2px] uppercase text-white/70">Change Password</span>
+              <span className="text-[11px] font-semibold tracking-[2px] uppercase text-white/70">{t("auto.auto_290", "Change Password")}</span>
             </div>
             <h2 className="font-['Cormorant_Garant',serif] text-[22px] font-semibold text-white leading-tight">{stepLabel}</h2>
           </div>
@@ -166,20 +167,20 @@ function ChangePasswordModal({ email, onClose }) {
             {step === "send" && (
               <motion.div key="send" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
                 <p className="text-[13.5px] text-[#7a6d5e] font-light leading-relaxed mb-5">
-                  We'll send a 4-digit verification code to<br />
+                  {t("auto.auto_291", "We'll send a 4-digit verification code to")}<br />
                   <span className="font-semibold text-[#4db87a]">{email}</span>
                 </p>
                 {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200/80 rounded-xl text-[12.5px] text-red-700">{error}</div>}
                 <button onClick={handleSend} disabled={loading}
                   className="w-full h-12 rounded-xl bg-[#0c1e11] text-white text-[14px] font-semibold cursor-pointer hover:bg-[#163d25] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5">
-                  {loading ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Sending…</> : "Send OTP →"}
+                  {loading ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{t("auto.auto_292", "Sending…")}</> : "Send OTP →"}
                 </button>
               </motion.div>
             )}
 
             {step === "otp" && (
               <motion.div key="otp" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
-                <p className="text-[13px] text-[#7a6d5e] font-light mb-5">Enter the 4-digit code sent to <span className="font-medium text-[#4db87a]">{email}</span></p>
+                <p className="text-[13px] text-[#7a6d5e] font-light mb-5">{t("auto.auto_293", "Enter the 4-digit code sent to")} <span className="font-medium text-[#4db87a]">{email}</span></p>
                 {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200/80 rounded-xl text-[12.5px] text-red-700">{error}</div>}
                 <div className="flex gap-2.5 justify-center mb-5">
                   {otp.map((digit, idx) => (
@@ -193,11 +194,11 @@ function ChangePasswordModal({ email, onClose }) {
                 </div>
                 <button onClick={handleVerify} disabled={loading}
                   className="w-full h-12 rounded-xl bg-[#0c1e11] text-white text-[14px] font-semibold cursor-pointer hover:bg-[#163d25] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5">
-                  {loading ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Verifying…</> : "Verify Code →"}
+                  {loading ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{t("auto.auto_294", "Verifying…")}</> : "Verify Code →"}
                 </button>
                 <button onClick={() => { setOtp(["", "", "", ""]); setStep("send"); setError(""); }}
                   className="w-full text-center text-[12.5px] text-[#b5ac9e] hover:text-[#4db87a] transition-colors mt-3 cursor-pointer">
-                  ← Resend code
+                  {t("auto.auto_295", "← Resend code")}
                 </button>
               </motion.div>
             )}
@@ -207,7 +208,7 @@ function ChangePasswordModal({ email, onClose }) {
                 className="flex flex-col gap-4">
                 {error && <div className="px-4 py-3 bg-red-50 border border-red-200/80 rounded-xl text-[12.5px] text-red-700">{error}</div>}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">New Password</label>
+                  <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">{t("auto.auto_296", "New Password")}</label>
                   <div className="relative">
                     <input type={showPw.pw ? "text" : "password"} value={pws.pw}
                       onChange={e => setPws({ ...pws, pw: e.target.value })}
@@ -222,7 +223,7 @@ function ChangePasswordModal({ email, onClose }) {
                   <StrengthBar pw={pws.pw} />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">Confirm Password</label>
+                  <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">{t("auto.auto_297", "Confirm Password")}</label>
                   <div className="relative">
                     <input type={showPw.confirm ? "text" : "password"} value={pws.confirm}
                       onChange={e => setPws({ ...pws, confirm: e.target.value })}
@@ -237,7 +238,7 @@ function ChangePasswordModal({ email, onClose }) {
                 </div>
                 <button onClick={handleReset} disabled={loading}
                   className="w-full h-12 rounded-xl bg-[#0c1e11] text-white text-[14px] font-semibold cursor-pointer hover:bg-[#163d25] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5">
-                  {loading ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Updating…</> : "Update Password →"}
+                  {loading ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{t("auto.auto_298", "Updating…")}</> : "Update Password →"}
                 </button>
               </motion.div>
             )}
@@ -251,11 +252,11 @@ function ChangePasswordModal({ email, onClose }) {
                 >
                   🔐
                 </motion.div>
-                <h3 className="font-['Cormorant_Garant',serif] text-[26px] font-semibold text-[#0c1e11] mb-2">Password updated!</h3>
-                <p className="text-[13px] text-[#8a7d6e] font-light mb-6">Your password has been changed successfully.</p>
+                <h3 className="font-['Cormorant_Garant',serif] text-[26px] font-semibold text-[#0c1e11] mb-2">{t("auto.auto_299", "Password updated!")}</h3>
+                <p className="text-[13px] text-[#8a7d6e] font-light mb-6">{t("auto.auto_300", "Your password has been changed successfully.")}</p>
                 <button onClick={onClose}
                   className="w-full h-12 rounded-xl bg-[#0c1e11] text-white text-[14px] font-semibold cursor-pointer hover:bg-[#163d25] transition-all">
-                  Close
+                  {t("auto.auto_301", "Close")}
                 </button>
               </motion.div>
             )}
@@ -277,6 +278,7 @@ function getLevelLabel(lv) {
 
 // ─── Main Profile ─────────────────────────────────────────────
 export default function Profile() {
+  const { t } = useTranslation();
   const [profile,     setProfile]     = useState(null);
   const [lands,       setLands]       = useState([]);
   const [completions, setCompletions] = useState([]);
@@ -368,7 +370,7 @@ export default function Profile() {
   if (pageLoading) return <ProfileSkeleton />;
   if (!profile) return (
     <div className="min-h-screen bg-[#f7f3ec] flex items-center justify-center text-red-500 text-sm font-['Outfit',sans-serif]">
-      Failed to load profile. Please refresh.
+      {t("auto.auto_304", "Failed to load profile. Please refresh.")}
     </div>
   );
 
@@ -408,11 +410,11 @@ export default function Profile() {
           <div className="relative flex gap-2 shrink-0 self-start md:self-auto flex-wrap">
             <button onClick={() => setEditOpen(true)}
               className="px-4 py-2.5 rounded-xl border border-white/20 bg-white/8 text-white text-[12.5px] font-medium hover:bg-white/15 hover:border-white/35 transition-all cursor-pointer">
-              ✏ Edit Profile
+              {t("auto.auto_305", "✏ Edit Profile")}
             </button>
             <button onClick={() => setPwOpen(true)}
               className="px-4 py-2.5 rounded-xl border border-[#4db87a]/30 bg-[#4db87a]/12 text-[#4db87a] text-[12.5px] font-medium hover:bg-[#4db87a]/20 transition-all cursor-pointer">
-              🔐 Change Password
+              {t("auto.auto_306", "🔐 Change Password")}
             </button>
           </div>
         </motion.div>
@@ -448,7 +450,7 @@ export default function Profile() {
                   <div>
                     <div className="inline-flex items-center gap-2 mb-3" style={{ background: "rgba(77,184,122,0.15)", borderRadius: 100, padding: "4px 14px", border: "1px solid rgba(77,184,122,0.25)" }}>
                       <span style={{ fontSize: 11 }}>⚡</span>
-                      <span style={{ color: "#4db87a", fontSize: 10.5, fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase" }}>Gamification Progress</span>
+                      <span style={{ color: "#4db87a", fontSize: 10.5, fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase" }}>{t("auto.auto_307", "Gamification Progress")}</span>
                     </div>
                     <h2 style={{ fontFamily: "'Cormorant Garant', serif", fontSize: 28, fontWeight: 700, color: "#fff", lineHeight: 1.1 }}>
                       Level {gamification.level} &mdash; <span style={{ color: "#4db87a" }}>{getLevelLabel(gamification.level)}</span>
@@ -501,7 +503,7 @@ export default function Profile() {
                     borderRadius: 10, padding: "7px 16px",
                     color: "#4db87a", fontSize: 12.5, fontWeight: 600, textDecoration: "none",
                   }}>
-                    🏆 View Full Leaderboard →
+                    {t("auto.auto_308", "🏆 View Full Leaderboard →")}
                   </Link>
                 </div>
               </div>
@@ -514,8 +516,8 @@ export default function Profile() {
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-base">📊</div>
                     <div>
-                      <h2 className="text-[14px] font-semibold text-[#0c1e11]">Points Breakdown</h2>
-                      <p className="text-[11.5px] text-[#b5ac9e] font-light">XP earned per activity type</p>
+                      <h2 className="text-[14px] font-semibold text-[#0c1e11]">{t("auto.auto_309", "Points Breakdown")}</h2>
+                      <p className="text-[11.5px] text-[#b5ac9e] font-light">{t("auto.auto_310", "XP earned per activity type")}</p>
                     </div>
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 700, color: "#4db87a", background: "rgba(77,184,122,0.1)", padding: "3px 12px", borderRadius: 100, border: "1px solid rgba(77,184,122,0.2)" }}>
@@ -571,7 +573,7 @@ export default function Profile() {
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base">🌳</div>
                       <div>
-                        <h2 className="text-[14px] font-semibold text-[#0c1e11]">Tree Milestone Badges</h2>
+                        <h2 className="text-[14px] font-semibold text-[#0c1e11]">{t("auto.auto_312", "Tree Milestone Badges")}</h2>
                         <p className="text-[11.5px] text-[#b5ac9e] font-light">
                           {gamification.totalTreesPlanted} trees planted &nbsp;·&nbsp;
                           {treeBadges.filter(b => b.earned).length}/{treeBadges.length} milestones reached
@@ -580,7 +582,7 @@ export default function Profile() {
                     </div>
                     {nextUnearned && (
                       <div style={{ background: "rgba(77,184,122,0.08)", border: "1px solid rgba(77,184,122,0.2)", borderRadius: 10, padding: "6px 12px", fontSize: 11.5, color: "#1f6b3a" }}>
-                        Next: <strong>{nextUnearned.name}</strong> at {nextUnearned.threshold} trees
+                        {t("auto.auto_313", "Next:")} <strong>{nextUnearned.name}</strong> at {nextUnearned.threshold} trees
                         &nbsp; ({Math.max(0, nextUnearned.threshold - gamification.totalTreesPlanted)} to go)
                       </div>
                     )}
@@ -591,7 +593,7 @@ export default function Profile() {
                     {nextUnearned && (
                       <>
                         <div className="flex justify-between mb-1.5 text-[11px] text-[#b5ac9e]">
-                          <span>Progress to <strong className="text-[#0c1e11]">{nextUnearned.name}</strong></span>
+                          <span>{t("auto.auto_314", "Progress to")} <strong className="text-[#0c1e11]">{nextUnearned.name}</strong></span>
                           <span>{gamification.totalTreesPlanted} / {nextUnearned.threshold} trees</span>
                         </div>
                         <div style={{ height: 8, borderRadius: 8, background: "#f0ebe2", overflow: "hidden", marginBottom: 16 }}>
@@ -713,7 +715,7 @@ export default function Profile() {
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-[#ede8de]">
                   <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-base shrink-0">🏅</div>
                   <div>
-                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">All Badges</h2>
+                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">{t("auto.auto_315", "All Badges")}</h2>
                     <p className="text-[11.5px] text-[#b5ac9e] font-light">{gamification.badgeCount} earned · {(gamification.totalBadges ?? gamification.allBadges.length) - gamification.badgeCount} locked</p>
                   </div>
                 </div>
@@ -776,7 +778,7 @@ export default function Profile() {
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-[#ede8de]">
                   <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base shrink-0">⚡</div>
                   <div>
-                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">Recent XP Activity</h2>
+                    <h2 className="text-[14px] font-semibold text-[#0c1e11]">{t("auto.auto_316", "Recent XP Activity")}</h2>
                     <p className="text-[11.5px] text-[#b5ac9e] font-light">Last {gamification.recentTransactions.length} XP events</p>
                   </div>
                 </div>
@@ -838,13 +840,13 @@ export default function Profile() {
           <div className="flex items-center gap-3 px-6 py-5 border-b border-[#ede8de]">
             <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base shrink-0">🌍</div>
             <div>
-              <h2 className="text-[14px] font-semibold text-[#0c1e11]">My Submitted Lands</h2>
+              <h2 className="text-[14px] font-semibold text-[#0c1e11]">{t("auto.auto_317", "My Submitted Lands")}</h2>
               <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">{lands.length} land{lands.length !== 1 ? "s" : ""} submitted</p>
             </div>
           </div>
 
           {lands.length === 0 ? (
-            <div className="py-12 text-center text-[#b5ac9e] text-[13.5px] font-light">No lands submitted yet.</div>
+            <div className="py-12 text-center text-[#b5ac9e] text-[13.5px] font-light">{t("auto.auto_318", "No lands submitted yet.")}</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
@@ -889,8 +891,8 @@ export default function Profile() {
         >
           <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
             <div>
-              <h2 className="text-[14px] font-semibold text-[#0c1e11]">Activity Stats</h2>
-              <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">Land submissions and trees planted over time</p>
+              <h2 className="text-[14px] font-semibold text-[#0c1e11]">{t("auto.auto_319", "Activity Stats")}</h2>
+              <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">{t("auto.auto_320", "Land submissions and trees planted over time")}</p>
             </div>
             <div className="flex gap-1 p-1 bg-[#f7f3ec] border border-[#ede8de] rounded-xl">
               {["monthly", "yearly"].map(f => (
@@ -906,7 +908,7 @@ export default function Profile() {
           {stats.length === 0 ? (
             <div className="h-44 flex flex-col items-center justify-center text-[#b5ac9e] text-[13.5px] gap-2">
               <span className="text-3xl">📊</span>
-              No stats yet — submit more lands to see trends.
+              {t("auto.auto_321", "No stats yet — submit more lands to see trends.")}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -946,8 +948,8 @@ export default function Profile() {
           <div className="flex items-center gap-3 pb-5 border-b border-[#f0ebe2] mb-5">
             <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-base shrink-0">📅</div>
             <div>
-              <h2 className="text-[14px] font-semibold text-[#0c1e11]">Activity Calendar</h2>
-              <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">Land submissions this month</p>
+              <h2 className="text-[14px] font-semibold text-[#0c1e11]">{t("auto.auto_322", "Activity Calendar")}</h2>
+              <p className="text-[12px] text-[#b5ac9e] mt-0.5 font-light">{t("auto.auto_323", "Land submissions this month")}</p>
             </div>
           </div>
 
@@ -978,9 +980,9 @@ export default function Profile() {
           </div>
 
           <div className="flex items-center gap-2 mt-4 text-[11px] text-[#b5ac9e]">
-            <span>Less</span>
+            <span>{t("auto.auto_324", "Less")}</span>
             {calSwatches.map((c, i) => <div key={i} className="w-3.5 h-3.5 rounded-sm" style={{ background: c, border: "1px solid rgba(0,0,0,0.06)" }} />)}
-            <span>More</span>
+            <span>{t("auto.auto_325", "More")}</span>
           </div>
         </motion.div>
 
@@ -1000,9 +1002,9 @@ export default function Profile() {
             >
               <div className="inline-flex items-center gap-2">
                 <div className="w-4 h-px bg-[#4db87a]" />
-                <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a]">Profile</span>
+                <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-[#4db87a]">{t("auto.auto_326", "Profile")}</span>
               </div>
-              <h2 className="font-['Cormorant_Garant',serif] text-[26px] font-semibold text-[#0c1e11] -mt-2">Edit Profile</h2>
+              <h2 className="font-['Cormorant_Garant',serif] text-[26px] font-semibold text-[#0c1e11] -mt-2">{t("auto.auto_327", "Edit Profile")}</h2>
 
               {[{ label: "First Name", key: "fname" }, { label: "Last Name", key: "lname" }, { label: "Phone Number", key: "phoneNo" }].map(({ label, key }) => (
                 <div key={key} className="flex flex-col gap-1.5">
@@ -1018,7 +1020,7 @@ export default function Profile() {
               <div className="flex gap-3 justify-end pt-1">
                 <button onClick={() => setEditOpen(false)}
                   className="px-5 py-2.5 rounded-xl border border-[#e0d8cf] text-[13px] font-medium text-[#8a7d6e] hover:border-[#c8bfb4] hover:text-[#0c1e11] transition-all cursor-pointer">
-                  Cancel
+                  {t("auto.auto_328", "Cancel")}
                 </button>
                 <button onClick={handleSave} disabled={saving}
                   className="px-5 py-2.5 rounded-xl bg-[#0c1e11] text-white text-[13px] font-semibold hover:bg-[#163d25] disabled:opacity-50 transition-all cursor-pointer">

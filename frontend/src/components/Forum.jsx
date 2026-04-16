@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,6 +8,7 @@ import { MessageSquare, ThumbsUp, User as UserIcon, Send, Clock, AlertCircle } f
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Forum({ user }) {
+  const { t } = useTranslation();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all"); 
@@ -96,7 +98,7 @@ export default function Forum({ user }) {
   return (
     <>
       <Helmet>
-        <title>Community Forum — TerraSpotter</title>
+        <title>{t("auto.auto_162", "Community Forum — TerraSpotter")}</title>
         <meta name="description" content="Ask questions, share advice, and connect with the TerraSpotter community." />
       </Helmet>
 
@@ -106,12 +108,12 @@ export default function Forum({ user }) {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
             <div>
               <div className="inline-flex items-center gap-2 bg-[#d4f0e0] text-[#1f5c35] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-3">
-                <span className="w-1.5 h-1.5 bg-[#2d8a55] rounded-full"></span> Live Q&A
+                <span className="w-1.5 h-1.5 bg-[#2d8a55] rounded-full"></span> {t("auto.auto_163", "Live Q&A")}
               </div>
               <h1 className="font-['Cormorant_Garant',serif] text-4xl md:text-5xl font-bold text-[#0c1e11] leading-none mb-2">
-                Community Forum
+                {t("auto.auto_164", "Community Forum")}
               </h1>
-              <p className="text-[#3d5244] text-[15px]">Ask for advice, discuss planting methods, or help out fellow members.</p>
+              <p className="text-[#3d5244] text-[15px]">{t("auto.auto_165", "Ask for advice, discuss planting methods, or help out fellow members.")}</p>
             </div>
             <button 
               onClick={() => {
@@ -119,7 +121,7 @@ export default function Forum({ user }) {
                 setShowAskModal(true);
               }}
               className="bg-[#0c1e11] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#163d25] transition-all whitespace-nowrap self-start md:self-end shadow-lg flex items-center gap-2">
-              <MessageSquare size={16} /> Ask a Question
+              <MessageSquare size={16} /> {t("auto.auto_166", "Ask a Question")}
             </button>
           </div>
 
@@ -133,8 +135,8 @@ export default function Forum({ user }) {
             ) : questions.length === 0 ? (
               <div className="py-20 flex flex-col items-center justify-center text-[#7a9485]">
                 <MessageSquare size={48} className="opacity-20 mb-4" />
-                <p className="text-lg font-medium text-[#3d5244]">No questions yet.</p>
-                <p className="text-sm">Be the first to start a discussion!</p>
+                <p className="text-lg font-medium text-[#3d5244]">{t("auto.auto_167", "No questions yet.")}</p>
+                <p className="text-sm">{t("auto.auto_168", "Be the first to start a discussion!")}</p>
               </div>
             ) : (
               <div className="divide-y divide-[#f0ebe2]">
@@ -232,8 +234,8 @@ export default function Forum({ user }) {
                             </div>
                           ) : (
                             <div className="bg-white border border-[#e0d8cf] px-4 py-3 rounded-xl text-sm flex justify-between items-center">
-                              <span className="text-[#7a9485]">Log in to leave a reply.</span>
-                              <a href="/login" className="font-semibold text-[#1f5c35] hover:underline">Log in</a>
+                              <span className="text-[#7a9485]">{t("auto.auto_169", "Log in to leave a reply.")}</span>
+                              <a href="/login" className="font-semibold text-[#1f5c35] hover:underline">{t("auto.auto_170", "Log in")}</a>
                             </div>
                           )}
                         </div>
@@ -254,15 +256,15 @@ export default function Forum({ user }) {
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAskModal(false)} className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
               <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white w-full max-w-lg rounded-2xl shadow-xl relative z-10 p-6">
-                <h2 className="font-['Cormorant_Garant',serif] text-2xl font-bold text-[#0c1e11] mb-2">Ask the Community</h2>
+                <h2 className="font-['Cormorant_Garant',serif] text-2xl font-bold text-[#0c1e11] mb-2">{t("auto.auto_171", "Ask the Community")}</h2>
                 <div className="flex items-start gap-2 text-xs text-[#2d8a55] bg-[#d4f0e0] p-3 rounded-lg mb-4">
                   <AlertCircle size={14} className="shrink-0 mt-0.5" />
-                  <p>Inappropriate language is monitored and strictly prohibited. Please keep discussions civil and on-topic.</p>
+                  <p>{t("auto.auto_172", "Inappropriate language is monitored and strictly prohibited. Please keep discussions civil and on-topic.")}</p>
                 </div>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#7a9485] uppercase tracking-wider mb-1">Question Title</label>
+                    <label className="block text-xs font-bold text-[#7a9485] uppercase tracking-wider mb-1">{t("auto.auto_173", "Question Title")}</label>
                     <input 
                       type="text" 
                       value={newTitle}
@@ -272,7 +274,7 @@ export default function Forum({ user }) {
                       maxLength={150} />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-[#7a9485] uppercase tracking-wider mb-1">Details</label>
+                    <label className="block text-xs font-bold text-[#7a9485] uppercase tracking-wider mb-1">{t("auto.auto_174", "Details")}</label>
                     <textarea 
                       value={newContent}
                       onChange={e => setNewContent(e.target.value)}
@@ -282,7 +284,7 @@ export default function Forum({ user }) {
                 </div>
                 
                 <div className="flex justify-end gap-3 mt-6">
-                  <button onClick={() => setShowAskModal(false)} className="px-5 py-2.5 text-sm font-semibold text-[#7a9485] hover:text-[#0c1e11]">Cancel</button>
+                  <button onClick={() => setShowAskModal(false)} className="px-5 py-2.5 text-sm font-semibold text-[#7a9485] hover:text-[#0c1e11]">{t("auto.auto_175", "Cancel")}</button>
                   <button disabled={submitting || !newTitle.trim() || !newContent.trim()} onClick={handleAsk} className="px-5 py-2.5 bg-[#0c1e11] text-white rounded-xl text-sm font-semibold disabled:opacity-50">
                     {submitting ? "Posting..." : "Post Question"}
                   </button>
