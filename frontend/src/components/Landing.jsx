@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -64,6 +65,7 @@ function FadeIn({ children, delay = 0, y = 24, className = "" }) {
 
 // ─── Main Landing ─────────────────────────────────────────────
 export default function Landing() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const navigate = useNavigate();
 
@@ -111,7 +113,7 @@ export default function Landing() {
               className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-[#4db87a]/20 bg-[#4db87a]/8 text-[#4db87a] text-[12px] font-semibold tracking-[2px] uppercase mb-8"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#4db87a] animate-pulse" />
-              India's Land-to-Forest Platform
+              {t("landing.platform_label", "India's Land-to-Forest Platform")}
             </motion.div>
 
             <motion.h1
@@ -120,10 +122,10 @@ export default function Landing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             >
-              Map it.{" "}
-              <em className="not-italic text-[#4db87a]">Green it.</em>
+              {t("landing.hero1", "Map it.")}{" "}
+              <em className="not-italic text-[#4db87a]">{t("landing.hero2", "Green it.")}</em>
               <br />
-              Legacy built.
+              {t("landing.hero3", "Legacy built.")}
             </motion.h1>
 
             <motion.p
@@ -132,7 +134,7 @@ export default function Landing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.7 }}
             >
-              Submit barren land with polygon mapping. Get matched with volunteers. Watch India's green cover grow — one verified parcel at a time.
+              {t("landing.subtitle", "Submit barren land with polygon mapping. Get matched with volunteers. Watch India's green cover grow — one verified parcel at a time.")}
             </motion.p>
 
             <motion.div
@@ -145,13 +147,13 @@ export default function Landing() {
                 to="/Main"
                 className="px-8 py-4 rounded-xl bg-[#4db87a] text-[#0c1e11] text-[15px] font-semibold no-underline hover:bg-[#5dcf8a] transition-all duration-200 shadow-[0_6px_28px_rgba(77,184,122,0.35)] active:scale-[0.97] whitespace-nowrap"
               >
-                Submit land parcel →
+                {t("landing.cta_start", "Submit land parcel →")}
               </Link>
               <Link
                 to="/browse"
                 className="px-8 py-4 rounded-xl border border-white/15 text-white/70 text-[15px] font-medium no-underline hover:text-white hover:border-white/35 hover:bg-white/[0.06] transition-all duration-200 whitespace-nowrap"
               >
-                Browse all lands
+                {t("landing.cta_explore", "Browse all lands")}
               </Link>
             </motion.div>
 

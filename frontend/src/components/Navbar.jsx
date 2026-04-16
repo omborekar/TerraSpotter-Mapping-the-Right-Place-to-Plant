@@ -8,10 +8,13 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const [user, setUser]     = useState(null);
   const [xpData, setXpData] = useState(null);
   const [ddOpen, setDdOpen] = useState(false);
@@ -86,23 +89,23 @@ export default function Navbar() {
   };
 
   const NAV = user ? [
-    { to: "/",                  label: "Home",        icon: "🏡" },
-    { to: "/Main",             label: "Submit",      icon: "📍" },
-    { to: "/browse",           label: "Browse",      icon: "🗺️" },
-    { to: "/plantationShowcase", label: "History",   icon: "📚" },
-    { to: "/community",        label: "Community",   icon: "🌱" },
-    { to: "/leaderboard",      label: "Leaderboard", icon: "🏆" },
-    { to: "/about",            label: "About",       icon: "ℹ️" },
-    { to: "/forum",            label: "Forum",       icon: "💬" },
-    ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: "Admin", icon: "⚙️" }] : []),
+    { to: "/",                  label: t("navbar.home", "Home"),        icon: "🏡" },
+    { to: "/Main",             label: t("navbar.tracker", "Submit"),      icon: "📍" },
+    { to: "/browse",           label: t("navbar.browse", "Browse"),      icon: "🗺️" },
+    { to: "/plantationShowcase", label: t("navbar.reports", "History"),   icon: "📚" },
+    { to: "/community",        label: t("navbar.community", "Community"),   icon: "🌱" },
+    { to: "/leaderboard",      label: t("navbar.leaderboard", "Leaderboard"), icon: "🏆" },
+    { to: "/about",            label: t("navbar.about", "About"),       icon: "ℹ️" },
+    { to: "/forum",            label: t("navbar.forum", "Forum"),       icon: "💬" },
+    ...(user.role === "ADMIN" ? [{ to: "/admin/pending", label: t("navbar.admin", "Admin"), icon: "⚙️" }] : []),
   ] : [
-    { to: "/",            label: "Home",        icon: "🏡" },
-    { to: "/leaderboard", label: "Leaderboard", icon: "🏆" },
-    { to: "/about",       label: "About",       icon: "ℹ️" },
-    { to: "/forum",       label: "Forum",       icon: "💬" },
+    { to: "/",            label: t("navbar.home", "Home"),        icon: "🏡" },
+    { to: "/leaderboard", label: t("navbar.leaderboard", "Leaderboard"), icon: "🏆" },
+    { to: "/about",       label: t("navbar.about", "About"),       icon: "ℹ️" },
+    { to: "/forum",       label: t("navbar.forum", "Forum"),       icon: "💬" },
   ];
 
-  const DD_ITEMS = NAV.filter(x => x.to !== "/").concat([{ to: "/profile", label: "My Profile", icon: "👤" }]);
+  const DD_ITEMS = NAV.filter(x => x.to !== "/").concat([{ to: "/profile", label: t("navbar.profile", "My Profile"), icon: "👤" }]);
 
   return (
     <>
@@ -432,11 +435,12 @@ export default function Navbar() {
             </nav>
 
             <div className="nv-right">
+              <LanguageSwitcher />
               {!user ? (
                 <>
-                  <Link to="/login" className="nv-ghost">Sign in</Link>
+                  <Link to="/login" className="nv-ghost">{t("navbar.login", "Sign in")}</Link>
                   <div className="nv-vd" />
-                  <Link to="/signup" className="nv-cta">Get started →</Link>
+                  <Link to="/signup" className="nv-cta">{t("navbar.signup", "Get started →")}</Link>
                 </>
               ) : (
                 <div style={{ position: "relative" }} ref={ddRef}>
@@ -482,7 +486,7 @@ export default function Navbar() {
                         </div>
                         <div className="nv-dd-body">
                           <Link to="/profile" className="nv-dd-row" onClick={() => setDdOpen(false)}>
-                            <span className="nv-dd-ico">👤</span>My Profile
+                            <span className="nv-dd-ico">👤</span>{t("navbar.profile", "My Profile")}
                           </Link>
                           {NAV.filter(x => x.to !== "/").map(({ to, icon, label }) => (
                             <Link key={to} to={to} className="nv-dd-row" onClick={() => setDdOpen(false)}>
@@ -493,7 +497,7 @@ export default function Navbar() {
                         <div className="nv-dd-sep" />
                         <div className="nv-dd-body">
                           <button className="nv-dd-row out" onClick={logout}>
-                            <span className="nv-dd-ico">🚪</span>Sign out
+                            <span className="nv-dd-ico">🚪</span>{t("navbar.logout", "Sign out")}
                           </button>
                         </div>
                       </motion.div>
@@ -584,7 +588,7 @@ export default function Navbar() {
 
                       <button className="nv-dr-row" onClick={() => drawerGo("/profile")}>
                         <span className="nv-dr-ico">👤</span>
-                        <span className="nv-dr-txt">My Profile</span>
+                        <span className="nv-dr-txt">{t("navbar.profile", "My Profile")}</span>
                         {xpData && (
                           <span style={{
                             fontSize: 10, fontWeight: 700, color: "#1f6b3a",
@@ -601,7 +605,7 @@ export default function Navbar() {
 
                       <button className="nv-dr-row danger" onClick={logout}>
                         <span className="nv-dr-ico">🚪</span>
-                        <span className="nv-dr-txt">Sign out</span>
+                        <span className="nv-dr-txt">{t("navbar.logout", "Sign out")}</span>
                       </button>
                     </>
                   )}
@@ -610,8 +614,8 @@ export default function Navbar() {
                     <>
                       <div className="nv-dr-sep" />
                       <div className="nv-dr-auth">
-                        <button className="nv-dr-signin" onClick={() => drawerGo("/login")}>Sign in</button>
-                        <button className="nv-dr-go" onClick={() => drawerGo("/signup")}>Get started →</button>
+                        <button className="nv-dr-signin" onClick={() => drawerGo("/login")}>{t("navbar.login", "Sign in")}</button>
+                        <button className="nv-dr-go" onClick={() => drawerGo("/signup")}>{t("navbar.signup", "Get started →")}</button>
                       </div>
                     </>
                   )}

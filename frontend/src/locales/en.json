@@ -1,0 +1,24 @@
+{
+  "navbar": {
+    "home": "Home",
+    "browse": "Browse",
+    "tracker": "Tracker",
+    "forum": "Forum",
+    "reports": "Reports",
+    "community": "Community",
+    "about": "About",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "signup": "Sign Up",
+    "profile": "Profile",
+    "admin": "Admin",
+    "logout": "Logout"
+  },
+  "landing": {
+    "title": "Mapping the Right Place to Plant",
+    "subtitle": "Join TerraSpotter to identify, track, and celebrate tree planting initiatives worldwide. We empower communities to restore our earth, one strategic sapling at a time.",
+    "cta_start": "Start Planting Today",
+    "cta_explore": "Explore the Map"
+  }
+}

@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
+import { useTranslation } from "react-i18next";
 import { EditControl } from "react-leaflet-draw";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -230,6 +231,7 @@ const SidebarContent = ({ compact = false, dbStats }) => {
 
 // ─── Main ─────────────────────────────────────────────────────
 const Main = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [dbStats, setDbStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -576,10 +578,10 @@ const Main = () => {
             {/* Page heading */}
             <div>
               <h1 className="font-['Cormorant_Garant',serif] text-[34px] sm:text-[42px] font-semibold text-[#0c1e11] leading-[0.95] tracking-[-0.5px] mb-2">
-                Submit Land for Plantation
+                {t("main.title", "Submit Land for Plantation")}
               </h1>
               <p className="text-sm sm:text-[15px] text-[#8a7d6e] leading-relaxed font-light">
-                Mark boundaries, provide details, and upload photos to get matched with planting teams.
+                {t("main.subtitle", "Mark boundaries, provide details, and upload photos to get matched with planting teams.")}
               </p>
             </div>
 
