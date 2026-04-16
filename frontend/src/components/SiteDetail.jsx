@@ -81,7 +81,7 @@ function MiniStars({ value = 0, count = 0 }) {
 }
 
 // ─── Info row ─────────────────────────────────────────────────
-const InfoRow = ({ label, value }) => {t("auto.auto_346", "value ? (")}
+const InfoRow = ({ label, value }) => value ? (
   <div className="flex flex-col gap-1 py-3 border-b border-[#f0ebe2] last:border-0">
     <span className="text-[10.5px] font-semibold uppercase tracking-[0.8px] text-[#b5ac9e] font-['Outfit',sans-serif]">{label}</span>
     <span className="text-[13.5px] font-medium text-[#0c1e11] font-['Outfit',sans-serif]">{value}</span>
