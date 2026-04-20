@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -8,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import AdminLandDetail from "./AdminLandDetail";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -25,6 +25,7 @@ const Bone = ({ className = "" }) => (
 
 // ─── Card image loader ────────────────────────────────────────
 function CardImage({ landId }) {
+  const { t } = useTranslation();
   const [thumb, setThumb] = useState(null);
   const [extra, setExtra] = useState(0);
   const [status, setStatus] = useState("loading");

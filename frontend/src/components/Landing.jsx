@@ -144,7 +144,7 @@ export default function Landing() {
               transition={{ delay: 0.38, duration: 0.6 }}
             >
               <Link
-                to="/Main"
+                to="/main"
                 className="px-8 py-4 rounded-xl bg-[#4db87a] text-[#0c1e11] text-[15px] font-semibold no-underline hover:bg-[#5dcf8a] transition-all duration-200 shadow-[0_6px_28px_rgba(77,184,122,0.35)] active:scale-[0.97] whitespace-nowrap"
               >
                 {t("landing.cta_start", "Submit land parcel →")}
@@ -376,7 +376,7 @@ export default function Landing() {
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-[2px] mb-5">Platform</h4>
                 <div className="flex flex-col gap-3">
                   {[
-                    ["/Main", "Submit Land"],
+                    ["/main", "Submit Land"],
                     ["/browse", "Browse Lands"],
                     ["/plantationShowcase", "Showcase"],
                     ["/community", "Community"],

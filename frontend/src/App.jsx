@@ -30,6 +30,8 @@ const CommunityFeed = lazy(() => import("./components/CommunityFeed"));
 const Leaderboard = lazy(() => import("./components/Leaderboard"));
 const Main = lazy(() => import("./components/Main"));
 const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
+const Contact = lazy(() => import("./components/Contact"));
+const ContributionMap = lazy(() => import("./components/ContributionMap"));
 
 
 import "./App.css";
@@ -84,6 +86,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/forum" element={<Forum user={user} />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
 

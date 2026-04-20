@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -9,6 +8,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -84,6 +84,7 @@ const ListSkeleton = () => (
 
 // ─── Image strip ─────────────────────────────────────────────
 const ImageStrip = ({ landId, onOpenGallery, compact = false }) => {
+  const { t } = useTranslation();
   const [images, setImages] = useState([]);
   const [imgLoading, setImgLoading] = useState(true);
 
@@ -151,6 +152,7 @@ const ImageStrip = ({ landId, onOpenGallery, compact = false }) => {
 
 // ─── Grid Card ────────────────────────────────────────────────
 const GridCard = ({ land, onOpenGallery, onNavigate }) => {
+  const { t } = useTranslation();
   const cfg = statusConfig(land.landStatus);
   const approxTrees = land.areaSqm ? Math.floor(land.areaSqm / 20) : null;
 
@@ -239,6 +241,7 @@ const GridCard = ({ land, onOpenGallery, onNavigate }) => {
 
 // ─── List Card ────────────────────────────────────────────────
 const ListCard = ({ land, onOpenGallery, onNavigate }) => {
+  const { t } = useTranslation();
   const cfg = statusConfig(land.landStatus);
   const approxTrees = land.areaSqm ? Math.floor(land.areaSqm / 20) : null;
 

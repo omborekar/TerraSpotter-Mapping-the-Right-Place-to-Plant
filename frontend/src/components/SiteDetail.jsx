@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -10,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 // Removed LoadingSpinner
@@ -368,15 +368,15 @@ export default function SiteDetail() {
             {[
               { key: TAB_DETAILS, label: "🌍 Details" },
               { key: TAB_REVIEWS, label: `⭐ Reviews${reviews.length > 0 ? ` (${reviews.length})` : ""}` },
-            ].map(t => (
-              <button key={t.key}
-                onClick={() => setActiveTab(t.key)}
-                className={`px-5 py-3 text-[13.5px] font-semibold border-b-2 -mb-px transition-all duration-150 cursor-pointer font-['Outfit',sans-serif] ${activeTab === t.key
+            ].map(tab => (
+              <button key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-5 py-3 text-[13.5px] font-semibold border-b-2 -mb-px transition-all duration-150 cursor-pointer font-['Outfit',sans-serif] ${activeTab === tab.key
                     ? "text-[#0c1e11] border-[#0c1e11]"
                     : "text-[#b5ac9e] border-transparent hover:text-[#0c1e11]"
                   }`}
               >
-                {t.label}
+                {tab.label}
               </button>
             ))}
           </div>

@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -8,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
