@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -7,6 +6,7 @@ import { useTranslation } from "react-i18next";
 */
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Star, MapPin, Calendar, TreePine, Users, Camera, X, ChevronLeft, ChevronRight, Check } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -45,10 +45,10 @@ function Counter({ target }) {
       seen.current = true;
       const num = parseFloat(String(target).replace(/,/g, ""));
       let cur = 0; const steps = 55; const inc = num / steps;
-      const t = setInterval(() => {
+      const timer = setInterval(() => {
         cur = Math.min(cur + inc, num);
         setCount(Number.isInteger(num) ? Math.floor(cur) : parseFloat(cur.toFixed(1)));
-        if (cur >= num) clearInterval(t);
+        if (cur >= num) clearInterval(timer);
       }, 1600 / steps);
     }, { threshold: 0.3 });
     if (ref.current) ob.observe(ref.current);
@@ -419,7 +419,7 @@ function DetailModal({ plantation, onClose, onReview }) {
           {plantation.notes && (
             <div className="border-l-4 border-[#0c1e11] pl-5 py-1 mb-8">
               <p className="font-['Cormorant_Garant',serif] text-[18px] font-normal italic text-[#2e2e24] leading-[1.75]">
-                "{plantation.notes}"
+                {plantation.notes}
               </p>
             </div>
           )}
@@ -446,7 +446,7 @@ function DetailModal({ plantation, onClose, onReview }) {
                         <span className="text-[11px] text-[#b5ac9e]">{new Date(r.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
-                    {r.comment && <p className="text-[13px] text-[#6b5e4e] leading-relaxed italic font-light">"{r.comment}"</p>}
+                    {r.comment && <p className="text-[13px] text-[#6b5e4e] leading-relaxed italic font-light">{r.comment}</p>}
                   </div>
                 ))}
               </div>

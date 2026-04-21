@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 /*
  Project: TerraSpotter Platform
  Author: Om Borekar
@@ -9,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -71,7 +71,7 @@ function ReviewCard({ review }) {
 
       {review.body && (
         <p className="text-[13px] text-[#6b5e4e] leading-relaxed italic border-l-2 border-[#4db87a]/40 pl-3 font-light font-['Outfit',sans-serif]">
-          "{review.body}"
+          {review.body}
         </p>
       )}
     </motion.div>

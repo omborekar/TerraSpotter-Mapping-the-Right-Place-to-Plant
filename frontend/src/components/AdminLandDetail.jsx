@@ -335,7 +335,7 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
                       )}
                       {r.body && (
                         <p className="text-[12.5px] text-white/40 leading-relaxed border-l-2 border-[#4db87a]/30 pl-3 italic font-['Outfit',sans-serif] font-light">
-                          "{r.body}"
+                          {r.body}
                         </p>
                       )}
                     </div>

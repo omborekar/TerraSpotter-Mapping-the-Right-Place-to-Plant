@@ -431,7 +431,7 @@ export default function SiteDetail() {
                       </div>
                       {land.notes && (
                         <div className="mt-4 px-4 py-3 bg-[#f7f3ec] rounded-xl border-l-4 border-[#4db87a]/50 text-[13px] text-[#6b5e4e] italic leading-relaxed font-light">
-                          "{land.notes}"
+                          {land.notes}
                         </div>
                       )}
                     </div>
@@ -551,7 +551,7 @@ export default function SiteDetail() {
                                 {rv.feasibilityNote && <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700">✅ {rv.feasibilityNote}</span>}
                                 {rv.permissionNote && <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-200/80 text-sky-700">🔐 {rv.permissionNote}</span>}
                               </div>
-                              {rv.body && <p className="text-[12.5px] text-[#6b5e4e] italic leading-relaxed border-l-2 border-[#4db87a]/40 pl-3 font-light">"{rv.body}"</p>}
+                              {rv.body && <p className="text-[12.5px] text-[#6b5e4e] italic leading-relaxed border-l-2 border-[#4db87a]/40 pl-3 font-light">{rv.body}</p>}
                             </div>
                           ))}
                           {reviews.length > 3 && (

@@ -221,7 +221,7 @@ const GridCard = ({ land, onOpenGallery, onNavigate }) => {
 
         {land.notes && (
           <p className="text-[12px] text-[#b5ac9e] italic leading-relaxed line-clamp-2 font-['Outfit',sans-serif]">
-            "{land.notes}"
+            {land.notes}
           </p>
         )}
 
@@ -307,7 +307,7 @@ const ListCard = ({ land, onOpenGallery, onNavigate }) => {
 
         {land.notes && (
           <p className="text-[12px] text-[#b5ac9e] italic leading-relaxed line-clamp-1 font-['Outfit',sans-serif] hidden sm:block">
-            "{land.notes}"
+            {land.notes}
           </p>
         )}
 
@@ -737,7 +737,7 @@ const Browse = () => {
                 <button
                   key={img.id}
                   onClick={() => setGalleryIdx(i)}
-                  className={`w-13 h-13 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 shrink-0 cursor-pointer transition-all duration-200 ${i === galleryIdx ? "border-[#4db87a] opacity-100 scale-105" : "border-transparent opacity-40 hover:opacity-70"
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 shrink-0 cursor-pointer transition-all duration-200 ${i === galleryIdx ? "border-[#4db87a] opacity-100 scale-105" : "border-transparent opacity-40 hover:opacity-70"
                     }`}
                 >
                   <img src={img.imageUrl} className="w-full h-full object-cover"
