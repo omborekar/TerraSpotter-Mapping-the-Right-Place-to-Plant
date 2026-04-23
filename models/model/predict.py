@@ -2,7 +2,10 @@
 # Author: Om Borekar
 # Year: 2026
 # Description: Return top tree recommendations from trained model for given climate/soil inputs.
-
+import pandas as pd
+import numpy as np
+import joblib
+model = joblib.load("tree_model.pkl")
 def recommend_trees(temp, rainfall, soil, climate, top_k=5):
 
     input_df = pd.DataFrame([{
@@ -24,7 +27,7 @@ def recommend_trees(temp, rainfall, soil, climate, top_k=5):
 
     # select top indices and shuffle their order slightly
     top_indices = np.argsort(probs)[::-1][:top_k]
-    np.random.shuffle(top_indices)
+    
 
     results = []
     for i in top_indices:
