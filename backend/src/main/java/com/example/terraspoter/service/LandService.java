@@ -60,6 +60,7 @@ public class LandService {
     private final CloudinaryService                   cloudinaryService;
     private final BrevoEmailService                   emailService;
     private final GamificationService                 gamificationService;
+    private final SpatialGridService                  spatialGridService;
 
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(8))
@@ -116,6 +117,11 @@ public class LandService {
 
     public Land saveLand(Map<String, Object> payload, Long userId) {
         Land land = buildLandFromPayload(payload, userId);
+        
+        // Use SpatialGridService to calculate estimated tree capacity
+        int estimatedCapacity = spatialGridService.estimateTreeCapacity(land.getPolygonCoords());
+        land.setEstimatedTreeCapacity(estimatedCapacity);
+        
         Land saved = landRepository.save(land);
         fetchAndSaveRecommendations(saved);
 

@@ -37,6 +37,8 @@ public class Land {
     private Double centroidLat;
     private Double centroidLng;
     private Double areaSqm;
+    
+    private Integer estimatedTreeCapacity;
 
     private String ownerName;
     private String ownerPhone;
