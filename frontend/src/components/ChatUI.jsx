@@ -38,7 +38,7 @@ const ChatUI = () => {
                 { withCredentials: true }
             );
 
-            setMessages(prev => [...prev, { role: 'assistant', text: response.data.reply }]);
+            setMessages(prev => [...prev, { role: 'assistant', text: response.data.reply, lands: response.data.lands }]);
         } catch (error) {
             console.error("Chat error:", error);
             setMessages(prev => [...prev, { role: 'assistant', text: "Sorry, I am having trouble connecting to the TerraSpotter backend right now." }]);
@@ -69,6 +69,27 @@ const ChatUI = () => {
                             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-emerald-500 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm border border-slate-100 dark:border-slate-700 rounded-bl-none'}`}>
                                     {msg.text}
+                                    
+                                    {msg.lands && msg.lands.length > 0 && (
+                                        <div className="flex flex-col gap-2 mt-3 w-full">
+                                            {msg.lands.map(land => (
+                                                <div key={land.id} className="bg-slate-50 dark:bg-slate-700/50 p-2 rounded-xl flex gap-3 items-center border border-slate-200 dark:border-slate-600 w-full min-w-[200px]">
+                                                    {land.imageUrl ? (
+                                                        <img src={land.imageUrl} alt={land.title} className="w-14 h-14 object-cover rounded-lg shadow-sm" />
+                                                    ) : (
+                                                        <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 shrink-0">
+                                                            🌿
+                                                        </div>
+                                                    )}
+                                                    <div className="flex flex-col overflow-hidden">
+                                                        <span className="font-semibold text-sm dark:text-white truncate" title={land.title}>{land.title}</span>
+                                                        <span className="text-xs text-slate-500 dark:text-slate-400">Area: {land.areaSqm} sqm</span>
+                                                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium truncate">{land.status}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}

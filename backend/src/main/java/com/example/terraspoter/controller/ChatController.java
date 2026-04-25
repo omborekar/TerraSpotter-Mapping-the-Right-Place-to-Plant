@@ -26,7 +26,7 @@ public class ChatController {
             return ResponseEntity.status(401).body(Map.of("error", "Not logged in"));
         }
         
-        String reply = chatService.processChat(request.getMessage(), userId);
-        return ResponseEntity.ok(new ChatResponse(reply));
+        com.example.terraspoter.dto.ChatResponse response = chatService.processChat(request.getMessage(), userId);
+        return ResponseEntity.ok(response);
     }
 }

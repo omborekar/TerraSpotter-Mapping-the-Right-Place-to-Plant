@@ -41,10 +41,12 @@ public class ChatService {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
-    public String processChat(String message, Long userId) {
+    public com.example.terraspoter.dto.ChatResponse processChat(String message, Long userId) {
         if (geminiApiKey == null || geminiApiKey.isEmpty()) {
-            return "Error: Gemini API key is not configured.";
+            return new com.example.terraspoter.dto.ChatResponse("Error: Gemini API key is not configured.", null);
         }
+
+        List<com.example.terraspoter.dto.LandTile> associatedLands = null;
 
         try {
             // First call to Gemini with tools
@@ -55,7 +57,7 @@ public class ChatService {
             JsonNode candidate = getFirstCandidate(root);
 
             if (candidate == null) {
-                return "I couldn't process that request at the moment.";
+                return new com.example.terraspoter.dto.ChatResponse("I couldn't process that request at the moment.", null);
             }
 
             JsonNode content = candidate.path("content");
@@ -71,6 +73,10 @@ public class ChatService {
 
                 // Execute tool
                 Object toolResult = executeTool(toolName, args, userId);
+                
+                if ("getUserLands".equals(toolName) && toolResult instanceof List) {
+                    associatedLands = (List<com.example.terraspoter.dto.LandTile>) toolResult;
+                }
 
                 // Send result back to Gemini
                 ObjectNode followUpRequest = buildFollowUpRequest(requestBody, content, toolName, toolResult);
@@ -79,20 +85,21 @@ public class ChatService {
                 JsonNode followUpRoot = objectMapper.readTree(followUpResponse.body());
                 JsonNode finalCandidate = getFirstCandidate(followUpRoot);
                 if (finalCandidate != null && finalCandidate.path("content").path("parts").isArray()) {
-                    return finalCandidate.path("content").path("parts").get(0).path("text").asText("No text response");
+                    String finalReply = finalCandidate.path("content").path("parts").get(0).path("text").asText("No text response");
+                    return new com.example.terraspoter.dto.ChatResponse(finalReply, associatedLands);
                 }
             }
 
             // Normal text response
             if (parts.isArray() && parts.size() > 0 && parts.get(0).has("text")) {
-                return parts.get(0).get("text").asText();
+                return new com.example.terraspoter.dto.ChatResponse(parts.get(0).get("text").asText(), associatedLands);
             }
 
-            return "I am unable to answer right now.";
+            return new com.example.terraspoter.dto.ChatResponse("I am unable to answer right now.", null);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Chat processing failed", e);
-            return "Sorry, I encountered an internal error while processing your request.";
+            return new com.example.terraspoter.dto.ChatResponse("Sorry, I encountered an internal error while processing your request.", null);
         }
     }
 
@@ -101,15 +108,21 @@ public class ChatService {
             switch (toolName) {
                 case "getUserLands":
                     List<Land> lands = landService.getLandsByUser(userId);
-                    // Simplify object to avoid token bloat
-                    return lands.stream().map(l -> 
-                        objectMapper.createObjectNode()
-                            .put("id", l.getId())
-                            .put("title", l.getTitle())
-                            .put("status", l.getLandStatus())
-                            .put("areaSqm", l.getAreaSqm())
-                            .put("waterAvailable", l.getWaterAvailable())
-                    ).toList();
+                    return lands.stream().map(l -> {
+                        String imageUrl = null;
+                        var images = landService.getImagesByLandId(l.getId());
+                        if (images != null && !images.isEmpty()) {
+                            imageUrl = images.get(0).getImageUrl();
+                        }
+                        return new com.example.terraspoter.dto.LandTile(
+                            l.getId(),
+                            l.getTitle(),
+                            l.getDescription(),
+                            l.getAreaSqm(),
+                            l.getLandStatus(),
+                            imageUrl
+                        );
+                    }).toList();
                 
                 case "getRecommendations":
                     if (!args.has("landId")) return "Error: landId missing";
