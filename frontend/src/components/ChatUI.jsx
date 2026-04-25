@@ -48,7 +48,7 @@ const ChatUI = () => {
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end">
             {/* Chat Window */}
             {isOpen && (
                 <div className="w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden mb-4 border border-emerald-100 dark:border-emerald-800 transition-all duration-300">
