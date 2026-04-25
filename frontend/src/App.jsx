@@ -36,6 +36,7 @@ const ContributionMap = lazy(() => import("./components/ContributionMap"));
 
 import "./App.css";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
+import ChatUI from "./components/ChatUI";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -76,6 +77,7 @@ function App() {
 
       {/* 🔥 PASS USER */}
       <Navbar user={user} />
+      {user && <ChatUI />}
 
       <Suspense fallback={<LoadingSpinner text="Fetching layout..." />}>
         <Routes>
