@@ -21,8 +21,11 @@ function fmt(n) {
   return String(n);
 }
 
+import { useUser } from "../context/UserContext";
+
 export default function Login() {
   const { t } = useTranslation();
+  const { login: contextLogin } = useUser();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -52,8 +55,8 @@ export default function Login() {
     if (!validate()) return;
     setLoading(true);
     try {
-      await axios.post(`${BASE_URL}/api/auth/login`, form, { withCredentials: true });
-      window.dispatchEvent(new Event("login"));
+      const res = await axios.post(`${BASE_URL}/api/auth/login`, form, { withCredentials: true });
+      contextLogin(res.data);
       navigate("/Main");
     } catch {
       setErrors({ api: "Invalid email or password" });

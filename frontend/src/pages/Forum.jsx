@@ -7,7 +7,10 @@ import { MessageSquare, ThumbsUp, User as UserIcon, Send, Clock, AlertCircle } f
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-export default function Forum({ user }) {
+import { useUser } from "../context/UserContext";
+
+export default function Forum() {
+  const { user } = useUser();
   const { t } = useTranslation();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);

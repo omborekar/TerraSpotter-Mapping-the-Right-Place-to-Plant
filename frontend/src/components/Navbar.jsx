@@ -7,43 +7,24 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useUser } from "../context/UserContext";
+import { useTheme } from "../context/ThemeContext";
+import { Moon, Sun } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Navbar() {
   const { t } = useTranslation();
-  const [user, setUser] = useState(null);
-  const [xpData, setXpData] = useState(null);
+  const { user, xpData, logout: contextLogout } = useUser();
+  const { theme, toggleTheme } = useTheme();
   const [ddOpen, setDdOpen] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const ddRef = useRef(null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
-  /* session */
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const r = await axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true });
-        setUser(r.data);
-        try {
-          const xp = await axios.get(`${BASE_URL}/api/gamification/me`, { withCredentials: true });
-          setXpData(xp.data);
-        } catch { setXpData(null); }
-      } catch { setUser(null); setXpData(null); }
-    };
-    setTimeout(fetchUser, 300);
-    window.addEventListener("login", fetchUser);
-    window.addEventListener("logout", () => { setUser(null); setXpData(null); });
-    return () => {
-      window.removeEventListener("login", fetchUser);
-      window.removeEventListener("logout", () => { });
-    };
-  }, []);
 
   /* scroll */
   useEffect(() => {
@@ -71,11 +52,10 @@ export default function Navbar() {
   useEffect(() => { setDdOpen(false); }, [pathname]);
 
   const logout = async () => {
-    try {
-      await axios.post(`${BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
-      setUser(null); setDdOpen(false); setDrawer(false);
-      window.dispatchEvent(new Event("logout")); navigate("/login");
-    } catch (e) { console.error(e); }
+    await contextLogout();
+    setDdOpen(false);
+    setDrawer(false);
+    navigate("/login");
   };
 
   const on = (p) => pathname === p;
@@ -145,8 +125,8 @@ export default function Navbar() {
         ═══════════════════════════════ */
         .nv-bar {
           height: 62px; display: flex; align-items: center;
-          background: #f8fdf9;
-          border-bottom: 1px solid rgba(34,197,94,0.12);
+          background: var(--background);
+          border-bottom: 1px solid var(--border);
           transition: background 0.3s, box-shadow 0.3s;
           position: relative;
         }
@@ -157,12 +137,37 @@ export default function Navbar() {
           pointer-events: none;
         }
         .nv-bar.up {
-          background: rgba(248,253,249,0.92);
+          background: var(--background);
           backdrop-filter: blur(22px) saturate(1.6);
           -webkit-backdrop-filter: blur(22px) saturate(1.6);
-          border-bottom-color: rgba(34,197,94,0.18);
           box-shadow: 0 1px 0 rgba(34,197,94,0.08), 0 4px 32px rgba(0,0,0,0.07);
         }
+
+        /* ── Dark Mode Overrides ── */
+        .dark .nv-bar { background: #0c1e11; border-bottom-color: rgba(255,255,255,0.05); }
+        .dark .nv-lk { color: #86a490; }
+        .dark .nv-lk:hover { color: #4db87a; background: rgba(77,184,122,0.1); }
+        .dark .nv-lk.hi { color: #4db87a; background: rgba(77,184,122,0.15); }
+        .dark .nv-ghost { color: #86a490; }
+        .dark .nv-pill { background: #0f2916; border-color: rgba(255,255,255,0.1); color: #fff; }
+        .dark .nv-dd { background: #0c1e11; border-color: rgba(255,255,255,0.1); }
+        .dark .nv-dd-who { background: linear-gradient(135deg, #0f2916, #0c1e11); border-bottom-color: #0f2916; }
+        .dark .nv-dd-name { color: #fff; }
+        .dark .nv-dd-row { color: #86a490; }
+        .dark .nv-dd-row:hover { background: #0f2916; color: #4db87a; }
+        .dark .nv-dd-ico { background: #0f2916; border-color: rgba(255,255,255,0.05); }
+
+        /* Theme Toggle Button */
+        .nv-theme-btn {
+          width: 38px; height: 38px; border-radius: 10px;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; border: 1.5px solid rgba(34,197,94,0.2);
+          background: transparent; color: #15803d;
+          transition: all 0.2s;
+        }
+        .dark .nv-theme-btn { color: #4db87a; border-color: rgba(255,255,255,0.1); background: #0f2916; }
+        .nv-theme-btn:hover { background: rgba(34,197,94,0.07); transform: scale(1.05); }
+        .dark .nv-theme-btn:hover { background: #1a3d25; }
 
         .nv-inner {
           width: 100%; max-width: 1280px; margin: 0 auto;
@@ -619,8 +624,13 @@ export default function Navbar() {
             {/* Right */}
             <div className="nv-right">
               <div className="nv-ls-desk">
-                <LanguageSwitcher dark={true} />
+                <LanguageSwitcher dark={theme === "dark"} />
               </div>
+
+              {/* Theme Toggle */}
+              <button className="nv-theme-btn" onClick={toggleTheme} aria-label="Toggle Theme">
+                {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+              </button>
 
               {!user ? (
                 <>

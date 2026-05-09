@@ -12,9 +12,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-// Removed LoadingSpinner
-import PlantationForm from "./PlantationForm.jsx";
-import CompletePlantationModal from "./CompletePlantationModal.jsx";
+import PlantationForm from "../components/PlantationForm.jsx";
+import CompletePlantationModal from "../components/CompletePlantationModal.jsx";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 

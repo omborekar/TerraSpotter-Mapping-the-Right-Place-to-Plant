@@ -9,6 +9,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import AdminLandDetail from "./AdminLandDetail";
+import { useUser } from "../context/UserContext";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -113,21 +114,13 @@ function Tag({ children }) {
 // ─── Main ─────────────────────────────────────────────────────
 export default function AdminPendingLands() {
   const { t } = useTranslation();
+  const { user, loading: sessionLoading } = useUser();
   const [lands, setLands] = useState([]);
-  const [user, setUser] = useState(null);
-  const [sessionLoading, setSessionLoad] = useState(true);
   const [landsLoading, setLandsLoading] = useState(false);
   const [voting, setVoting] = useState({});
   const [selectedId, setSelectedId] = useState(null);
   const [filter, setFilter] = useState("ALL");
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    axios.get(`${BASE_URL}/api/auth/session`, { withCredentials: true })
-      .then(r => setUser(r.data))
-      .catch(() => setUser(null))
-      .finally(() => setSessionLoad(false));
-  }, []);
 
   const fetchLands = useCallback(async () => {
     setLandsLoading(true);
