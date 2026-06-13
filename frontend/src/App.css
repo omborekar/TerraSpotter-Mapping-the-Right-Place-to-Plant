@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Global app styles and Tailwind CSS configuration.
+ Description: Global dark-first app styles with Tailwind CSS design tokens.
 */
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
@@ -49,10 +49,9 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ── Light Theme (fallback) ── */
 :root {
   --radius: 0.625rem;
-
-  /* TerraSpotter Light Theme — Warm Cream + Forest Green */
   --background: #f7f4ee;
   --foreground: #0c1e11;
   --card: #ffffff;
@@ -86,8 +85,8 @@
   --sidebar-ring: rgba(77,184,122,0.45);
 }
 
+/* ── Dark Theme (default) ── */
 .dark {
-  /* TerraSpotter Dark Theme — Deep Forest */
   --background: #0b1d10;
   --foreground: #e8f5ee;
   --card: #0f2916;
@@ -127,8 +126,76 @@
   }
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Custom scrollbar for dark mode */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+
+  /* Selection color */
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+}
+
+/* ── Utility classes ── */
+@layer utilities {
+  .glass {
+    background: rgba(15, 41, 22, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .glass-light {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #4db87a, #2d8a55);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-green {
+    box-shadow: 0 0 20px rgba(77,184,122,0.3), 0 0 40px rgba(77,184,122,0.1);
+  }
+
+  .card-dark {
+    @apply bg-card border border-border rounded-2xl;
+  }
+
+  .input-dark {
+    @apply w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-semibold rounded-xl transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20;
+  }
+
+  .btn-ghost {
+    @apply border border-border text-muted-foreground rounded-xl transition-all hover:border-primary/40 hover:text-primary hover:bg-primary/5;
   }
 }

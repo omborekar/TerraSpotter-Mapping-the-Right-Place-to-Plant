@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Navbar — premium light theme, unique & eye-catching.
+ Description: Navbar — fully dark, pure Tailwind, responsive with side drawer.
 */
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useUser } from "../context/UserContext";
 import { useTheme } from "../context/ThemeContext";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, X, Menu, ChevronDown, LogOut, User, Settings } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -26,29 +26,23 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  /* scroll */
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", h);
     return () => window.removeEventListener("scroll", h);
   }, []);
 
-  /* click-outside desktop dropdown */
   useEffect(() => {
-    const h = (e) => {
-      if (ddRef.current && !ddRef.current.contains(e.target)) setDdOpen(false);
-    };
+    const h = (e) => { if (ddRef.current && !ddRef.current.contains(e.target)) setDdOpen(false); };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  /* body lock when drawer open */
   useEffect(() => {
     document.body.style.overflow = drawer ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [drawer]);
 
-  /* close desktop dropdown on route change */
   useEffect(() => { setDdOpen(false); }, [pathname]);
 
   const logout = async () => {
@@ -85,740 +79,291 @@ export default function Navbar() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+      {/* ── TOP SHIMMER LINE ── */}
+      <div className="h-[2.5px] bg-gradient-to-r from-emerald-900 via-primary to-emerald-900 animate-pulse sticky top-0 z-[201]" />
 
-        *, *::before, *::after { box-sizing: border-box; }
+      {/* ── NAVBAR BAR ── */}
+      <nav className={`sticky top-[2.5px] z-[200] transition-all duration-300 ${
+        scrolled
+          ? "bg-background/90 backdrop-blur-2xl border-b border-border shadow-lg shadow-black/20"
+          : "bg-background border-b border-border"
+      }`}>
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-7 h-[62px] flex items-center gap-0">
 
-        /* ═══════════════════════════════
-           SHIMMER ANIMATION
-        ═══════════════════════════════ */
-        @keyframes nv-shimmer {
-          0%   { background-position: -200% center; }
-          100% { background-position:  200% center; }
-        }
-        @keyframes nv-pulse-dot {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
-          50%       { box-shadow: 0 0 0 4px rgba(34,197,94,0); }
-        }
+          {/* Brand */}
+          <Link to="/" className="flex items-center gap-2.5 shrink-0 mr-7 group">
+            <img src="/favicon.ico" alt="TerraSpotter" className="w-8 h-8 rounded-[9px] object-cover ring-1 ring-primary/25 shadow-md shadow-primary/20 group-hover:ring-primary/50 group-hover:-rotate-6 transition-all duration-200" />
+            <span className="font-bold text-[18.5px] tracking-tight bg-gradient-to-r from-primary via-emerald-400 to-primary bg-clip-text text-transparent drop-shadow-sm">
+              TerraSpotter
+            </span>
+          </Link>
 
-        /* ═══════════════════════════════
-           WRAPPER
-        ═══════════════════════════════ */
-        .nv {
-          font-family: 'Plus Jakarta Sans', sans-serif;
-          position: sticky; top: 0; z-index: 200;
-        }
+          {/* Desktop Nav links */}
+          <nav className="hidden lg:flex items-center gap-0.5 flex-1">
+            {NAV.map(({ to, label }) => (
+              <Link
+                key={to}
+                to={to}
+                className={`relative text-[13.5px] font-medium px-3 py-1.5 rounded-lg transition-all duration-150 whitespace-nowrap ${
+                  on(to)
+                    ? "text-primary bg-primary/10 font-semibold"
+                    : "text-muted-foreground hover:text-primary hover:bg-primary/8"
+                }`}
+              >
+                {label}
+                {on(to) && (
+                  <span className="absolute bottom-0.5 left-3 right-3 h-[2px] rounded-full bg-gradient-to-r from-primary to-emerald-400" />
+                )}
+              </Link>
+            ))}
+          </nav>
 
-        /* ── Shimmer top accent line ── */
-        .nv-topline {
-          height: 2.5px;
-          background: linear-gradient(90deg,
-            #d1fae5 0%, #22c55e 20%, #16a34a 50%, #22c55e 80%, #d1fae5 100%
-          );
-          background-size: 200% 100%;
-          animation: nv-shimmer 3.5s linear infinite;
-        }
+          {/* Right section */}
+          <div className="ml-auto flex items-center gap-2 shrink-0">
 
-        /* ═══════════════════════════════
-           BAR
-        ═══════════════════════════════ */
-        .nv-bar {
-          height: 62px; display: flex; align-items: center;
-          background: var(--background);
-          border-bottom: 1px solid var(--border);
-          transition: background 0.3s, box-shadow 0.3s;
-          position: relative;
-        }
-        .nv-bar::after {
-          content: '';
-          position: absolute; inset: 0;
-          background: linear-gradient(180deg, rgba(34,197,94,0.025) 0%, transparent 100%);
-          pointer-events: none;
-        }
-        .nv-bar.up {
-          background: var(--background);
-          backdrop-filter: blur(22px) saturate(1.6);
-          -webkit-backdrop-filter: blur(22px) saturate(1.6);
-          box-shadow: 0 1px 0 rgba(34,197,94,0.08), 0 4px 32px rgba(0,0,0,0.07);
-        }
+            {/* Language switcher — desktop only */}
+            <div className="hidden lg:block">
+              <LanguageSwitcher dark={theme === "dark"} />
+            </div>
 
-        /* ── Dark Mode Overrides ── */
-        .dark .nv-bar { background: #0c1e11; border-bottom-color: rgba(255,255,255,0.05); }
-        .dark .nv-lk { color: #86a490; }
-        .dark .nv-lk:hover { color: #4db87a; background: rgba(77,184,122,0.1); }
-        .dark .nv-lk.hi { color: #4db87a; background: rgba(77,184,122,0.15); }
-        .dark .nv-ghost { color: #86a490; }
-        .dark .nv-pill { background: #0f2916; border-color: rgba(255,255,255,0.1); color: #fff; }
-        .dark .nv-dd { background: #0c1e11; border-color: rgba(255,255,255,0.1); }
-        .dark .nv-dd-who { background: linear-gradient(135deg, #0f2916, #0c1e11); border-bottom-color: #0f2916; }
-        .dark .nv-dd-name { color: #fff; }
-        .dark .nv-dd-row { color: #86a490; }
-        .dark .nv-dd-row:hover { background: #0f2916; color: #4db87a; }
-        .dark .nv-dd-ico { background: #0f2916; border-color: rgba(255,255,255,0.05); }
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle Theme"
+              className="w-9 h-9 rounded-[10px] flex items-center justify-center border border-border text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
+            >
+              {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+            </button>
 
-        /* Theme Toggle Button */
-        .nv-theme-btn {
-          width: 38px; height: 38px; border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; border: 1.5px solid rgba(34,197,94,0.2);
-          background: transparent; color: #15803d;
-          transition: all 0.2s;
-        }
-        .dark .nv-theme-btn { color: #4db87a; border-color: rgba(255,255,255,0.1); background: #0f2916; }
-        .nv-theme-btn:hover { background: rgba(34,197,94,0.07); transform: scale(1.05); }
-        .dark .nv-theme-btn:hover { background: #1a3d25; }
+            {/* Auth — desktop */}
+            {!user ? (
+              <div className="hidden lg:flex items-center gap-2">
+                <div className="w-px h-4 bg-border" />
+                <Link to="/login" className="text-[13.5px] font-medium text-muted-foreground hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all">
+                  {t("navbar.login", "Sign in")}
+                </Link>
+                <Link to="/signup" className="text-[13.5px] font-bold text-primary-foreground px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 transition-all shadow-md shadow-primary/25 hover:shadow-primary/40">
+                  {t("navbar.signup", "Get started →")}
+                </Link>
+              </div>
+            ) : (
+              /* Profile pill — desktop */
+              <div className="hidden lg:block relative" ref={ddRef}>
+                <button
+                  onClick={() => setDdOpen(o => !o)}
+                  className={`flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full border transition-all duration-200 text-[13.5px] font-semibold whitespace-nowrap ${
+                    ddOpen
+                      ? "border-primary bg-primary/10 shadow-md shadow-primary/20"
+                      : "border-border bg-card hover:border-primary/40 hover:bg-card/80 shadow-sm"
+                  }`}
+                >
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-emerald-600 text-primary-foreground text-[10px] font-bold flex items-center justify-center ring-2 ring-primary/20">
+                    {ini}
+                  </div>
+                  <span className="text-foreground">{user.fname}</span>
+                  {xpData && (
+                    <span className="text-[10.5px] font-bold text-amber-400 bg-amber-900/30 px-2 py-0.5 rounded-full border border-amber-800/40">
+                      ⚡ {xpData.totalXp?.toLocaleString()} · Lv {xpData.level}
+                    </span>
+                  )}
+                  <ChevronDown size={11} className={`text-muted-foreground transition-transform duration-200 ${ddOpen ? "rotate-180" : ""}`} />
+                </button>
 
-        .nv-inner {
-          width: 100%; max-width: 1280px; margin: 0 auto;
-          padding: 0 28px; display: flex; align-items: center;
-          height: 100%; gap: 0; position: relative; z-index: 1;
-        }
+                {/* Dropdown */}
+                <AnimatePresence>
+                  {ddOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute top-[calc(100%+10px)] right-0 w-[248px] bg-card border border-border rounded-2xl shadow-2xl shadow-black/30 overflow-hidden z-[999]"
+                    >
+                      {/* Shimmer top */}
+                      <div className="h-[2px] bg-gradient-to-r from-emerald-900 via-primary to-emerald-900" />
 
-        /* ═══════════════════════════════
-           BRAND
-        ═══════════════════════════════ */
-        .nv-brand {
-          display: flex; align-items: center; gap: 9px;
-          text-decoration: none; flex-shrink: 0; margin-right: 34px;
-          transition: opacity 0.18s;
-        }
-        .nv-brand img {
-          width: 32px; height: 32px; border-radius: 9px; object-fit: cover;
-          box-shadow: 0 0 0 1.5px rgba(34,197,94,0.25), 0 3px 10px rgba(34,197,94,0.2);
-          flex-shrink: 0;
-          transition: box-shadow 0.2s, transform 0.2s;
-        }
-        .nv-brand:hover img {
-          box-shadow: 0 0 0 2px rgba(34,197,94,0.45), 0 4px 16px rgba(34,197,94,0.3);
-          transform: rotate(-4deg) scale(1.07);
-        }
-        .nv-brand-txt {
-          font-family: 'Syne', sans-serif;
-          font-size: 18.5px; font-weight: 800;
-          background: linear-gradient(120deg, #15803d, #22c55e, #166534);
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-          background-clip: text;
-          letter-spacing: -0.3px; white-space: nowrap;
-          filter: drop-shadow(0 1px 6px rgba(34,197,94,0.18));
-          transition: filter 0.2s;
-        }
-        .nv-brand:hover .nv-brand-txt {
-          filter: drop-shadow(0 0 12px rgba(34,197,94,0.4));
-        }
+                      {/* Who */}
+                      <div className="flex items-center gap-3 px-4 py-3.5 bg-gradient-to-br from-secondary to-card border-b border-border">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-emerald-600 text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 shadow-md">
+                          {ini}
+                        </div>
+                        <div className="overflow-hidden">
+                          <div className="text-[13px] font-bold text-foreground truncate">{user.fname} {user.lname}</div>
+                          <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
+                        </div>
+                      </div>
 
-        /* ═══════════════════════════════
-           DESKTOP NAV LINKS
-        ═══════════════════════════════ */
-        .nv-links { display: flex; align-items: center; gap: 1px; flex: 1; }
-        .nv-lk {
-          position: relative; font-size: 13.5px; font-weight: 500;
-          color: #4b6355;
-          text-decoration: none; padding: 6px 11px; border-radius: 8px;
-          transition: color 0.16s, background 0.16s; white-space: nowrap;
-        }
-        .nv-lk:hover {
-          color: #15803d;
-          background: rgba(34,197,94,0.07);
-        }
-        .nv-lk.hi {
-          color: #15803d; font-weight: 650;
-          background: rgba(34,197,94,0.1);
-        }
-        .nv-lk.hi::after {
-          content: '';
-          position: absolute; bottom: 1px; left: 11px; right: 11px;
-          height: 2px; border-radius: 2px;
-          background: linear-gradient(90deg, #22c55e, #16a34a);
-          box-shadow: 0 0 8px rgba(34,197,94,0.45);
-        }
+                      {/* Nav items */}
+                      <div className="p-1.5">
+                        <Link to="/profile" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-muted-foreground hover:bg-primary/8 hover:text-primary transition-all" onClick={() => setDdOpen(false)}>
+                          <span className="w-7 h-7 rounded-lg bg-secondary border border-border flex items-center justify-center text-[13px] shrink-0">👤</span>
+                          {t("navbar.profile", "My Profile")}
+                        </Link>
+                        {NAV.filter(x => x.to !== "/").map(({ to, icon, label }) => (
+                          <Link key={to} to={to} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-muted-foreground hover:bg-primary/8 hover:text-primary transition-all" onClick={() => setDdOpen(false)}>
+                            <span className="w-7 h-7 rounded-lg bg-secondary border border-border flex items-center justify-center text-[13px] shrink-0">{icon}</span>
+                            {label}
+                          </Link>
+                        ))}
+                      </div>
 
-        /* ═══════════════════════════════
-           RIGHT SECTION
-        ═══════════════════════════════ */
-        .nv-right {
-          margin-left: auto; flex-shrink: 0;
-          display: flex; align-items: center; gap: 8px;
-        }
-        .nv-vd {
-          width: 1px; height: 18px;
-          background: linear-gradient(180deg, transparent, rgba(34,197,94,0.25), transparent);
-        }
+                      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mx-3" />
 
-        /* Ghost sign-in */
-        .nv-ghost {
-          font-size: 13.5px; font-weight: 500; color: #4b6355;
-          text-decoration: none; padding: 7px 14px; border-radius: 8px;
-          transition: color 0.16s, background 0.16s; white-space: nowrap;
-        }
-        .nv-ghost:hover { color: #15803d; background: rgba(34,197,94,0.07); }
+                      <div className="p-1.5">
+                        <button onClick={logout} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-destructive hover:bg-destructive/10 w-full transition-all">
+                          <span className="w-7 h-7 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center text-[13px] shrink-0">🚪</span>
+                          {t("navbar.logout", "Sign out")}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
-        /* CTA Button */
-        .nv-cta {
-          position: relative; overflow: hidden;
-          font-size: 13.5px; font-weight: 700; color: #fff;
-          text-decoration: none; padding: 8px 18px; border-radius: 8px;
-          background: linear-gradient(135deg, #22c55e, #16a34a);
-          box-shadow: 0 0 0 1px rgba(22,163,74,0.3), 0 3px 14px rgba(34,197,94,0.3);
-          transition: transform 0.15s, box-shadow 0.15s, filter 0.15s; white-space: nowrap;
-          letter-spacing: 0.01em;
-        }
-        .nv-cta::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 60%);
-        }
-        .nv-cta:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 0 0 1px rgba(22,163,74,0.4), 0 6px 22px rgba(34,197,94,0.35);
-          filter: brightness(1.04);
-        }
-        .nv-cta:active { transform: scale(0.97); }
+            {/* Hamburger — mobile */}
+            <button
+              onClick={() => setDrawer(o => !o)}
+              aria-label="Menu"
+              className="lg:hidden w-9 h-9 rounded-[9px] flex flex-col items-center justify-center gap-[4.5px] border border-border bg-card hover:border-primary/40 hover:bg-secondary transition-all"
+            >
+              <span className={`block w-[17px] h-[1.5px] bg-primary rounded-full transition-all duration-250 ${drawer ? "translate-y-[6px] rotate-45" : ""}`} />
+              <span className={`block w-[17px] h-[1.5px] bg-primary rounded-full transition-all duration-250 ${drawer ? "opacity-0 scale-x-0" : ""}`} />
+              <span className={`block w-[17px] h-[1.5px] bg-primary rounded-full transition-all duration-250 ${drawer ? "-translate-y-[6px] -rotate-45" : ""}`} />
+            </button>
 
-        /* ═══════════════════════════════
-           PROFILE PILL
-        ═══════════════════════════════ */
-        .nv-pill {
-          display: flex; align-items: center; gap: 8px;
-          padding: 4px 8px 4px 5px; border-radius: 100px;
-          border: 1.5px solid rgba(34,197,94,0.2);
-          background: #fff;
-          cursor: pointer;
-          font-family: 'Plus Jakarta Sans', sans-serif;
-          font-size: 13.5px; font-weight: 600; color: #1a3d25;
-          box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-          transition: all 0.2s cubic-bezier(.4,0,.2,1); white-space: nowrap;
-        }
-        .nv-pill:hover {
-          border-color: rgba(34,197,94,0.42);
-          box-shadow: 0 3px 16px rgba(34,197,94,0.15), 0 1px 6px rgba(0,0,0,0.06);
-          transform: translateY(-1px);
-          background: #f0fdf4;
-        }
-        .nv-pill.open {
-          border-color: #22c55e;
-          background: #f0fdf4;
-          box-shadow: 0 0 0 3px rgba(34,197,94,0.12), 0 3px 16px rgba(34,197,94,0.15);
-        }
-        .nv-ini {
-          width: 28px; height: 28px; border-radius: 50%;
-          background: linear-gradient(135deg, #22c55e, #15803d);
-          color: #fff; font-size: 10px; font-weight: 800;
-          display: flex; align-items: center; justify-content: center;
-          letter-spacing: 0.6px; flex-shrink: 0;
-          box-shadow: 0 0 0 2px rgba(34,197,94,0.22);
-        }
-        .nv-xp-badge {
-          font-size: 10.5px; font-weight: 700;
-          color: #b45309;
-          background: #fef3c7;
-          padding: 2px 8px; border-radius: 100px;
-          border: 1px solid rgba(180,83,9,0.18);
-          white-space: nowrap; letter-spacing: 0.2px;
-        }
-        .nv-chv { opacity: 0.35; flex-shrink: 0; transition: transform 0.22s, opacity 0.15s; }
-        .nv-chv.r { transform: rotate(180deg); opacity: 0.65; }
+          </div>
+        </div>
+      </nav>
 
-        /* ═══════════════════════════════
-           DESKTOP DROPDOWN
-        ═══════════════════════════════ */
-        .nv-dd {
-          position: absolute; top: calc(100% + 10px); right: 0;
-          width: 248px; background: #fff;
-          border: 1px solid rgba(34,197,94,0.14);
-          border-radius: 18px;
-          box-shadow: 0 12px 48px rgba(0,0,0,0.12), 0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(34,197,94,0.06);
-          overflow: hidden; z-index: 999;
-        }
-        .nv-dd-top {
-          height: 2.5px;
-          background: linear-gradient(90deg, #d1fae5 0%, #22c55e 30%, #16a34a 50%, #22c55e 70%, #d1fae5 100%);
-          background-size: 200% 100%;
-          animation: nv-shimmer 3s linear infinite;
-        }
-        .nv-dd-who {
-          display: flex; align-items: center; gap: 11px;
-          padding: 13px 15px 12px;
-          border-bottom: 1px solid #f0fdf4;
-          background: linear-gradient(135deg, #f0fdf4, #fff);
-        }
-        .nv-dd-avt {
-          width: 38px; height: 38px; border-radius: 50%;
-          background: linear-gradient(135deg, #22c55e, #15803d);
-          color: #fff; font-size: 12px; font-weight: 800;
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; box-shadow: 0 2px 8px rgba(34,197,94,0.28);
-        }
-        .nv-dd-name { font-size: 13px; font-weight: 700; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .nv-dd-email { font-size: 11px; color: #86a490; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-        .nv-dd-body { padding: 5px; }
-        .nv-dd-row {
-          display: flex; align-items: center; gap: 9px;
-          padding: 8px 9px; border-radius: 9px;
-          font-size: 13px; color: #2d4a35;
-          text-decoration: none; background: none; border: none;
-          width: 100%; text-align: left; cursor: pointer;
-          transition: background 0.13s, color 0.13s;
-          font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500;
-        }
-        .nv-dd-row:hover { background: #f0fdf4; color: #15803d; }
-        .nv-dd-row.out { color: #dc2626; }
-        .nv-dd-row.out:hover { background: #fef2f2; }
-        .nv-dd-ico {
-          width: 28px; height: 28px; border-radius: 7px;
-          background: #f0fdf4; border: 1px solid rgba(34,197,94,0.12);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 13px; flex-shrink: 0; transition: background 0.13s;
-        }
-        .nv-dd-row:hover .nv-dd-ico { background: #dcfce7; }
-        .nv-dd-row.out .nv-dd-ico { background: #fef2f2; border-color: rgba(220,38,38,0.1); }
-        .nv-dd-row.out:hover .nv-dd-ico { background: #fee2e2; }
-        .nv-dd-sep {
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(34,197,94,0.15), transparent);
-          margin: 3px 8px;
-        }
+      {/* ── MOBILE SIDE DRAWER ── */}
+      <AnimatePresence>
+        {drawer && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 z-[290] bg-black/50 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22 }}
+              onClick={() => setDrawer(false)}
+            />
 
-        /* ═══════════════════════════════
-           HAMBURGER
-        ═══════════════════════════════ */
-        .nv-ham {
-          display: none; width: 38px; height: 38px; border-radius: 9px;
-          border: 1.5px solid rgba(34,197,94,0.2); background: #fff;
-          cursor: pointer; flex-direction: column;
-          align-items: center; justify-content: center; gap: 4.5px;
-          box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-          transition: background 0.15s, border-color 0.18s, box-shadow 0.18s;
-          flex-shrink: 0;
-        }
-        .nv-ham:hover {
-          background: #f0fdf4;
-          border-color: rgba(34,197,94,0.4);
-          box-shadow: 0 2px 10px rgba(34,197,94,0.14);
-        }
-        .nv-ham-ln {
-          width: 17px; height: 1.5px;
-          background: #15803d; border-radius: 2px;
-          transition: transform 0.24s cubic-bezier(.4,0,.2,1), opacity 0.2s;
-        }
-        .nv-ham.x .nv-ham-ln:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-        .nv-ham.x .nv-ham-ln:nth-child(2) { opacity: 0; transform: scaleX(0); }
-        .nv-ham.x .nv-ham-ln:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
-
-        /* ═══════════════════════════════
-           BACKDROP
-        ═══════════════════════════════ */
-        .nv-backdrop {
-          position: fixed; inset: 0; z-index: 290;
-          background: rgba(8,30,12,0.38);
-          backdrop-filter: blur(3px);
-          -webkit-backdrop-filter: blur(3px);
-        }
-
-        /* ═══════════════════════════════
-           SIDE DRAWER
-        ═══════════════════════════════ */
-        .nv-drawer {
-          position: fixed; top: 0; right: 0; bottom: 0;
-          width: min(320px, 82vw);
-          background: #f8fdf9;
-          z-index: 300;
-          display: flex; flex-direction: column;
-          box-shadow: -8px 0 48px rgba(0,0,0,0.14), 0 0 0 1px rgba(34,197,94,0.1);
-          overflow: hidden;
-        }
-
-        /* Drawer header */
-        .nv-dr-head {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 0 18px;
-          height: 62px; flex-shrink: 0;
-          background: linear-gradient(135deg, #15803d, #166534);
-          border-bottom: 1px solid rgba(255,255,255,0.1);
-          position: relative;
-        }
-        .nv-dr-head::after {
-          content: '';
-          position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-        }
-        .nv-dr-brand { display: flex; align-items: center; gap: 9px; }
-        .nv-dr-brand img {
-          width: 30px; height: 30px; border-radius: 8px; object-fit: cover;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        }
-        .nv-dr-brand-txt {
-          font-family: 'Syne', sans-serif;
-          font-size: 16.5px; font-weight: 800; color: #fff; letter-spacing: -0.2px;
-        }
-        .nv-dr-close {
-          width: 34px; height: 34px; border-radius: 8px;
-          background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
-          cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          color: #fff; font-size: 14px;
-          transition: background 0.15s;
-        }
-        .nv-dr-close:hover { background: rgba(255,255,255,0.25); }
-
-        /* Drawer user card */
-        .nv-dr-user {
-          margin: 14px 14px 4px;
-          padding: 13px 15px;
-          background: #fff;
-          border: 1px solid rgba(34,197,94,0.14);
-          border-radius: 14px;
-          display: flex; align-items: center; gap: 12px;
-          box-shadow: 0 2px 12px rgba(34,197,94,0.08);
-          position: relative; overflow: hidden;
-        }
-        .nv-dr-user::before {
-          content: '';
-          position: absolute; top: -18px; right: -18px;
-          width: 70px; height: 70px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%);
-          pointer-events: none;
-        }
-        .nv-dr-avt {
-          width: 44px; height: 44px; border-radius: 50%;
-          background: linear-gradient(135deg, #22c55e, #15803d);
-          color: #fff; font-size: 14px; font-weight: 800;
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; box-shadow: 0 2px 10px rgba(34,197,94,0.3);
-        }
-        .nv-dr-uname { font-size: 14px; font-weight: 700; color: #111; }
-        .nv-dr-badge {
-          display: inline-flex; align-items: center;
-          margin-top: 3px; padding: 2px 8px; border-radius: 100px;
-          font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
-          text-transform: uppercase;
-          background: rgba(34,197,94,0.1);
-          border: 1px solid rgba(34,197,94,0.2);
-          color: #15803d;
-        }
-
-        /* Drawer scrollable body */
-        .nv-dr-body {
-          flex: 1; overflow-y: auto; padding: 8px 10px 28px;
-          scrollbar-width: thin; scrollbar-color: rgba(34,197,94,0.2) transparent;
-        }
-        .nv-dr-body::-webkit-scrollbar { width: 3px; }
-        .nv-dr-body::-webkit-scrollbar-track { background: transparent; }
-        .nv-dr-body::-webkit-scrollbar-thumb { background: rgba(34,197,94,0.25); border-radius: 4px; }
-
-        /* Section label */
-        .nv-dr-lbl {
-          font-size: 9.5px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 1.3px; color: rgba(34,197,94,0.55);
-          padding: 14px 10px 6px;
-        }
-
-        /* Nav row */
-        .nv-dr-row {
-          display: flex; align-items: center; gap: 12px;
-          padding: 10px 12px; border-radius: 11px;
-          font-size: 14px; font-weight: 500; color: #3d5c47;
-          text-decoration: none; cursor: pointer;
-          background: none; border: none; width: 100%; text-align: left;
-          transition: background 0.13s, color 0.13s; margin-bottom: 2px;
-          font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .nv-dr-row:hover { background: rgba(34,197,94,0.07); color: #15803d; }
-        .nv-dr-row.hi {
-          background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(21,128,61,0.06));
-          color: #15803d; font-weight: 650;
-          border: 1px solid rgba(34,197,94,0.15);
-        }
-        .nv-dr-row.danger { color: #dc2626; }
-        .nv-dr-row.danger:hover { background: #fef2f2; }
-
-        .nv-dr-ico {
-          width: 37px; height: 37px; border-radius: 10px;
-          background: #fff;
-          border: 1px solid rgba(34,197,94,0.12);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 16px; flex-shrink: 0;
-          box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-          transition: background 0.13s, box-shadow 0.13s;
-        }
-        .nv-dr-row:hover .nv-dr-ico { background: #dcfce7; box-shadow: none; }
-        .nv-dr-row.hi .nv-dr-ico { background: #dcfce7; border-color: rgba(34,197,94,0.22); }
-        .nv-dr-row.danger .nv-dr-ico { background: #fef2f2; border-color: rgba(220,38,38,0.1); }
-        .nv-dr-row.danger:hover .nv-dr-ico { background: #fee2e2; }
-
-        .nv-dr-txt { flex: 1; }
-        .nv-dr-dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: #22c55e; flex-shrink: 0;
-          animation: nv-pulse-dot 1.8s ease-in-out infinite;
-        }
-        .nv-dr-sep {
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(34,197,94,0.18), transparent);
-          margin: 6px 6px;
-        }
-
-        /* Drawer auth buttons */
-        .nv-dr-auth { display: flex; flex-direction: column; gap: 8px; padding: 8px 0; }
-        .nv-dr-signin {
-          padding: 13px; border-radius: 11px; font-size: 14px; font-weight: 600;
-          text-align: center; text-decoration: none; color: #15803d;
-          background: #fff; border: 1.5px solid rgba(34,197,94,0.25);
-          transition: background 0.13s, box-shadow 0.15s;
-          display: block; cursor: pointer;
-          font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .nv-dr-signin:hover { background: #f0fdf4; box-shadow: 0 2px 10px rgba(34,197,94,0.12); }
-        .nv-dr-go {
-          position: relative; overflow: hidden;
-          padding: 13px; border-radius: 11px; font-size: 14px; font-weight: 700;
-          text-align: center; text-decoration: none; color: #fff; display: block; cursor: pointer;
-          background: linear-gradient(135deg, #22c55e, #15803d);
-          box-shadow: 0 4px 18px rgba(34,197,94,0.32);
-          transition: filter 0.16s, transform 0.14s;
-          font-family: 'Plus Jakarta Sans', sans-serif; border: none;
-        }
-        .nv-dr-go::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
-        }
-        .nv-dr-go:hover { filter: brightness(1.06); transform: translateY(-1px); }
-
-        /* ═══════════════════════════════
-           RESPONSIVE
-        ═══════════════════════════════ */
-        @media (max-width: 860px) {
-          .nv-links, .nv-ghost, .nv-vd, .nv-cta, .nv-pill, .nv-ls-desk { display: none !important; }
-          .nv-ham { display: flex; }
-          .nv-inner { padding: 0 16px; }
-          .nv-brand { margin-right: 0; }
-        }
-        @media (min-width: 861px) {
-          .nv-ham { display: none !important; }
-        }
-      `}</style>
-
-      <div className="nv">
-
-        {/* ══ SHIMMER TOP LINE ══ */}
-        <div className="nv-topline" />
-
-        {/* ══ BAR ══ */}
-        <div className={`nv-bar${scrolled ? " up" : ""}`}>
-          <div className="nv-inner">
-
-            {/* Brand */}
-            <Link to="/" className="nv-brand">
-              <img src="/favicon.ico" alt="TerraSpotter" />
-              <span className="nv-brand-txt">TerraSpotter</span>
-            </Link>
-
-            {/* Desktop Nav */}
-            <nav className="nv-links">
-              {NAV.map(({ to, label }) => (
-                <Link key={to} to={to} className={`nv-lk${on(to) ? " hi" : ""}`}>{label}</Link>
-              ))}
-            </nav>
-
-            {/* Right */}
-            <div className="nv-right">
-              <div className="nv-ls-desk">
-                <LanguageSwitcher dark={theme === "dark"} />
+            {/* Drawer panel */}
+            <motion.div
+              className="fixed top-0 right-0 bottom-0 w-[min(320px,82vw)] bg-background z-[300] flex flex-col shadow-2xl shadow-black/40 border-l border-border overflow-hidden"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+            >
+              {/* Drawer header */}
+              <div className="h-[62px] flex items-center justify-between px-5 bg-gradient-to-r from-emerald-900 to-[#071408] border-b border-white/10 shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <img src="/favicon.ico" alt="" className="w-8 h-8 rounded-lg object-cover shadow-md" />
+                  <span className="font-bold text-[16.5px] text-white tracking-tight">TerraSpotter</span>
+                </div>
+                <button onClick={() => setDrawer(false)} className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all">
+                  <X size={14} />
+                </button>
               </div>
 
-              {/* Theme Toggle */}
-              <button className="nv-theme-btn" onClick={toggleTheme} aria-label="Toggle Theme">
-                {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
-              </button>
-
-              {!user ? (
-                <>
-                  <Link to="/login" className="nv-ghost">{t("navbar.login", "Sign in")}</Link>
-                  <div className="nv-vd" />
-                  <Link to="/signup" className="nv-cta">{t("navbar.signup", "Get started →")}</Link>
-                </>
-              ) : (
-                <div style={{ position: "relative" }} ref={ddRef}>
-                  <button
-                    className={`nv-pill${ddOpen ? " open" : ""}`}
-                    onClick={() => setDdOpen(o => !o)}
-                  >
-                    <div className="nv-ini">{ini}</div>
-                    <span>{user.fname}</span>
-                    {xpData && (
-                      <span className="nv-xp-badge">
-                        ⚡ {xpData.totalXp?.toLocaleString()} · Lv {xpData.level}
-                      </span>
-                    )}
-                    <svg className={`nv-chv${ddOpen ? " r" : ""}`} width="11" height="11" viewBox="0 0 11 11" fill="none">
-                      <path d="M2 4l3.5 3.5L9 4" stroke="#15803d" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-
-                  <AnimatePresence>
-                    {ddOpen && (
-                      <motion.div className="nv-dd"
-                        initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                        transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                      >
-                        <div className="nv-dd-top" />
-                        <div className="nv-dd-who">
-                          <div className="nv-dd-avt">{ini}</div>
-                          <div style={{ overflow: "hidden" }}>
-                            <div className="nv-dd-name">{user.fname} {user.lname}</div>
-                            <div className="nv-dd-email">{user.email}</div>
-                          </div>
-                        </div>
-                        <div className="nv-dd-body">
-                          <Link to="/profile" className="nv-dd-row" onClick={() => setDdOpen(false)}>
-                            <span className="nv-dd-ico">👤</span>{t("navbar.profile", "My Profile")}
-                          </Link>
-                          {NAV.filter(x => x.to !== "/").map(({ to, icon, label }) => (
-                            <Link key={to} to={to} className="nv-dd-row" onClick={() => setDdOpen(false)}>
-                              <span className="nv-dd-ico">{icon}</span>{label}
-                            </Link>
-                          ))}
-                        </div>
-                        <div className="nv-dd-sep" />
-                        <div className="nv-dd-body">
-                          <button className="nv-dd-row out" onClick={logout}>
-                            <span className="nv-dd-ico">🚪</span>{t("navbar.logout", "Sign out")}
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+              {/* User card */}
+              {user && (
+                <div className="mx-3.5 mt-3.5 mb-1 p-3.5 bg-card border border-border rounded-2xl flex items-center gap-3 shadow-sm">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-emerald-600 text-primary-foreground text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
+                    {ini}
+                  </div>
+                  <div>
+                    <div className="text-[14px] font-bold text-foreground">{user.fname} {user.lname}</div>
+                    <span className="inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-primary/10 border border-primary/20 text-primary">
+                      {user.role === "ADMIN" ? "Admin" : "Member"}
+                      {xpData && ` · Lv ${xpData.level}`}
+                    </span>
+                  </div>
                 </div>
               )}
 
-              {/* Hamburger — mobile only */}
-              <button
-                className={`nv-ham${drawer ? " x" : ""}`}
-                onClick={() => setDrawer(o => !o)}
-                aria-label="Menu"
-              >
-                <span className="nv-ham-ln" />
-                <span className="nv-ham-ln" />
-                <span className="nv-ham-ln" />
-              </button>
-            </div>
-          </div>
-        </div>
+              {/* Scrollable body */}
+              <div className="flex-1 overflow-y-auto px-2.5 pb-8 scrollbar-thin">
 
-        {/* ══ SIDE DRAWER + BACKDROP ══ */}
-        <AnimatePresence>
-          {drawer && (
-            <>
-              <motion.div
-                className="nv-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.22 }}
-                onClick={() => setDrawer(false)}
-              />
-
-              <motion.div
-                className="nv-drawer"
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-              >
-                {/* Header */}
-                <div className="nv-dr-head">
-                  <div className="nv-dr-brand">
-                    <img src="/favicon.ico" alt="" />
-                    <span className="nv-dr-brand-txt">TerraSpotter</span>
-                  </div>
-                  <button className="nv-dr-close" onClick={() => setDrawer(false)}>✕</button>
+                {/* Language */}
+                <p className="text-[9.5px] font-bold uppercase tracking-[1.3px] text-primary/60 px-2.5 pt-4 pb-1.5">{t("navbar.language", "Language")}</p>
+                <div className="px-2.5 pb-4">
+                  <LanguageSwitcher dark={false} />
                 </div>
 
-                {/* User card */}
-                {user && (
-                  <div className="nv-dr-user">
-                    <div className="nv-dr-avt">{ini}</div>
-                    <div>
-                      <div className="nv-dr-uname">{user.fname} {user.lname}</div>
-                      <span className="nv-dr-badge">
-                        {user.role === "ADMIN" ? "Admin" : "Member"}
-                        {xpData && ` · Lv ${xpData.level}`}
-                      </span>
-                    </div>
-                  </div>
-                )}
+                {/* Theme toggle mobile */}
+                <button onClick={toggleTheme} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-[14px] font-medium text-muted-foreground hover:bg-primary/8 hover:text-primary transition-all mb-2 border border-transparent hover:border-primary/15">
+                  <span className="w-9 h-9 rounded-xl bg-secondary border border-border flex items-center justify-center text-base shrink-0">
+                    {theme === "light" ? "🌙" : "☀️"}
+                  </span>
+                  <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
+                </button>
 
-                {/* Scrollable body */}
-                <div className="nv-dr-body">
+                {/* Navigation */}
+                <p className="text-[9.5px] font-bold uppercase tracking-[1.3px] text-primary/60 px-2.5 pt-2 pb-1.5">{t("navbar.navigation", "Navigation")}</p>
 
-                  <div className="nv-dr-lbl">{t("navbar.language", "Language")}</div>
-                  <div style={{ padding: "4px 12px 16px" }}>
-                    <LanguageSwitcher dark={false} />
-                  </div>
+                {NAV.map(({ to, label, icon }) => (
+                  <button
+                    key={to}
+                    onClick={() => drawerGo(to)}
+                    className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all mb-1 ${
+                      on(to)
+                        ? "bg-primary/12 text-primary font-semibold border border-primary/20"
+                        : "text-muted-foreground hover:bg-primary/8 hover:text-primary border border-transparent hover:border-primary/15"
+                    }`}
+                  >
+                    <span className={`w-9 h-9 rounded-xl border flex items-center justify-center text-base shrink-0 ${on(to) ? "bg-primary/20 border-primary/30" : "bg-secondary border-border"}`}>
+                      {icon}
+                    </span>
+                    <span className="flex-1 text-left">{label}</span>
+                    {on(to) && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
+                  </button>
+                ))}
 
-                  <div className="nv-dr-lbl">{t("navbar.navigation", "Navigation")}</div>
+                {/* Account section */}
+                {user ? (
+                  <>
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent my-3 mx-1" />
+                    <p className="text-[9.5px] font-bold uppercase tracking-[1.3px] text-primary/60 px-2.5 pb-1.5">{t("navbar.account", "Account")}</p>
 
-                  {NAV.map(({ to, label, icon }) => (
-                    <button
-                      key={to}
-                      className={`nv-dr-row${on(to) ? " hi" : ""}`}
-                      onClick={() => drawerGo(to)}
-                    >
-                      <span className="nv-dr-ico">{icon}</span>
-                      <span className="nv-dr-txt">{label}</span>
-                      {on(to) && <span className="nv-dr-dot" />}
+                    <button onClick={() => drawerGo("/profile")} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-[14px] font-medium text-muted-foreground hover:bg-primary/8 hover:text-primary transition-all mb-1 border border-transparent hover:border-primary/15">
+                      <span className="w-9 h-9 rounded-xl bg-secondary border border-border flex items-center justify-center text-base shrink-0">👤</span>
+                      <span className="flex-1 text-left">{t("navbar.profile", "My Profile")}</span>
+                      {xpData && (
+                        <span className="text-[10px] font-bold text-amber-400 bg-amber-900/30 px-1.5 py-0.5 rounded-full border border-amber-800/30">
+                          Lv {xpData.level}
+                        </span>
+                      )}
                     </button>
-                  ))}
 
-                  {user && (
-                    <>
-                      <div className="nv-dr-sep" />
-                      <div className="nv-dr-lbl">{t("navbar.account", "Account")}</div>
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent my-2 mx-1" />
 
-                      <button className="nv-dr-row" onClick={() => drawerGo("/profile")}>
-                        <span className="nv-dr-ico">👤</span>
-                        <span className="nv-dr-txt">{t("navbar.profile", "My Profile")}</span>
-                        {xpData && (
-                          <span style={{
-                            fontSize: 10, fontWeight: 700, color: "#b45309",
-                            background: "#fef3c7",
-                            padding: "2px 7px", borderRadius: 100,
-                            border: "1px solid rgba(180,83,9,0.18)",
-                          }}>
-                            Lv {xpData.level}
-                          </span>
-                        )}
-                      </button>
-
-                      <div className="nv-dr-sep" />
-
-                      <button className="nv-dr-row danger" onClick={logout}>
-                        <span className="nv-dr-ico">🚪</span>
-                        <span className="nv-dr-txt">{t("navbar.logout", "Sign out")}</span>
-                      </button>
-                    </>
-                  )}
-
-                  {!user && (
-                    <>
-                      <div className="nv-dr-sep" />
-                      <div className="nv-dr-auth">
-                        <button className="nv-dr-signin" onClick={() => drawerGo("/login")}>{t("navbar.login", "Sign in")}</button>
-                        <button className="nv-dr-go" onClick={() => drawerGo("/signup")}>{t("navbar.signup", "Get started →")}</button>
-                      </div>
-                    </>
-                  )}
-
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-
-      </div>
+                    <button onClick={logout} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-[14px] font-medium text-destructive hover:bg-destructive/10 transition-all border border-transparent hover:border-destructive/20">
+                      <span className="w-9 h-9 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center justify-center text-base shrink-0">🚪</span>
+                      <span className="flex-1 text-left">{t("navbar.logout", "Sign out")}</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent my-3 mx-1" />
+                    <div className="flex flex-col gap-2 pt-1">
+                      <Link to="/login" onClick={() => setDrawer(false)} className="block text-center px-4 py-3 rounded-xl text-[14px] font-semibold text-primary bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-all">
+                        {t("navbar.login", "Sign in")}
+                      </Link>
+                      <Link to="/signup" onClick={() => setDrawer(false)} className="block text-center px-4 py-3 rounded-xl text-[14px] font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-all shadow-md shadow-primary/30">
+                        {t("navbar.signup", "Get started →")}
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }

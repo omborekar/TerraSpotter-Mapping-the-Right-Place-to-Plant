@@ -2,7 +2,7 @@
  Project: TerraSpotter Platform
  Author: Om Borekar
  Year: 2026
- Description: Signup component with OTP flow and password helpers.
+ Description: Signup page — dark-first Tailwind, 3-step flow (details → OTP → done).
 */
 import { useState, useRef, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
@@ -10,6 +10,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -24,7 +25,7 @@ function getStrength(p) {
   return s;
 }
 
-// 4-box OTP input component
+// 4-box OTP input
 function OtpInput({ value, onChange, disabled }) {
   const refs = [useRef(), useRef(), useRef(), useRef()];
   const chars = (value + "    ").slice(0, 4).split("");
@@ -51,41 +52,22 @@ function OtpInput({ value, onChange, disabled }) {
   };
 
   return (
-    <div style={{ display: "flex", gap: 12, justifyContent: "center", margin: "28px 0" }}>
+    <div className="flex gap-3 justify-center my-7">
       {[0, 1, 2, 3].map(i => {
         const filled = chars[i] && chars[i] !== " ";
         return (
-          <input
-            key={i}
-            ref={refs[i]}
-            type="text"
-            inputMode="numeric"
-            maxLength={1}
+          <input key={i} ref={refs[i]} type="text" inputMode="numeric" maxLength={1}
             value={filled ? chars[i] : ""}
             onKeyDown={e => handleKey(i, e)}
             onPaste={handlePaste}
-            onChange={() => { }}
+            onChange={() => {}}
             disabled={disabled}
             autoFocus={i === 0}
-            style={{
-              width: 60,
-              height: 70,
-              textAlign: "center",
-              fontSize: 30,
-              fontWeight: 700,
-              fontFamily: "'Playfair Display', serif",
-              border: `2px solid ${filled ? "#3a8c57" : "#e8e2da"}`,
-              borderRadius: 13,
-              outline: "none",
-              background: filled ? "#f0fdf6" : "#ffffff",
-              color: "#163d25",
-              boxShadow: filled
-                ? "0 0 0 3px rgba(58,140,87,.14), 0 2px 8px rgba(58,140,87,.12)"
-                : "0 1px 3px rgba(0,0,0,0.04)",
-              transition: "border-color .18s, box-shadow .18s, background .18s",
-              opacity: disabled ? 0.6 : 1,
-              cursor: disabled ? "not-allowed" : "text",
-            }}
+            className={`w-[60px] h-[70px] text-center text-[30px] font-bold rounded-xl border-2 outline-none transition-all caret-transparent ${
+              filled
+                ? "border-primary bg-primary/10 text-foreground shadow-md shadow-primary/20"
+                : "border-border bg-card text-foreground hover:border-primary/40"
+            } ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
           />
         );
       })}
@@ -93,62 +75,30 @@ function OtpInput({ value, onChange, disabled }) {
   );
 }
 
-// Step progress bar
+// Step progress
 function Steps({ step }) {
   const labels = ["Details", "Verify Email", "Done"];
   return (
-    <div style={{ display: "flex", alignItems: "center", marginBottom: 36 }}>
+    <div className="flex items-center mb-9">
       {labels.map((l, i) => {
         const active = i === step;
         const done = i < step;
         return (
-          <div key={i} style={{ display: "flex", alignItems: "center", flex: i < 2 ? 1 : 0 }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
-              <div style={{
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 12,
-                fontWeight: 700,
-                fontFamily: "'DM Sans', sans-serif",
-                background: done
-                  ? "linear-gradient(145deg, #256638, #163d25)"
-                  : active
-                    ? "linear-gradient(145deg, #163d25, #0d2a1a)"
-                    : "#e8e2da",
-                color: done || active ? "white" : "#a89e93",
-                transition: "all .32s cubic-bezier(.22,1,.36,1)",
-                boxShadow: (done || active)
-                  ? "0 2px 10px rgba(58,140,87,0.28)"
-                  : "none",
-              }}>
+          <div key={i} className="flex items-center flex-1 last:flex-none">
+            <div className="flex flex-col items-center gap-1.5">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold transition-all duration-300 ${
+                done ? "bg-primary text-primary-foreground shadow-md shadow-primary/30"
+                  : active ? "bg-primary/20 border-2 border-primary text-primary"
+                    : "bg-secondary border border-border text-muted-foreground"
+              }`}>
                 {done ? "✓" : i + 1}
               </div>
-              <span style={{
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: ".7px",
-                textTransform: "uppercase",
-                whiteSpace: "nowrap",
-                color: active ? "#163d25" : "#a89e93",
-                transition: "color .3s",
-              }}>{l}</span>
+              <span className={`text-[10px] font-semibold uppercase tracking-[0.7px] whitespace-nowrap transition-colors ${active ? "text-foreground" : "text-muted-foreground"}`}>
+                {l}
+              </span>
             </div>
             {i < 2 && (
-              <div style={{
-                flex: 1,
-                height: 2,
-                margin: "0 8px",
-                marginBottom: 18,
-                borderRadius: 2,
-                background: done
-                  ? "linear-gradient(90deg, #256638, #3a8c57)"
-                  : "#e8e2da",
-                transition: "background .35s",
-              }} />
+              <div className={`flex-1 h-0.5 mx-2 mb-5 rounded-full transition-colors ${done ? "bg-primary" : "bg-border"}`} />
             )}
           </div>
         );
@@ -157,11 +107,22 @@ function Steps({ step }) {
   );
 }
 
+const perks = [
+  { icon: "🗺️", title: "Map any land", desc: "Draw a polygon boundary on our live map and submit in minutes." },
+  { icon: "🤝", title: "Get volunteers", desc: "Verified land gets matched with local planters and NGOs." },
+  { icon: "🌱", title: "AI plant advice", desc: "ML model picks native species based on your soil and climate." },
+  { icon: "🏆", title: "Earn XP & badges", desc: "Level up as you contribute to India's green future." },
+];
+
+const inputCls = (error) =>
+  `w-full h-11 px-3.5 bg-card border rounded-xl text-[14px] text-foreground outline-none placeholder:text-muted-foreground transition-all focus:ring-2 hover:border-primary/40 ${
+    error ? "border-destructive/50 focus:border-destructive focus:ring-destructive/20" : "border-border focus:border-primary focus:ring-primary/20"
+  }`;
+
 export default function Signup() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
-
   const [form, setForm] = useState({
     fname: "", lname: "", email: "",
     phoneNo: "", dob: "", password: "", confirmPassword: "",
@@ -170,7 +131,6 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const [showCp, setShowCp] = useState(false);
-
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
@@ -183,10 +143,7 @@ export default function Signup() {
     setResendSecs(60);
     clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setResendSecs(s => {
-        if (s <= 1) { clearInterval(timerRef.current); return 0; }
-        return s - 1;
-      });
+      setResendSecs(s => { if (s <= 1) { clearInterval(timerRef.current); return 0; } return s - 1; });
     }, 1000);
   };
 
@@ -221,11 +178,8 @@ export default function Signup() {
       setStep(1);
       startResendTimer();
     } catch (err) {
-      const msg = err.response?.data?.message || err.response?.data || "Failed to send OTP. Try again.";
-      setErrors({ api: msg });
-    } finally {
-      setLoading(false);
-    }
+      setErrors({ api: err.response?.data?.message || err.response?.data || "Failed to send OTP. Try again." });
+    } finally { setLoading(false); }
   };
 
   const handleVerifyOtp = async () => {
@@ -240,827 +194,296 @@ export default function Signup() {
       }, { withCredentials: true });
       setStep(2);
     } catch (err) {
-      const msg = err.response?.data?.message || err.response?.data || "Invalid or expired OTP.";
-      setOtpError(msg);
-    } finally {
-      setOtpLoading(false);
-    }
+      setOtpError(err.response?.data?.message || err.response?.data || "Invalid or expired OTP.");
+    } finally { setOtpLoading(false); }
   };
 
   const handleResend = async () => {
     if (resendSecs > 0) return;
     try {
       await axios.post(`${BASE_URL}/api/auth/send-otp`, { email: form.email, fname: form.fname });
-      setOtp("");
-      setOtpError("");
-      startResendTimer();
-    } catch {
-      setOtpError("Failed to resend. Please try again.");
-    }
+      setOtp(""); setOtpError(""); startResendTimer();
+    } catch { setOtpError("Failed to resend. Please try again."); }
   };
 
   const strength = getStrength(form.password);
   const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
-  const strengthColor = ["", "#b03a2e", "#c0862a", "#3a8c57", "#163d25"][strength];
+  const strengthColors = ["", "bg-red-400", "bg-amber-400", "bg-lime-500", "bg-primary"];
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-          --forest:       #163d25;
-          --canopy:       #256638;
-          --leaf:         #3a8c57;
-          --sprout:       #5cb87a;
-          --sand:         #f8f5f0;
-          --cream:        #fdfbf8;
-          --ink:          #111;
-          --smoke:        #6b6457;
-          --muted:        #a89e93;
-          --line:         #e8e2da;
-          --white:        #ffffff;
-          --danger:       #b03a2e;
-          --danger-bg:    #fdf3f2;
-          --green-glow:   rgba(58,140,87,0.18);
-          --green-glow-s: rgba(58,140,87,0.28);
-          --mist:         #edf7f2;
-        }
-
-        body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--ink); }
-
-        .su-page {
-          min-height: 100vh;
-          display: grid;
-          grid-template-columns: 400px 1fr;
-        }
-
-        /* ── LEFT PANEL ── */
-        .su-left {
-          background: var(--forest);
-          color: white;
-          padding: 54px 44px;
-          display: flex;
-          flex-direction: column;
-          position: sticky;
-          top: 0;
-          height: 100vh;
-          overflow: hidden;
-        }
-
-        .su-left::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background:
-            radial-gradient(ellipse at 15% 85%, rgba(92,184,122,.20) 0%, transparent 52%),
-            radial-gradient(ellipse at 82% 18%, rgba(22,61,37,.55) 0%, transparent 48%);
-          pointer-events: none;
-        }
-        .su-left::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          opacity: 0.035;
-          background-image:
-            linear-gradient(rgba(255,255,255,.7) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.7) 1px, transparent 1px);
-          background-size: 48px 48px;
-          pointer-events: none;
-        }
-
-        .su-left-inner {
-          position: relative;
-          z-index: 1;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-
-        .su-logo {
-          font-family: 'Playfair Display', serif;
-          font-size: 20px;
-          font-weight: 700;
-          color: white;
-          margin-bottom: 56px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          letter-spacing: -0.2px;
-        }
-        .su-logo-mark {
-          width: 30px;
-          height: 30px;
-          border-radius: 9px;
-          background: linear-gradient(145deg, var(--canopy), var(--sprout));
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 14px;
-          box-shadow: 0 2px 12px var(--green-glow-s), inset 0 1px 0 rgba(255,255,255,0.15);
-          flex-shrink: 0;
-        }
-
-        .su-left h1 {
-          font-family: 'Playfair Display', serif;
-          font-size: 38px;
-          font-weight: 700;
-          line-height: 1.10;
-          letter-spacing: -0.5px;
-          margin-bottom: 18px;
-          color: white;
-        }
-        .su-left h1 em { font-style: italic; color: var(--sprout); }
-
-        .su-left-desc {
-          font-size: 14px;
-          color: rgba(255,255,255,0.55);
-          line-height: 1.80;
-          margin-bottom: 48px;
-        }
-
-        .su-perks {
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
-          margin-bottom: auto;
-        }
-        .su-perk {
-          display: flex;
-          align-items: flex-start;
-          gap: 13px;
-        }
-        .su-perk-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: var(--sprout);
-          flex-shrink: 0;
-          margin-top: 6px;
-          box-shadow: 0 0 8px rgba(92,184,122,0.5);
-        }
-        .su-perk-text h4 {
-          font-size: 13px;
-          font-weight: 600;
-          color: white;
-          margin-bottom: 3px;
-        }
-        .su-perk-text p {
-          font-size: 12px;
-          color: rgba(255,255,255,0.45);
-          line-height: 1.60;
-        }
-
-        .su-left-foot {
-          margin-top: 40px;
-          padding-top: 22px;
-          border-top: 1px solid rgba(255,255,255,0.08);
-          font-size: 12px;
-          color: rgba(255,255,255,0.25);
-          line-height: 1.7;
-        }
-
-        /* ── RIGHT PANEL ── */
-        .su-right {
-          background: var(--cream);
-          padding: 52px 64px 80px;
-          display: flex;
-          align-items: flex-start;
-          justify-content: center;
-          overflow-y: auto;
-          position: relative;
-        }
-        .su-right::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          opacity: 0.016;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-          background-size: 200px 200px;
-        }
-
-        .su-form-wrap {
-          width: 100%;
-          max-width: 450px;
-          position: relative;
-          z-index: 1;
-        }
-
-        .su-form-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 32px;
-          font-weight: 700;
-          letter-spacing: -0.4px;
-          color: var(--forest);
-          margin-bottom: 5px;
-        }
-        .su-form-sub {
-          font-size: 14px;
-          color: var(--smoke);
-          margin-bottom: 28px;
-        }
-
-        /* Section heading */
-        .su-section-head {
-          font-size: 10.5px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 1.3px;
-          color: var(--muted);
-          margin: 22px 0 14px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        .su-section-head::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: var(--line);
-        }
-
-        /* Fields */
-        .su-field {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-          margin-bottom: 16px;
-        }
-        .su-label {
-          font-size: 11px;
-          font-weight: 600;
-          color: #4a3f36;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
-        }
-        .su-err { font-size: 12px; color: var(--danger); margin-top: 2px; font-weight: 500; }
-
-        .su-input-wrap {
-          position: relative;
-          display: flex;
-          align-items: center;
-        }
-        .su-input {
-          width: 100%;
-          padding: 11px 14px;
-          border: 1.5px solid var(--line);
-          border-radius: 9px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14px;
-          color: var(--ink);
-          background: var(--white);
-          outline: none;
-          transition: border-color .2s, box-shadow .2s, background .2s;
-          letter-spacing: 0.01em;
-        }
-        .su-input::placeholder { color: var(--muted); }
-        .su-input:focus {
-          border-color: var(--leaf);
-          box-shadow: 0 0 0 3px var(--green-glow);
-          background: #fdfffe;
-        }
-        .su-input.e {
-          border-color: var(--danger);
-          background: var(--danger-bg);
-          box-shadow: 0 0 0 3px rgba(176,58,46,.07);
-        }
-        .su-input.pw { padding-right: 46px; }
-
-        .su-pw-eye {
-          position: absolute;
-          right: 13px;
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-size: 15px;
-          color: var(--muted);
-          padding: 0;
-          transition: color .15s;
-        }
-        .su-pw-eye:hover { color: var(--forest); }
-
-        .su-grid-2 {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 12px;
-        }
-
-        /* Password strength */
-        .su-strength {
-          margin-top: 7px;
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-        }
-        .su-strength-bar {
-          height: 3px;
-          border-radius: 2px;
-          background: var(--line);
-          overflow: hidden;
-        }
-        .su-strength-fill {
-          height: 100%;
-          border-radius: 2px;
-          transition: width .35s ease, background .35s ease;
-        }
-
-        /* API error */
-        .su-api-err {
-          padding: 12px 15px;
-          background: var(--danger-bg);
-          border: 1px solid rgba(176,58,46,.2);
-          border-radius: 9px;
-          font-size: 13px;
-          color: var(--danger);
-          margin-bottom: 18px;
-          font-weight: 500;
-        }
-
-        /* Submit */
-        .su-submit {
-          width: 100%;
-          padding: 13.5px;
-          background: linear-gradient(145deg, var(--canopy) 0%, var(--forest) 100%);
-          color: white;
-          border: none;
-          border-radius: 9px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14.5px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: filter .2s, transform .12s, box-shadow .2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          margin-top: 4px;
-          letter-spacing: 0.02em;
-          box-shadow: 0 3px 14px var(--green-glow-s), inset 0 1px 0 rgba(255,255,255,.10);
-        }
-        .su-submit:hover:not(:disabled) {
-          filter: brightness(1.08);
-          box-shadow: 0 5px 20px var(--green-glow-s);
-        }
-        .su-submit:active:not(:disabled) { transform: scale(.985); }
-        .su-submit:disabled { opacity: .62; cursor: not-allowed; }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .su-spinner {
-          width: 16px;
-          height: 16px;
-          border: 2px solid rgba(255,255,255,.3);
-          border-top-color: white;
-          border-radius: 50%;
-          animation: spin .65s linear infinite;
-        }
-
-        .su-divider {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin: 24px 0;
-          font-size: 11.5px;
-          color: var(--muted);
-          font-weight: 500;
-          letter-spacing: .06em;
-          text-transform: uppercase;
-        }
-        .su-divider::before, .su-divider::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: var(--line);
-        }
-
-        .su-signin {
-          text-align: center;
-          font-size: 13.5px;
-          color: var(--smoke);
-          margin-top: 20px;
-        }
-        .su-signin a {
-          color: var(--leaf);
-          font-weight: 600;
-          text-decoration: none;
-          transition: color .15s;
-        }
-        .su-signin a:hover { color: var(--forest); }
-
-        /* ── OTP step ── */
-        .otp-card {
-          background: white;
-          border-radius: 18px;
-          border: 1px solid var(--line);
-          padding: 34px 28px;
-          box-shadow: 0 4px 30px rgba(22,61,37,.08), 0 1px 6px rgba(0,0,0,0.04);
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-        }
-        .otp-card::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 3px;
-          background: linear-gradient(90deg, var(--forest), var(--leaf), var(--forest));
-        }
-
-        .otp-email-chip {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 18px;
-          background: var(--mist);
-          border-radius: 100px;
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--canopy);
-          margin: 12px 0 8px;
-          letter-spacing: 0.01em;
-        }
-
-        .otp-hint {
-          font-size: 13px;
-          color: var(--smoke);
-          line-height: 1.65;
-          margin-top: 6px;
-        }
-
-        .otp-err {
-          padding: 10px 14px;
-          background: var(--danger-bg);
-          border: 1px solid rgba(176,58,46,.18);
-          border-radius: 9px;
-          font-size: 13px;
-          color: var(--danger);
-          margin-bottom: 14px;
-          font-weight: 500;
-        }
-
-        .otp-resend {
-          font-size: 13px;
-          color: var(--smoke);
-          margin-top: 16px;
-        }
-        .otp-resend button {
-          background: none;
-          border: none;
-          color: var(--leaf);
-          font-weight: 600;
-          cursor: pointer;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 13px;
-          padding: 0;
-          transition: color .15s;
-        }
-        .otp-resend button:hover { color: var(--forest); }
-        .otp-resend button:disabled { color: var(--muted); cursor: default; }
-
-        .otp-back {
-          background: none;
-          border: none;
-          color: var(--muted);
-          font-size: 12.5px;
-          cursor: pointer;
-          font-family: 'DM Sans', sans-serif;
-          margin-top: 14px;
-          text-decoration: underline;
-          transition: color .15s;
-        }
-        .otp-back:hover { color: var(--smoke); }
-
-        /* ── Success card ── */
-        .success-card {
-          background: white;
-          border-radius: 20px;
-          border: 1px solid var(--line);
-          padding: 52px 40px;
-          box-shadow: 0 4px 30px rgba(22,61,37,.08);
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-        }
-        .success-card::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 3px;
-          background: linear-gradient(90deg, var(--forest), var(--leaf), var(--forest));
-        }
-
-        .success-icon {
-          width: 76px;
-          height: 76px;
-          border-radius: 50%;
-          background: linear-gradient(145deg, var(--leaf), var(--canopy));
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 34px;
-          margin: 0 auto 26px;
-          box-shadow: 0 8px 28px var(--green-glow-s);
-        }
-
-        .success-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 28px;
-          font-weight: 700;
-          color: var(--forest);
-          margin-bottom: 12px;
-          letter-spacing: -0.3px;
-        }
-
-        .success-sub {
-          font-size: 14px;
-          color: var(--smoke);
-          line-height: 1.80;
-          margin-bottom: 30px;
-        }
-
-        .success-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 13px 30px;
-          background: linear-gradient(145deg, var(--canopy), var(--forest));
-          color: white;
-          border: none;
-          border-radius: 9px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          text-decoration: none;
-          transition: filter .2s, box-shadow .2s;
-          box-shadow: 0 3px 14px var(--green-glow-s);
-          letter-spacing: 0.02em;
-        }
-        .success-btn:hover {
-          filter: brightness(1.08);
-          box-shadow: 0 5px 20px var(--green-glow-s);
-        }
-
-        @media (max-width: 860px) {
-          .su-page { grid-template-columns: 1fr; }
-          .su-left { display: none; }
-          .su-right { padding: 36px 20px 64px; }
-        }
-      `}</style>
-
       <Helmet>
-        <title>{t("signup.page_title", "TerraSpotter — Sign up")}</title>
-        <meta name="description" content="Create a free TerraSpotter account to submit land and join planting." />
+        <title>TerraSpotter — Create Account</title>
+        <meta name="description" content="Create your TerraSpotter account and start mapping land for afforestation." />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </Helmet>
 
-      <div className="su-page">
+      <div className="min-h-screen flex bg-background text-foreground">
 
-        {/* LEFT PANEL */}
-        <motion.aside className="su-left"
-          initial={{ opacity: 0, x: -24 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}>
-          <div className="su-left-inner">
-            <div className="su-logo">
-              <span className="su-logo-mark">🌿</span>
-              TerraSpotter
+        {/* ── LEFT PANEL ── */}
+        <div className="hidden lg:flex flex-col justify-between w-[380px] xl:w-[420px] relative overflow-hidden px-10 py-12 bg-[#071408] shrink-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#071408] via-[#0c1e11] to-[#0a1a0d]" />
+          <div className="absolute top-[-10%] right-[-10%] w-[380px] h-[380px] rounded-full bg-emerald-900/40 blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-[-15%] left-[-10%] w-[400px] h-[400px] rounded-full bg-emerald-950/60 blur-[130px] pointer-events-none" />
+          <div className="absolute inset-0 opacity-[0.035] pointer-events-none"
+            style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.7) 1px, transparent 1px)", backgroundSize: "40px 40px" }}
+          />
+          <div className="absolute right-0 top-[10%] bottom-[10%] w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent" />
+
+          {/* Brand */}
+          <div className="relative z-10">
+            <Link to="/" className="inline-flex items-center gap-3 group">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-700 to-primary flex items-center justify-center shadow-lg shadow-primary/40 text-sm">🌿</div>
+              <span className="font-bold text-[18px] text-white/80 tracking-wide group-hover:text-white transition-colors">TerraSpotter</span>
+            </Link>
+          </div>
+
+          {/* Hero copy */}
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-6 h-px bg-primary/60" />
+              <span className="text-primary text-[10px] font-semibold tracking-[3px] uppercase">India's Land Platform</span>
             </div>
-          <h1>
-            {t("signup.hero_line_1", "Your legacy")}<br />
-            {t("signup.hero_line_2", "starts with a")}<br />
-            <em className="not-italic text-[#4db87a]">{t("signup.hero_line_3", "single boundary.")}</em>
-          </h1>
+            <h2 className="text-[44px] xl:text-[50px] font-bold text-white leading-[0.92] tracking-tight mb-5">
+              Plant a<br /><em className="not-italic text-primary">legacy</em>
+            </h2>
+            <p className="text-white/40 text-[13.5px] leading-relaxed font-light mb-9 max-w-[280px]">
+              Join thousands mapping India's barren land for afforestation. One account opens the entire ecosystem.
+            </p>
 
-          <p className="su-left-desc">
-            {t("signup.hero_desc", "Join India's fastest-growing afforestation network. Draw your land, connect with volunteers, and track the growth.")}
-          </p>
-            <div className="su-perks">
-              {[
-                ["Submit & track land parcels", "Map boundaries, upload photos, and get matched with planting teams automatically."],
-                ["AI-powered species recommendations", "Soil type, rainfall, and climate data generate native tree recommendations for every parcel."],
-                ["Verified impact tracking", "CO₂ capture, canopy growth, and water recharge data updated as plantations mature."],
-                ["Open to all — free forever", "Built for NGOs, researchers, students, local bodies, and individual volunteers."],
-              ].map(([h, p]) => (
-                <div key={h} className="su-perk">
-                  <div className="su-perk-dot" />
-                  <div className="su-perk-text"><h4>{h}</h4><p>{p}</p></div>
+            {/* Perks */}
+            <div className="flex flex-col gap-4">
+              {perks.map((p, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center text-sm shrink-0 mt-0.5">{p.icon}</div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-white">{p.title}</div>
+                    <div className="text-[11.5px] text-white/40 leading-snug">{p.desc}</div>
+                  </div>
                 </div>
               ))}
             </div>
-            <p className="su-left-foot">Your data is used only to connect land with planting teams.<br />No ads. No selling. No noise.</p>
           </div>
-        </motion.aside>
 
-        {/* RIGHT PANEL */}
-        <motion.div className="su-right"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.50, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}>
-          <div className="su-form-wrap">
+          <div className="relative z-10 border-t border-white/[0.07] pt-5">
+            <p className="text-white/20 text-[11px] leading-relaxed">
+              © 2026 TerraSpotter · Built by Om Borekar<br />Afforestation Intelligence Platform 🇮🇳
+            </p>
+          </div>
+        </div>
+
+        {/* ── RIGHT PANEL ── */}
+        <div className="flex-1 overflow-y-auto bg-background px-6 py-12 md:px-14 xl:px-20 flex items-start justify-center">
+          <div className="w-full max-w-[500px] relative z-10">
+
+            {/* Mobile brand */}
+            <div className="lg:hidden mb-8 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-700 to-primary flex items-center justify-center text-sm">🌿</div>
+              <span className="font-bold text-[18px] text-foreground">TerraSpotter</span>
+            </div>
 
             <Steps step={step} />
 
+            {/* ── STEP 0 — FORM ── */}
             <AnimatePresence mode="wait">
-
-              {/* STEP 0: registration form */}
               {step === 0 && (
-                <motion.div key="form"
-                  initial={{ opacity: 0, x: -24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 24 }}
-                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>
+                <motion.div key="step0" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <div className="mb-7">
+                    <span className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[2.5px] uppercase text-primary mb-3">
+                      <span className="w-4 h-px bg-primary" /> New Account
+                    </span>
+                    <h1 className="text-[38px] font-bold text-foreground leading-[1.05] tracking-tight">
+                      Create your<br /><em className="not-italic text-primary">workspace</em>
+                    </h1>
+                    <p className="text-muted-foreground text-[13.5px] mt-2 font-light">
+                      Already have one? <Link to="/login" className="text-foreground font-semibold hover:text-primary transition-colors">Sign in →</Link>
+                    </p>
+                  </div>
 
-                  <h2 className="su-form-title">{t("signup.create_acc", "Create account")}</h2>
-                  <p className="su-form-sub">{t("signup.sub", "Transform your barren land into a lush forest.")}</p>
-
-                  {errors.api && <div className="su-api-err">⚠ {errors.api}</div>}
-
-                  <form onSubmit={handleSendOtp} noValidate>
-                    <div className="su-section-head">Personal</div>
-                    <div className="su-grid-2">
-                      <div className="su-field">
-                        <label className="su-label">First Name</label>
-                        <input className={`su-input${errors.fname ? " e" : ""}`}
-                          name="fname" placeholder="Arjun"
-                          value={form.fname} onChange={handleChange} autoComplete="given-name" />
-                        {errors.fname && <span className="su-err">{errors.fname}</span>}
-                      </div>
-                      <div className="su-field">
-                        <label className="su-label">Last Name</label>
-                        <input className={`su-input${errors.lname ? " e" : ""}`}
-                          name="lname" placeholder="Desai"
-                          value={form.lname} onChange={handleChange} autoComplete="family-name" />
-                        {errors.lname && <span className="su-err">{errors.lname}</span>}
-                      </div>
+                  {errors.api && (
+                    <div className="flex items-center gap-2.5 px-4 py-3.5 bg-destructive/10 border border-destructive/30 rounded-xl text-[13px] text-destructive font-medium mb-5">
+                      <span className="w-4 h-4 rounded-full bg-destructive/20 flex items-center justify-center text-[10px] shrink-0">!</span>
+                      {errors.api}
                     </div>
-                    <div className="su-grid-2">
-                      <div className="su-field">
-                        <label className="su-label">Date of Birth</label>
-                        <input className={`su-input${errors.dob ? " e" : ""}`}
-                          type="date" name="dob"
-                          value={form.dob} onChange={handleChange} />
-                        {errors.dob && <span className="su-err">{errors.dob}</span>}
+                  )}
+
+                  <form onSubmit={handleSendOtp} noValidate className="flex flex-col gap-0">
+                    {/* Name row */}
+                    <div className="flex items-center gap-1.5 my-5 text-[10.5px] font-bold uppercase tracking-[1.3px] text-muted-foreground">
+                      Personal Info <div className="flex-1 h-px bg-border" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[11px] font-semibold uppercase tracking-[0.8px] text-foreground/60">First name</label>
+                        <input name="fname" placeholder="Om" value={form.fname} onChange={handleChange} className={inputCls(errors.fname)} />
+                        {errors.fname && <p className="text-[12px] text-destructive font-medium">{errors.fname}</p>}
                       </div>
-                      <div className="su-field">
-                        <label className="su-label">Mobile Number</label>
-                        <input className={`su-input${errors.phoneNo ? " e" : ""}`}
-                          name="phoneNo" placeholder="9876543210" maxLength={10}
-                          value={form.phoneNo} onChange={handleChange} autoComplete="tel" />
-                        {errors.phoneNo && <span className="su-err">{errors.phoneNo}</span>}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[11px] font-semibold uppercase tracking-[0.8px] text-foreground/60">Last name</label>
+                        <input name="lname" placeholder="Borekar" value={form.lname} onChange={handleChange} className={inputCls(errors.lname)} />
+                        {errors.lname && <p className="text-[12px] text-destructive font-medium">{errors.lname}</p>}
                       </div>
                     </div>
 
-                    <div className="su-section-head">Account</div>
-                    <div className="su-field">
-                      <label className="su-label">Email Address</label>
-                      <input className={`su-input${errors.email ? " e" : ""}`}
-                        type="email" name="email" placeholder="you@example.com"
-                        value={form.email} onChange={handleChange} autoComplete="email" />
-                      {errors.email && <span className="su-err">{errors.email}</span>}
+                    <div className="flex flex-col gap-1.5 mb-4">
+                      <label className="text-[11px] font-semibold uppercase tracking-[0.8px] text-foreground/60">Email address</label>
+                      <input name="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange} className={inputCls(errors.email)} />
+                      {errors.email && <p className="text-[12px] text-destructive font-medium">{errors.email}</p>}
                     </div>
-                    <div className="su-field">
-                      <label className="su-label">Password</label>
-                      <div className="su-input-wrap">
-                        <input className={`su-input pw${errors.password ? " e" : ""}`}
-                          type={showPw ? "text" : "password"} name="password"
-                          placeholder="Min. 8 characters" value={form.password}
-                          onChange={handleChange} autoComplete="new-password" />
-                        <button type="button" className="su-pw-eye"
-                          onClick={() => setShowPw(v => !v)} tabIndex={-1}>
-                          {showPw ? "🙈" : "👁"}
+
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[11px] font-semibold uppercase tracking-[0.8px] text-foreground/60">Phone number</label>
+                        <input name="phoneNo" placeholder="10-digit" value={form.phoneNo} onChange={handleChange} className={inputCls(errors.phoneNo)} />
+                        {errors.phoneNo && <p className="text-[12px] text-destructive font-medium">{errors.phoneNo}</p>}
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[11px] font-semibold uppercase tracking-[0.8px] text-foreground/60">Date of birth</label>
+                        <input name="dob" type="date" value={form.dob} onChange={handleChange} className={inputCls(errors.dob)} />
+                        {errors.dob && <p className="text-[12px] text-destructive font-medium">{errors.dob}</p>}
+                      </div>
+                    </div>
+
+                    {/* Password section */}
+                    <div className="flex items-center gap-1.5 my-5 text-[10.5px] font-bold uppercase tracking-[1.3px] text-muted-foreground">
+                      Security <div className="flex-1 h-px bg-border" />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 mb-2">
+                      <label className="text-[11px] font-semibold uppercase tracking-[0.8px] text-foreground/60">Password</label>
+                      <div className="relative">
+                        <input name="password" type={showPw ? "text" : "password"} placeholder="••••••••"
+                          value={form.password} onChange={handleChange}
+                          className={inputCls(errors.password) + " pr-11"} />
+                        <button type="button" onClick={() => setShowPw(v => !v)} tabIndex={-1}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                          {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
                         </button>
                       </div>
+                      {/* Strength bar */}
                       {form.password && (
-                        <div className="su-strength">
-                          <div className="su-strength-bar">
-                            <div className="su-strength-fill"
-                              style={{ width: `${strength * 25}%`, background: strengthColor }} />
+                        <div className="flex flex-col gap-1 mt-1">
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4].map(i => (
+                              <div key={i} className={`flex-1 h-[3px] rounded-full transition-all duration-300 ${i <= strength ? strengthColors[strength] : "bg-border"}`} />
+                            ))}
                           </div>
-                          <span style={{ fontSize: 11.5, fontWeight: 600, color: strengthColor }}>
-                            {strengthLabel}
-                          </span>
+                          <p className="text-[11px] text-muted-foreground font-medium">{strengthLabel}</p>
                         </div>
                       )}
-                      {errors.password && <span className="su-err">{errors.password}</span>}
-                    </div>
-                    <div className="su-field">
-                      <label className="su-label">Confirm Password</label>
-                      <div className="su-input-wrap">
-                        <input className={`su-input pw${errors.confirmPassword ? " e" : ""}`}
-                          type={showCp ? "text" : "password"} name="confirmPassword"
-                          placeholder="Re-enter password" value={form.confirmPassword}
-                          onChange={handleChange} autoComplete="new-password" />
-                        <button type="button" className="su-pw-eye"
-                          onClick={() => setShowCp(v => !v)} tabIndex={-1}>
-                          {showCp ? "🙈" : "👁"}
-                        </button>
-                      </div>
-                      {errors.confirmPassword && <span className="su-err">{errors.confirmPassword}</span>}
+                      {errors.password && <p className="text-[12px] text-destructive font-medium">{errors.password}</p>}
                     </div>
 
-                    <button type="submit" className="su-submit" disabled={loading}>
+                    <div className="flex flex-col gap-1.5 mb-5">
+                      <label className="text-[11px] font-semibold uppercase tracking-[0.8px] text-foreground/60">Confirm password</label>
+                      <div className="relative">
+                        <input name="confirmPassword" type={showCp ? "text" : "password"} placeholder="••••••••"
+                          value={form.confirmPassword} onChange={handleChange}
+                          className={inputCls(errors.confirmPassword) + " pr-11"} />
+                        <button type="button" onClick={() => setShowCp(v => !v)} tabIndex={-1}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                          {showCp ? <EyeOff size={15} /> : <Eye size={15} />}
+                        </button>
+                      </div>
+                      {errors.confirmPassword && <p className="text-[12px] text-destructive font-medium">{errors.confirmPassword}</p>}
+                    </div>
+
+                    <button type="submit" disabled={loading}
+                      className="h-12 w-full rounded-xl bg-primary text-primary-foreground text-[14.5px] font-semibold flex items-center justify-center gap-2.5 cursor-pointer transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-primary/25">
                       {loading
-                        ? <><div className="su-spinner" />Sending OTP…</>
-                        : "Continue → Verify Email"}
+                        ? <><span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /><span>Sending OTP…</span></>
+                        : <><span>Continue</span><span className="text-primary-foreground/70">→</span></>}
                     </button>
                   </form>
 
-                  {/* Google Sign-up Shortcut */}
-                  <div className="su-divider">or sign up faster</div>
-                  <GoogleLoginButton
-                    variant="light"
-                    label="Sign up with Google"
-                    onSuccess={(data) => {
-                      if (data.isNewSignup) {
-                        navigate("/profile", { state: { changePassword: true } });
-                      } else {
-                        navigate("/main");
-                      }
-                    }}
-                  />
-
-                  <div className="su-divider" style={{ marginTop: 20 }}>already registered?</div>
-                  <div className="su-signin">Already have an account? <Link to="/login">Sign in →</Link></div>
+                  <div className="flex items-center gap-4 my-7">
+                    <div className="flex-1 h-px bg-border" />
+                    <span className="text-[11px] text-muted-foreground uppercase tracking-[1px] font-medium">or</span>
+                    <div className="flex-1 h-px bg-border" />
+                  </div>
+                  <GoogleLoginButton variant="dark" label="Sign up with Google" />
                 </motion.div>
               )}
 
-              {/* STEP 1: OTP entry */}
+              {/* ── STEP 1 — OTP ── */}
               {step === 1 && (
-                <motion.div key="otp"
-                  initial={{ opacity: 0, x: 24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -24 }}
-                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>
-
-                  <h1 className="su-form-title">Check your inbox</h1>
-                  <p className="su-form-sub">We emailed a 4-digit code to</p>
-
-                  <div className="otp-card">
-                    <div className="otp-email-chip">📧 {form.email}</div>
-                    <p className="otp-hint">Enter the code below. It expires in 10 minutes.</p>
-
-                    <OtpInput value={otp} onChange={setOtp} disabled={otpLoading} />
-
-                    {otpError && <div className="otp-err">⚠ {otpError}</div>}
-
-                    <button
-                      className="su-submit"
-                      onClick={handleVerifyOtp}
-                      disabled={otpLoading || otp.replace(/\s/g, "").length < 4}
-                    >
-                      {otpLoading
-                        ? <><div className="su-spinner" />Verifying…</>
-                        : "Verify & Create Account →"}
-                    </button>
-
-                    <div className="otp-resend">
-                      {resendSecs > 0
-                        ? <span>{t("signup.resend_in", "Resend in")} <strong>{resendSecs}s</strong></span>
-                        : <span>{t("signup.didnt_get", "Didn't get it?")} <button onClick={handleResend}>{t("signup.resend_otp", "Resend OTP")}</button></span>
-                      }
-                    </div>
-                    <div>
-                      <button className="otp-back"
-                        onClick={() => { setStep(0); setOtp(""); setOtpError(""); }}>
-                        ← {t("signup.back_edit", "Back to edit details")}
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STEP 2: success */}
-              {step === 2 && (
-                <motion.div key="success"
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.42, type: "spring", bounce: 0.28 }}>
-
-                  <div className="success-card">
-                    <motion.div className="success-icon"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.18, type: "spring", bounce: 0.5 }}>
-                      🌱
-                    </motion.div>
-                    <h2 className="success-title">Account created!</h2>
-                    <p className="success-sub">
-                      Welcome to TerraSpotter, <strong>{form.fname}</strong>! 🎉<br />
-                      A confirmation email has been sent to<br />
-                      <strong>{form.email}</strong>
+                <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <div className="text-center mb-2">
+                    <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center text-3xl">📧</div>
+                    <span className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[2.5px] uppercase text-primary mb-3">
+                      <span className="w-4 h-px bg-primary" /> Verify Email
+                    </span>
+                    <h2 className="text-[32px] font-bold text-foreground leading-tight tracking-tight">Check your inbox</h2>
+                    <p className="text-muted-foreground text-[13.5px] mt-2 font-light">
+                      We sent a 4-digit code to
                     </p>
-                    <Link to="/login" className="success-btn">
-                      Sign in to your account →
-                    </Link>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mt-2 mb-4">
+                      <span className="text-[13px] font-semibold text-primary">{form.email}</span>
+                    </div>
+                  </div>
+
+                  {otpError && (
+                    <div className="flex items-center gap-2.5 px-4 py-3.5 bg-destructive/10 border border-destructive/30 rounded-xl text-[13px] text-destructive font-medium mb-4">
+                      <span className="w-4 h-4 rounded-full bg-destructive/20 flex items-center justify-center text-[10px] shrink-0">!</span>
+                      {otpError}
+                    </div>
+                  )}
+
+                  <OtpInput value={otp} onChange={setOtp} disabled={otpLoading} />
+
+                  <button onClick={handleVerifyOtp} disabled={otpLoading || otp.replace(/\s/g, "").length < 4}
+                    className="w-full h-12 rounded-xl bg-primary text-primary-foreground text-[14.5px] font-semibold flex items-center justify-center gap-2.5 cursor-pointer transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-primary/25 mb-5">
+                    {otpLoading
+                      ? <><span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /><span>Verifying…</span></>
+                      : "Verify & Create Account →"}
+                  </button>
+
+                  <div className="flex flex-col items-center gap-2">
+                    <button type="button" disabled={resendSecs > 0} onClick={handleResend}
+                      className="text-[13px] text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 font-medium">
+                      {resendSecs > 0 ? `Resend in ${resendSecs}s` : "Resend code"}
+                    </button>
+                    <button type="button" onClick={() => { setStep(0); setOtp(""); setOtpError(""); }}
+                      className="text-[13px] text-muted-foreground hover:text-foreground transition-colors">
+                      ← Change email
+                    </button>
                   </div>
                 </motion.div>
               )}
 
+              {/* ── STEP 2 — DONE ── */}
+              {step === 2 && (
+                <motion.div key="step2" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
+                  <motion.div className="w-20 h-20 mx-auto mb-7 rounded-2xl bg-gradient-to-br from-emerald-700 to-primary flex items-center justify-center text-4xl shadow-lg shadow-primary/25"
+                    initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.15, type: "spring", bounce: 0.4 }}>
+                    🌱
+                  </motion.div>
+
+                  <div className="inline-flex items-center gap-2 mb-4">
+                    <div className="w-4 h-px bg-primary" />
+                    <span className="text-[11px] font-semibold tracking-[2.5px] uppercase text-primary">Account Created</span>
+                    <div className="w-4 h-px bg-primary" />
+                  </div>
+
+                  <h2 className="text-[36px] font-bold text-foreground mb-3 tracking-tight">Welcome, {form.fname}! 🎉</h2>
+                  <p className="text-muted-foreground text-[14px] leading-relaxed mb-10 max-w-[320px] mx-auto">
+                    Your TerraSpotter account is ready. Sign in now and start mapping land for a greener India.
+                  </p>
+
+                  <button onClick={() => navigate("/login")}
+                    className="w-full h-12 rounded-xl bg-primary text-primary-foreground text-[14.5px] font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all cursor-pointer shadow-lg shadow-primary/25 mb-4">
+                    Go to Login →
+                  </button>
+                  <button onClick={() => navigate("/")}
+                    className="w-full h-10 rounded-xl border border-border text-muted-foreground text-[14px] font-medium hover:text-foreground hover:border-primary/30 transition-all">
+                    Explore TerraSpotter
+                  </button>
+                </motion.div>
+              )}
             </AnimatePresence>
+
           </div>
-        </motion.div>
+        </div>
       </div>
     </>
   );
