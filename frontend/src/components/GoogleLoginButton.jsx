@@ -42,7 +42,10 @@ export default function GoogleLoginButton({
         // 1. Get the user's profile from Google's userinfo endpoint
         const userInfoRes = await axios.get(
           "https://www.googleapis.com/oauth2/v3/userinfo",
-          { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
+          {
+            headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+            withCredentials: false,
+          }
         );
 
         const { email, given_name: fname, family_name: lname } = userInfoRes.data;
@@ -58,6 +61,8 @@ export default function GoogleLoginButton({
         contextLogin(res.data);
         if (onSuccess) {
           onSuccess(res.data);
+        } else if (res.data.isNewSignup) {
+          navigate("/profile", { state: { changePassword: true } });
         } else {
           navigate("/main");
         }

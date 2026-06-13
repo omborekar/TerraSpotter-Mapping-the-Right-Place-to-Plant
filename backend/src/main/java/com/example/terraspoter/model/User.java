@@ -106,4 +106,15 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Transient
+    private Boolean isNewSignup;
+
+    public Boolean getIsNewSignup() {
+        return isNewSignup;
+    }
+
+    public void setIsNewSignup(Boolean isNewSignup) {
+        this.isNewSignup = isNewSignup;
+    }
 }

@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 */
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom';
 import { XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, AreaChart, Area } from "recharts";
 // Removed LoadingSpinner
 
@@ -280,6 +280,12 @@ function getLevelLabel(lv) {
 
 // ─── Main Profile ─────────────────────────────────────────────
 export default function Profile() {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.changePassword || new URLSearchParams(location.search).get('changePassword') === 'true') {
+      setPwOpen(true);
+    }
+  }, [location]);
   const { t } = useTranslation();
   const [profile,     setProfile]     = useState(null);
   const [lands,       setLands]       = useState([]);

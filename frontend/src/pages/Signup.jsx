@@ -972,7 +972,13 @@ export default function Signup() {
                   <GoogleLoginButton
                     variant="light"
                     label="Sign up with Google"
-                    onSuccess={() => navigate("/main")}
+                    onSuccess={(data) => {
+                      if (data.isNewSignup) {
+                        navigate("/profile", { state: { changePassword: true } });
+                      } else {
+                        navigate("/main");
+                      }
+                    }}
                   />
 
                   <div className="su-divider" style={{ marginTop: 20 }}>already registered?</div>

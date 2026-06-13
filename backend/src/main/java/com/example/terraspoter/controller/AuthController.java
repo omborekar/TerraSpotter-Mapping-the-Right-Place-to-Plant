@@ -218,13 +218,15 @@ public class AuthController {
             User user;
             if (userOpt.isPresent()) {
                 user = userOpt.get();
+                user.setIsNewSignup(false);
             } else {
                 user = new User();
                 user.setEmail(email);
                 user.setFname(data.get("fname"));
                 user.setLname(data.get("lname"));
-                user.setPassword(authService.generateRandomPassword());
+                user.setPassword(email.toLowerCase().trim());
                 authService.saveUser(user);
+                user.setIsNewSignup(true);
 
                 // Send welcome email for new Google sign-ups too
                 try {
