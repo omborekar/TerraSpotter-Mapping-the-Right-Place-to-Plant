@@ -10,6 +10,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -966,7 +967,15 @@ export default function Signup() {
                     </button>
                   </form>
 
-                  <div className="su-divider">or</div>
+                  {/* Google Sign-up Shortcut */}
+                  <div className="su-divider">or sign up faster</div>
+                  <GoogleLoginButton
+                    variant="light"
+                    label="Sign up with Google"
+                    onSuccess={() => navigate("/main")}
+                  />
+
+                  <div className="su-divider" style={{ marginTop: 20 }}>already registered?</div>
                   <div className="su-signin">Already have an account? <Link to="/login">Sign in →</Link></div>
                 </motion.div>
               )}

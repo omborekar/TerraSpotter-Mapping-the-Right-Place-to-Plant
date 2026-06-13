@@ -35,7 +35,10 @@ export const UserProvider = ({ children }) => {
         setXpData(null);
       }
     } catch (err) {
-      console.error("Session error:", err);
+      // 401 is expected if not logged in, so we don't log it as an error
+      if (err.response?.status !== 401) {
+        console.error("Session verification failed:", err.message);
+      }
       setUser(null);
       setXpData(null);
     } finally {

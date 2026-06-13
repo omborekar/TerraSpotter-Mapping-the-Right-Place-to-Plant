@@ -38,7 +38,6 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 import "./App.css";
 
-const BASE_URL = import.meta.env.VITE_API_URL;
 
 import { useUser } from "./context/UserContext";
 

@@ -10,6 +10,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -339,8 +340,11 @@ export default function Login() {
               <div className="flex-1 h-px bg-[#e0d8cf]" />
             </div>
 
+            {/* Google Login */}
+            <GoogleLoginButton variant="light" label="Continue with Google" />
+
             {/* Signup link */}
-            <div className="text-center">
+            <div className="text-center mt-6">
               <p className="text-[13.5px] text-[#7a6d5e]">
                 New to TerraSpotter?{" "}
                 <Link

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -45,7 +46,15 @@ public class AuthService {
     }
 
     public String generateRandomPassword() {
-        return "12345678";
+        // Cryptographically secure random password for Google OAuth sign-ups
+        // (user never sees this; they log in via Google each time)
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!";
+        SecureRandom rng = new SecureRandom();
+        StringBuilder sb = new StringBuilder(20);
+        for (int i = 0; i < 20; i++) {
+            sb.append(chars.charAt(rng.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
     public void updatePassword(User user, String newRawPassword) {
         user.setPassword(passwordEncoder.encode(newRawPassword));
