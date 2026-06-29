@@ -80,10 +80,10 @@ export default function Navbar() {
   return (
     <>
       {/* ── TOP SHIMMER LINE ── */}
-      <div className="h-[2.5px] bg-gradient-to-r from-emerald-900 via-primary to-emerald-900 animate-pulse sticky top-0 z-[201]" />
+      <div className="h-[2.5px] bg-gradient-to-r from-emerald-900 via-primary to-emerald-900 animate-pulse sticky top-0 z-[1011]" />
 
       {/* ── NAVBAR BAR ── */}
-      <nav className={`sticky top-[2.5px] z-[200] transition-all duration-300 ${
+      <nav className={`sticky top-[2.5px] z-[1010] transition-all duration-300 ${
         scrolled
           ? "bg-background/90 backdrop-blur-2xl border-b border-border shadow-lg shadow-black/20"
           : "bg-background border-b border-border"
@@ -242,7 +242,7 @@ export default function Navbar() {
           <>
             {/* Backdrop */}
             <motion.div
-              className="fixed inset-0 z-[290] bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-[1100] bg-black/50 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -252,7 +252,7 @@ export default function Navbar() {
 
             {/* Drawer panel */}
             <motion.div
-              className="fixed top-0 right-0 bottom-0 w-[min(320px,82vw)] bg-background z-[300] flex flex-col shadow-2xl shadow-black/40 border-l border-border overflow-hidden"
+              className="fixed top-0 right-0 bottom-0 w-[min(320px,82vw)] bg-background z-[1110] flex flex-col shadow-2xl shadow-black/40 border-l border-border overflow-hidden"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
