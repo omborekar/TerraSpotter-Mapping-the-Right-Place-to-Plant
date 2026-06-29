@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { MessageCircle, X, Send, Bot, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ChatUI = () => {
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -34,11 +36,26 @@ const ChatUI = () => {
         try {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
             const response = await axios.post(`${apiUrl}/api/chat`, 
-                { message: userMsg },
+                { 
+                    message: userMsg,
+                    history: messages.map(m => ({ role: m.role, text: m.text }))
+                },
                 { withCredentials: true }
             );
 
-            setMessages(prev => [...prev, { role: 'assistant', text: response.data.reply, lands: response.data.lands }]);
+            const { reply, lands, redirectUrl } = response.data;
+            setMessages(prev => [...prev, { 
+                role: 'assistant', 
+                text: reply, 
+                lands: lands, 
+                redirectUrl: redirectUrl 
+            }]);
+
+            if (redirectUrl) {
+                setTimeout(() => {
+                    navigate(redirectUrl);
+                }, 2000);
+            }
         } catch (error) {
             console.error("Chat error:", error);
             setMessages(prev => [...prev, { role: 'assistant', text: "Sorry, I am having trouble connecting to the TerraSpotter backend right now." }]);
@@ -69,18 +86,28 @@ const ChatUI = () => {
                             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-emerald-500 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm border border-slate-100 dark:border-slate-700 rounded-bl-none'}`}>
                                     {msg.text}
+
+                                    {msg.redirectUrl && (
+                                        <button 
+                                            onClick={() => navigate(msg.redirectUrl)}
+                                            className="mt-3 w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                                        >
+                                            <span>Go to Page</span>
+                                            <span>→</span>
+                                        </button>
+                                    )}
                                     
                                     {msg.lands && msg.lands.length > 0 && (
                                         <div className="flex flex-col gap-2 mt-3 w-full">
                                             {msg.lands.map(land => (
                                                 <div key={land.id} className="bg-slate-50 dark:bg-slate-700/50 p-2 rounded-xl flex gap-3 items-center border border-slate-200 dark:border-slate-600 w-full min-w-[200px]">
                                                     {land.imageUrl ? (
-                                                        <img src={land.imageUrl} alt={land.title} className="w-14 h-14 object-cover rounded-lg shadow-sm" />
+                                                        <img src={land.imageUrl} alt="" className="w-14 h-14 object-cover rounded-lg shadow-sm" />
                                                     ) : (
                                                         <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 shrink-0">
                                                             🌿
                                                         </div>
-                                                    )}
+                                                     )}
                                                     <div className="flex flex-col overflow-hidden">
                                                         <span className="font-semibold text-sm dark:text-white truncate" title={land.title}>{land.title}</span>
                                                         <span className="text-xs text-slate-500 dark:text-slate-400">Area: {land.areaSqm} sqm</span>

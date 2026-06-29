@@ -11,8 +11,14 @@ import java.util.List;
 public class ChatResponse {
     private String reply;
     private List<LandTile> lands;
+    private String redirectUrl;
 
     public ChatResponse(String reply) {
         this.reply = reply;
+    }
+
+    public ChatResponse(String reply, List<LandTile> lands) {
+        this.reply = reply;
+        this.lands = lands;
     }
 }
