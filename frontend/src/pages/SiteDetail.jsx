@@ -174,6 +174,41 @@ const RefreshIcon = () => (
 const TAB_DETAILS = "details";
 const TAB_REVIEWS = "reviews";
 
+// Species parameters lookup based on scientific datasets and ML training bounds
+const TREE_PREFS = {
+  neem: { minTemp: 20, maxTemp: 40, temp: "20°C - 40°C", minRain: 400, maxRain: 1200, rainfall: "400 - 1200 mm", soil: ["sandy", "loamy"], climate: ["tropical"] },
+  banyan: { minTemp: 15, maxTemp: 35, temp: "15°C - 35°C", minRain: 800, maxRain: 2000, rainfall: "800 - 2000 mm", soil: ["clay", "loamy"], climate: ["tropical"] },
+  peepal: { minTemp: 15, maxTemp: 35, temp: "15°C - 35°C", minRain: 600, maxRain: 1500, rainfall: "600 - 1500 mm", soil: ["loamy"], climate: ["tropical"] },
+  mango: { minTemp: 20, maxTemp: 38, temp: "20°C - 38°C", minRain: 750, maxRain: 2500, rainfall: "750 - 2500 mm", soil: ["loamy"], climate: ["tropical"] },
+  teak: { minTemp: 22, maxTemp: 40, temp: "22°C - 40°C", minRain: 1200, maxRain: 3000, rainfall: "1200 - 3000 mm", soil: ["loamy"], climate: ["tropical"] },
+  arjun: { minTemp: 20, maxTemp: 35, temp: "20°C - 35°C", minRain: 800, maxRain: 2000, rainfall: "800 - 2000 mm", soil: ["loamy"], climate: ["tropical"] },
+  jamun: { minTemp: 20, maxTemp: 35, temp: "20°C - 35°C", minRain: 900, maxRain: 2000, rainfall: "900 - 2000 mm", soil: ["clay", "loamy"], climate: ["tropical"] },
+  gulmohar: { minTemp: 18, maxTemp: 35, temp: "18°C - 35°C", minRain: 500, maxRain: 1500, rainfall: "500 - 1500 mm", soil: ["loamy", "sandy"], climate: ["tropical"] },
+  coconut: { minTemp: 25, maxTemp: 35, temp: "25°C - 35°C", minRain: 1500, maxRain: 3000, rainfall: "1500 - 3000 mm", soil: ["sandy"], climate: ["tropical"] },
+  bamboo: { minTemp: 20, maxTemp: 35, temp: "20°C - 35°C", minRain: 1000, maxRain: 3000, rainfall: "1000 - 3000 mm", soil: ["clay", "loamy"], climate: ["tropical"] },
+  pine: { minTemp: 5, maxTemp: 25, temp: "5°C - 25°C", minRain: 600, maxRain: 2000, rainfall: "600 - 2000 mm", soil: ["sandy", "loamy"], climate: ["temperate"] },
+  oak: { minTemp: 5, maxTemp: 25, temp: "5°C - 25°C", minRain: 800, maxRain: 2000, rainfall: "800 - 2000 mm", soil: ["loamy", "clay"], climate: ["temperate"] },
+  maple: { minTemp: 0, maxTemp: 25, temp: "0°C - 25°C", minRain: 600, maxRain: 1500, rainfall: "600 - 1500 mm", soil: ["loamy"], climate: ["temperate"] },
+  cedar: { minTemp: 5, maxTemp: 25, temp: "5°C - 25°C", minRain: 700, maxRain: 2000, rainfall: "700 - 2000 mm", soil: ["loamy"], climate: ["temperate"] },
+  birch: { minTemp: 0, maxTemp: 20, temp: "0°C - 20°C", minRain: 500, maxRain: 1500, rainfall: "500 - 1500 mm", soil: ["sandy", "loamy"], climate: ["temperate"] },
+  willow: { minTemp: 10, maxTemp: 30, temp: "10°C - 30°C", minRain: 1000, maxRain: 2500, rainfall: "1000 - 2500 mm", soil: ["clay", "loamy"], climate: ["temperate"] },
+  mahogany: { minTemp: 20, maxTemp: 35, temp: "20°C - 35°C", minRain: 1500, maxRain: 3000, rainfall: "1500 - 3000 mm", soil: ["loamy"], climate: ["tropical"] },
+  sal: { minTemp: 20, maxTemp: 35, temp: "20°C - 35°C", minRain: 1000, maxRain: 2500, rainfall: "1000 - 2500 mm", soil: ["loamy"], climate: ["tropical"] },
+  acacia: { minTemp: 20, maxTemp: 40, temp: "20°C - 40°C", minRain: 200, maxRain: 800, rainfall: "200 - 800 mm", soil: ["sandy", "loamy"], climate: ["tropical"] },
+  eucalyptus: { minTemp: 15, maxTemp: 35, temp: "15°C - 35°C", minRain: 500, maxRain: 1500, rainfall: "500 - 1500 mm", soil: ["loamy"], climate: ["tropical"] },
+  moringa: { minTemp: 25, maxTemp: 40, temp: "25°C - 40°C", minRain: 250, maxRain: 1500, rainfall: "250 - 1500 mm", soil: ["sandy", "loamy"], climate: ["tropical"] }
+};
+
+function getTreePref(plantName) {
+  const name = (plantName || "").toLowerCase().trim();
+  return TREE_PREFS[name] || {
+    minTemp: 15, maxTemp: 35, temp: "15°C - 35°C",
+    minRain: 500, maxRain: 2000, rainfall: "500 - 2000 mm",
+    soil: ["loamy", "sandy", "clay"],
+    climate: ["tropical", "temperate"]
+  };
+}
+
 // ─── Main ─────────────────────────────────────────────────────
 export default function SiteDetail() {
   const { t } = useTranslation();
@@ -191,6 +226,7 @@ export default function SiteDetail() {
   const [completeOpen, setCompleteOpen] = useState(false);
   const [refreshSt, setRefreshSt] = useState("idle");
   const [refreshErr, setRefreshErr] = useState("");
+  const [expandedRecIdx, setExpandedRecIdx] = useState(null);
   const timerRef = useRef(null);
 
   useEffect(() => {
