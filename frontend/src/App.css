@@ -199,3 +199,120 @@
     @apply border border-border text-muted-foreground rounded-xl transition-all hover:border-primary/40 hover:text-primary hover:bg-primary/5;
   }
 }
+
+/* ══ DARK MODE GLOBAL PATCH ══════════════════════════════════
+   Overrides hardcoded light hex values in components/pages that
+   don't use CSS variables. Runs only when .dark is on <html>.
+   ══════════════════════════════════════════════════════════ */
+.dark {
+  /* ── Page / section backgrounds ─────────────────────────── */
+  .bg-\[\#f7f3ec\]  { background-color: var(--background) !important; }
+  .bg-\[\#f7f4ee\]  { background-color: var(--background) !important; }
+  .bg-\[\#faf8f4\]  { background-color: var(--background) !important; }
+  .bg-\[\#f2ede6\]  { background-color: var(--background) !important; }
+  .bg-\[\#ede8de\]  { background-color: var(--secondary) !important; }
+
+  /* bg-white => card color */
+  .bg-white         { background-color: var(--card) !important; }
+
+  /* ── Borders ────────────────────────────────────────────── */
+  .border-\[\#ede8de\]  { border-color: var(--border) !important; }
+  .border-\[\#e0d8cf\]  { border-color: var(--border) !important; }
+  .border-\[\#dde5e0\]  { border-color: var(--border) !important; }
+
+  /* ── Text colors ────────────────────────────────────────── */
+  .text-\[\#0c1e11\]   { color: var(--foreground) !important; }
+  .text-\[\#163d25\]   { color: var(--foreground) !important; }
+  .text-\[\#3d2b1f\]   { color: var(--foreground) !important; }
+  .text-\[\#5c5044\]   { color: var(--muted-foreground) !important; }
+  .text-\[\#7a6d5e\]   { color: var(--muted-foreground) !important; }
+  .text-\[\#8a7d6e\]   { color: var(--muted-foreground) !important; }
+  .text-\[\#b5ac9e\]   { color: var(--muted-foreground) !important; }
+
+  /* ── Divide lines ───────────────────────────────────────── */
+  .divide-\[\#ede8de\] > * + * { border-color: var(--border) !important; }
+
+  /* ── PlantationForm inline CSS class overrides ──────────── */
+  .pf-modal  { background-color: var(--card) !important; }
+  .pf-label  { color: var(--muted-foreground) !important; }
+  .pf-input, .pf-select, .pf-textarea {
+    background-color: var(--input) !important;
+    border-color: var(--border) !important;
+    color: var(--foreground) !important;
+  }
+  .pf-input:focus, .pf-select:focus, .pf-textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(77,184,122,.15) !important;
+  }
+  .pf-hint       { color: var(--muted-foreground) !important; }
+  .pf-footer     { border-top-color: var(--border) !important; }
+  .pf-btn-cancel {
+    background-color: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--muted-foreground) !important;
+  }
+  .pf-btn-cancel:hover { border-color: var(--primary) !important; color: var(--primary) !important; }
+  .pf-error {
+    background: rgba(224,92,74,.12) !important;
+    border-color: rgba(224,92,74,.35) !important;
+    color: #e05c4a !important;
+  }
+
+  /* ── CompletePlantationModal ────────────────────────────── */
+  .border-\[\#e0d8cf\].bg-white.text-\[\#8a7d6e\] {
+    background-color: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--muted-foreground) !important;
+  }
+
+  /* ── GrowthTracker SVG chart line ───────────────────────── */
+  .bg-\[\#0c1e11\]   { background-color: var(--primary) !important; }
+
+  /* ── Input / form overrides for SiteDetail / Profile ────── */
+  input.bg-white, select.bg-white, textarea.bg-white {
+    background-color: var(--input) !important;
+    border-color: var(--border) !important;
+    color: var(--foreground) !important;
+  }
+  input.bg-white::placeholder,
+  textarea.bg-white::placeholder {
+    color: var(--muted-foreground) !important;
+  }
+
+  /* ── Hover states that reference light backgrounds ──────── */
+  .hover\:bg-emerald-50:hover { background-color: var(--secondary) !important; }
+  .hover\:bg-\[\#f7f3ec\]:hover { background-color: var(--secondary) !important; }
+
+  /* ── Profile / SiteDetail card containers ───────────────── */
+  .rounded-3xl.bg-white,
+  .rounded-2xl.bg-white,
+  .rounded-xl.bg-white {
+    background-color: var(--card) !important;
+    border-color: var(--border) !important;
+  }
+
+  /* ── Metric cells in GrowthTracker ─────────────────────── */
+  .bg-\[\#f7f3ec\].px-4.py-3 {
+    background-color: var(--secondary) !important;
+  }
+
+  /* ── Bone skeleton in light pages ───────────────────────── */
+  .from-\[\#f0ebe2\], .via-\[\#e8e2d8\], .to-\[\#f0ebe2\] {
+    --tw-gradient-from: rgba(255,255,255,0.04) !important;
+    --tw-gradient-via: rgba(255,255,255,0.08) !important;
+    --tw-gradient-to: rgba(255,255,255,0.04) !important;
+  }
+  .from-\[\#ede8de\], .via-\[\#e0d8ce\], .to-\[\#ede8de\] {
+    --tw-gradient-from: rgba(255,255,255,0.04) !important;
+    --tw-gradient-via: rgba(255,255,255,0.08) !important;
+    --tw-gradient-to: rgba(255,255,255,0.04) !important;
+  }
+
+  /* ── GoogleLoginButton light mode state ─────────────────── */
+  .bg-white.border-gray-200.text-gray-800 {
+    background-color: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--foreground) !important;
+  }
+}
+

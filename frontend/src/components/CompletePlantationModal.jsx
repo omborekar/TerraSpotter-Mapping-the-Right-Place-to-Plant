@@ -162,7 +162,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
               <input
                 type="number" min="1" placeholder="e.g. 95"
                 value={form.treesPlanted} onChange={e => set("treesPlanted", e.target.value)}
-                className="w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all"
+                className="w-full px-4 py-3 border-[1.5px] border-border rounded-xl text-sm text-foreground bg-input outline-none font-['Outfit',sans-serif] focus:border-primary focus:ring-2 focus:ring-primary/10 hover:border-primary/40 transition-all"
               />
               <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_90", "Actual number planted today")}</span>
             </div>
@@ -174,7 +174,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
               <input
                 type="number" min="0" placeholder="e.g. 40"
                 value={form.moreCapacity} onChange={e => set("moreCapacity", e.target.value)}
-                className="w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all"
+                className="w-full px-4 py-3 border-[1.5px] border-border rounded-xl text-sm text-foreground bg-input outline-none font-['Outfit',sans-serif] focus:border-primary focus:ring-2 focus:ring-primary/10 hover:border-primary/40 transition-all"
               />
               <span className="text-[11px] text-[#b5ac9e] font-['Outfit',sans-serif]">{t("auto.auto_92", "Remaining capacity estimate")}</span>
             </div>
@@ -186,7 +186,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
               <textarea
                 placeholder="e.g. Soil was rocky in the north corner, water access good from the canal. Recommend native shrubs for perimeter…"
                 value={form.notes} onChange={e => set("notes", e.target.value)}
-                className="w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all resize-none min-h-[80px] leading-relaxed"
+                className="w-full px-4 py-3 border-[1.5px] border-border rounded-xl text-sm text-foreground bg-input outline-none font-['Outfit',sans-serif] focus:border-primary focus:ring-2 focus:ring-primary/10 hover:border-primary/40 transition-all resize-none min-h-[80px] leading-relaxed"
               />
             </div>
           </div>
@@ -196,7 +196,7 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200/80 rounded-xl text-[12.5px] text-red-700 font-medium font-['Outfit',sans-serif]"
+                className="flex items-center gap-2.5 px-4 py-3 bg-destructive/10 border border-destructive/30 rounded-xl text-[12.5px] text-destructive font-medium font-['Outfit',sans-serif]"
               >
                 <span className="shrink-0">⚠️</span> {error}
               </motion.div>
@@ -205,18 +205,18 @@ export default function CompletePlantationModal({ land, onClose, onSuccess }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-7 sm:px-8 py-5 border-t border-[#ede8de]">
+        <div className="flex items-center justify-end gap-3 px-7 sm:px-8 py-5 border-t border-border">
           <button
             onClick={onClose}
             disabled={submitting}
-            className="px-5 py-2.5 rounded-xl border-[1.5px] border-[#e0d8cf] bg-white text-[13.5px] font-medium text-[#8a7d6e] font-['Outfit',sans-serif] hover:border-[#0c1e11] hover:text-[#0c1e11] transition-all cursor-pointer disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl border-[1.5px] border-border bg-card text-[13.5px] font-medium text-muted-foreground font-['Outfit',sans-serif] hover:border-primary hover:text-primary transition-all cursor-pointer disabled:opacity-50"
           >
             {t("auto.auto_94", "Cancel")}
           </button>
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold font-['Outfit',sans-serif] hover:bg-[#163d25] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-[0_4px_16px_rgba(12,30,17,0.2)]"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-[13.5px] font-semibold font-['Outfit',sans-serif] hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-[0_4px_16px_rgba(77,184,122,0.3)]"
           >
             {submitting ? (
               <>

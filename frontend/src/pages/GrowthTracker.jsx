@@ -29,7 +29,7 @@ function getHealth(status) {
 
 // ─── Skeleton bone ────────────────────────────────────────────
 const Bone = ({ className = "" }) => (
-  <div className={`rounded-lg bg-gradient-to-r from-[#f0ebe2] via-[#e8e2d8] to-[#f0ebe2] bg-[length:200%_100%] animate-pulse ${className}`} />
+  <div className={`rounded-lg bg-gradient-to-r from-[#f0ebe2] via-[#e8e2d8] to-[#f0ebe2] dark:from-white/[0.05] dark:via-white/[0.11] dark:to-white/[0.05] bg-[length:200%_100%] animate-pulse ${className}`} />
 );
 
 const BoneDark = ({ className = "" }) => (
@@ -64,11 +64,11 @@ function GrowthChart({ updates }) {
         ))}
         {/* Height line */}
         <polyline points={pts(heights, maxH)}
-          fill="none" stroke="#0c1e11" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+          fill="none" stroke="var(--primary)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
         {heights.map((v, i) => {
           const x = PAD + (i / (heights.length - 1)) * (W - PAD * 2);
           const y = H - PAD - (v / maxH) * (H - PAD * 2);
-          return <circle key={i} cx={x} cy={y} r="4.5" fill="#0c1e11" stroke="#fff" strokeWidth="2" />;
+          return <circle key={i} cx={x} cy={y} r="4.5" fill="var(--primary)" stroke="var(--card)" strokeWidth="2" />;
         })}
         {/* Survival line */}
         <polyline points={pts(survivals, 100)}
@@ -76,7 +76,7 @@ function GrowthChart({ updates }) {
         {survivals.map((v, i) => {
           const x = PAD + (i / (survivals.length - 1)) * (W - PAD * 2);
           const y = H - PAD - (v / 100) * (H - PAD * 2);
-          return <circle key={i} cx={x} cy={y} r="3.5" fill="#c9a84c" stroke="#fff" strokeWidth="2" />;
+          return <circle key={i} cx={x} cy={y} r="3.5" fill="#c9a84c" stroke="var(--card)" strokeWidth="2" />;
         })}
         {/* Date labels */}
         {updates.map((u, i) => {
@@ -107,11 +107,11 @@ function TimelineCard({ update, onImageClick }) {
 
   return (
     <motion.div
-      className="relative ml-12 bg-white border border-[#ede8de] rounded-2xl overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(12,30,17,0.08)] transition-all duration-300"
+      className="relative ml-12 bg-card border border-border rounded-2xl overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(12,30,17,0.08)] transition-all duration-300"
       variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45 } } }}
     >
       {/* Timeline dot */}
-      <div className="absolute -left-[41px] top-7 w-3 h-3 rounded-full border-2 border-[#0c1e11] bg-[#f7f3ec] z-10" />
+      <div className="absolute -left-[41px] top-7 w-3 h-3 rounded-full border-2 border-primary bg-background z-10" />
 
       <div className="px-6 pt-5 pb-4 flex items-start justify-between flex-wrap gap-3">
         <div>
@@ -128,17 +128,17 @@ function TimelineCard({ update, onImageClick }) {
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-3 divide-x divide-[#ede8de] mx-6 rounded-xl overflow-hidden border border-[#ede8de] mb-4">
+      <div className="grid grid-cols-3 divide-x divide-border mx-6 rounded-xl overflow-hidden border border-border mb-4">
         {[
           { val: update.averageHeightCm || "—", lbl: "Height (cm)" },
           { val: update.survivalRate != null ? `${update.survivalRate}%` : "—", lbl: "Survival" },
           { val: hConf.label, lbl: "Health", colorCls: hConf.color },
         ].map((m, i) => (
-          <div key={i} className="bg-[#f7f3ec] px-4 py-3 text-center">
-            <div className={`font-['Cormorant_Garant',serif] text-[22px] font-semibold leading-none ${m.colorCls || "text-[#0c1e11]"}`}>
+          <div key={i} className="bg-secondary px-4 py-3 text-center">
+            <div className={`font-['Cormorant_Garant',serif] text-[22px] font-semibold leading-none ${m.colorCls || "text-foreground"}`}>
               {m.val}
             </div>
-            <div className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#b5ac9e] mt-1.5 font-['Outfit',sans-serif]">
+            <div className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mt-1.5 font-['Outfit',sans-serif]">
               {m.lbl}
             </div>
           </div>
@@ -146,7 +146,7 @@ function TimelineCard({ update, onImageClick }) {
       </div>
 
       {update.notes && (
-        <div className="px-6 py-3 border-t border-[#ede8de] text-[13px] text-[#5c5044] leading-[1.75] font-['Outfit',sans-serif] font-light">
+        <div className="px-6 py-3 border-t border-border text-[13px] text-muted-foreground leading-[1.75] font-['Outfit',sans-serif] font-light">
           {update.notes}
         </div>
       )}
@@ -157,7 +157,7 @@ function TimelineCard({ update, onImageClick }) {
             <button
               key={i}
               onClick={() => onImageClick(img)}
-              className="aspect-square rounded-xl overflow-hidden border border-[#ede8de] cursor-pointer hover:scale-105 transition-transform duration-200"
+              className="aspect-square rounded-xl overflow-hidden border border-border cursor-pointer hover:scale-105 transition-transform duration-200"
             >
               <img src={img} alt={`Growth ${i + 1}`} className="w-full h-full object-cover" />
             </button>
@@ -217,7 +217,7 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
     } finally { setSubmitting(false); }
   };
 
-  const inputCls = "w-full px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-xl text-sm text-[#0c1e11] bg-white outline-none font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 hover:border-[#c8bfb4] transition-all";
+  const inputCls = "w-full px-4 py-3 border-[1.5px] border-border rounded-xl text-sm text-foreground bg-input outline-none font-['Outfit',sans-serif] focus:border-primary focus:ring-2 focus:ring-primary/10 hover:border-primary/40 transition-all";
 
   return (
     <motion.div
@@ -226,7 +226,7 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
       onClick={e => e.target === e.currentTarget && !submitting && onClose()}
     >
       <motion.div
-        className="bg-[#f7f3ec] w-full max-w-[560px] rounded-2xl overflow-hidden shadow-2xl my-auto border border-[#ede8de]"
+        className="bg-card w-full max-w-[560px] rounded-2xl overflow-hidden shadow-2xl my-auto border border-border"
         initial={{ scale: 0.93, opacity: 0, y: 24 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.93, opacity: 0, y: 24 }}
@@ -259,7 +259,7 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
 
           {/* Health status */}
           <div className="flex flex-col gap-2">
-            <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">
+            <label className="text-[10.5px] font-semibold text-muted-foreground uppercase tracking-[1px]">
               {t("auto.auto_179", "Health Status")} <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2 flex-wrap">
@@ -269,7 +269,7 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
                   onClick={() => set("healthStatus", h.key)}
                   className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border text-[12px] font-medium cursor-pointer transition-all duration-200 ${form.healthStatus === h.key
                       ? `${h.ring} ${h.color} font-semibold`
-                      : "border-[#e0d8cf] bg-white text-[#8a7d6e] hover:border-[#4db87a]/40 hover:text-[#0c1e11]"
+                      : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
                     }`}
                 >
                   {h.icon} {h.label}
@@ -313,7 +313,7 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
 
           {/* Notes */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px]">
+            <label className="text-[10.5px] font-semibold text-muted-foreground uppercase tracking-[1px]">
               {t("auto.auto_184", "Field Notes")}
             </label>
             <textarea
@@ -335,19 +335,19 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
                 onDragOver={e => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={e => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}
-                className={`border-2 border-dashed rounded-2xl p-5 text-center cursor-pointer transition-all duration-200 ${dragOver ? "border-[#4db87a] bg-emerald-50/60" : "border-[#e0d8cf] bg-[#f2ede3] hover:border-[#4db87a]/50 hover:bg-emerald-50/40"
+                className={`border-2 border-dashed rounded-2xl p-5 text-center cursor-pointer transition-all duration-200 ${dragOver ? "border-primary bg-primary/10" : "border-border bg-secondary hover:border-primary/50 hover:bg-primary/5"
                   }`}
               >
                 <div className="text-3xl mb-2">📸</div>
-                <div className="text-[13px] font-medium text-[#5c5044]">{t("auto.auto_187", "Click or drag photos here")}</div>
-                <div className="text-[11.5px] text-[#b5ac9e] mt-1">{t("auto.auto_188", "JPG, PNG, WEBP — show the plantation growth")}</div>
+                <div className="text-[13px] font-medium text-muted-foreground">{t("auto.auto_187", "Click or drag photos here")}</div>
+                <div className="text-[11.5px] text-muted-foreground/60 mt-1">{t("auto.auto_188", "JPG, PNG, WEBP — show the plantation growth")}</div>
                 <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={e => addFiles(e.target.files)} />
               </div>
             )}
             {photos.length > 0 && (
               <div className={`grid grid-cols-5 gap-2 ${photos.length < 5 ? "mt-3" : ""}`}>
                 {photos.map((p, i) => (
-                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-[1.5px] border-[#e0d8cf]">
+                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-[1.5px] border-border">
                     <img src={p.previewUrl} alt="" className="w-full h-full object-cover" />
                     <button onClick={() => removePhoto(i)}
                       className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/65 text-white cursor-pointer text-[10px] flex items-center justify-center hover:bg-red-600/80 transition-colors">✕</button>
@@ -361,7 +361,7 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200/80 rounded-xl text-[12.5px] text-red-700 font-medium"
+                className="flex items-center gap-2.5 px-4 py-3 bg-destructive/10 border border-destructive/30 rounded-xl text-[12.5px] text-destructive font-medium"
               >
                 <span>⚠️</span> {error}
               </motion.div>
@@ -370,13 +370,13 @@ function UpdateModal({ landId, landTitle, onClose, onSuccess }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-7 sm:px-8 py-5 border-t border-[#ede8de]">
+        <div className="flex items-center justify-end gap-3 px-7 sm:px-8 py-5 border-t border-border">
           <button onClick={onClose} disabled={submitting}
-            className="px-5 py-2.5 rounded-xl border-[1.5px] border-[#e0d8cf] bg-white text-[13.5px] font-medium text-[#8a7d6e] hover:border-[#0c1e11] hover:text-[#0c1e11] transition-all cursor-pointer disabled:opacity-50">
+            className="px-5 py-2.5 rounded-xl border-[1.5px] border-border bg-card text-[13.5px] font-medium text-muted-foreground hover:border-primary hover:text-primary transition-all cursor-pointer disabled:opacity-50">
             {t("auto.auto_189", "Cancel")}
           </button>
           <button onClick={handleSubmit} disabled={submitting}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0c1e11] text-white text-[13.5px] font-semibold hover:bg-[#163d25] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-[0_4px_16px_rgba(12,30,17,0.2)]">
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-[13.5px] font-semibold hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-[0_4px_16px_rgba(77,184,122,0.3)]">
             {submitting ? (
               <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />{t("auto.auto_190", "Uploading…")}</>
             ) : "🌱 Submit Update"}

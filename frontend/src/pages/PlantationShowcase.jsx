@@ -546,16 +546,16 @@ function ReviewModal({ plantation, onClose, onSuccess }) {
           <textarea
             value={comment} onChange={e => setComment(e.target.value)}
             placeholder="Describe what you observed — the growth, the terrain, the atmosphere…"
-            className="w-full min-h-[100px] px-4 py-3 border-[1.5px] border-[#e0d8cf] rounded-none bg-white text-sm text-[#0c1e11] outline-none resize-vertical mb-5 font-['Outfit',sans-serif] focus:border-[#4db87a] focus:ring-2 focus:ring-[#4db87a]/10 transition-all leading-relaxed placeholder:text-[#c8bfb4]"
+            className="w-full min-h-[100px] px-4 py-3 border-[1.5px] border-border rounded-none bg-background text-sm text-foreground outline-none resize-vertical mb-5 font-['Outfit',sans-serif] focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all leading-relaxed placeholder:text-muted-foreground"
           />
 
-          <label className="block text-[10.5px] font-semibold text-[#3d2b1f] uppercase tracking-[1px] mb-3">
+          <label className="block text-[10.5px] font-semibold text-muted-foreground uppercase tracking-[1px] mb-3">
             {t("auto.auto_284", "Photos (Optional)")}
           </label>
           {photos.length < 5 && (
             <div
               onClick={() => fileRef.current?.click()}
-              className="border border-dashed border-[#e0d8cf] rounded-none py-5 px-4 text-center cursor-pointer bg-[#f2ede3] hover:border-[#4db87a]/50 hover:bg-emerald-50/40 transition-all mb-3"
+              className="border border-dashed border-border rounded-none py-5 px-4 text-center cursor-pointer bg-secondary hover:border-primary/50 hover:bg-primary/5 transition-all mb-3"
             >
               <Camera size={20} className="mx-auto text-[#b5ac9e] mb-1.5" />
               <div className="text-[12px] text-[#8a7d6e]">{t("auto.auto_285", "Click to upload")}</div>
