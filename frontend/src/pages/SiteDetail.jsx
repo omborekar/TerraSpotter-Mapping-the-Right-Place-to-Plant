@@ -267,8 +267,8 @@ export default function SiteDetail() {
               <h1 className="font-['Cormorant_Garant',serif] text-[clamp(28px,4.5vw,48px)] font-semibold text-[#0c1e11] leading-[0.95] tracking-[-0.5px]">
                 {land.title || "Unnamed Land"}
               </h1>
-              {land.centroidLat && (
-                <p className="text-[12.5px] text-[#b5ac9e]">📍 {land.centroidLat.toFixed(5)}, {land.centroidLng.toFixed(5)}</p>
+              {land.centroidLat != null && land.centroidLng != null && (
+                <p className="text-[12.5px] text-[#b5ac9e]">📍 {Number(land.centroidLat).toFixed(5)}, {Number(land.centroidLng).toFixed(5)}</p>
               )}
               <div className="flex gap-2 flex-wrap">
                 {land.landStatus && (
@@ -482,10 +482,10 @@ export default function SiteDetail() {
                             const soilVal = (land.mlParams?.soil || land.soilType || 'loamy').toLowerCase();
                             const isSoilMatch = pref.soil.some(s => soilVal.includes(s) || s.includes(soilVal));
                             
-                            const tempVal = land.mlParams?.temp || 28.0;
+                            const tempVal = Number(land.mlParams?.temp != null ? land.mlParams.temp : 28.0);
                             const isTempMatch = tempVal >= pref.minTemp && tempVal <= pref.maxTemp;
                             
-                            const rainVal = land.mlParams?.rainfall || 1000.0;
+                            const rainVal = Number(land.mlParams?.rainfall != null ? land.mlParams.rainfall : 1000.0);
                             const isRainMatch = rainVal >= pref.minRain && rainVal <= pref.maxRain;
                             
                             const climateVal = (land.mlParams?.climate || 'tropical').toLowerCase();
