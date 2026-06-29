@@ -196,6 +196,29 @@ export default function AdminLandDetail({ landId, user, onBack, onVote, voting: 
           {/* LEFT column */}
           <div className="flex flex-col gap-4">
 
+            {/* Overlap warnings banner */}
+            {land.overlappingLands && land.overlappingLands.length > 0 && (
+              <div className="px-5 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-[12.5px] text-red-400 font-semibold font-['Outfit',sans-serif] flex items-start gap-3">
+                <span className="text-lg shrink-0 mt-0.5">⚠️</span>
+                <div className="flex-1 min-w-0">
+                  <span className="block text-[13.5px] font-bold text-red-300 mb-1">Potential Duplicate Detected!</span>
+                  <span className="block font-medium text-white/70 leading-relaxed mb-2">
+                    This location's boundary coordinates overlap with the following registered land entries:
+                  </span>
+                  <div className="flex flex-col gap-2 mt-2">
+                    {land.overlappingLands.map(ov => (
+                      <div key={ov.id} className="bg-red-500/20 border border-red-500/30 px-3.5 py-2 rounded-xl flex items-center justify-between text-xs text-white">
+                        <span><strong>{ov.title}</strong> (ID: {ov.id})</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full">
+                          {ov.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Gallery */}
             {imageUrls.length > 0 ? (
               <div className="bg-[#0f2916] border border-white/[0.07] rounded-2xl overflow-hidden">

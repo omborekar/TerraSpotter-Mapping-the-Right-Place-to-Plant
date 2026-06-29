@@ -387,6 +387,23 @@ export default function AdminPendingLands() {
                       {land.waterAvailable && <span>💧 {land.waterAvailable}</span>}
                     </div>
 
+                    {/* Overlap warnings */}
+                    {land.overlappingLands && land.overlappingLands.length > 0 && (
+                      <div className="mt-1 px-3.5 py-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-[11.5px] text-red-400 font-semibold font-['Outfit',sans-serif] flex items-start gap-2.5">
+                        <span className="text-sm shrink-0">⚠️</span>
+                        <div className="flex-1 min-w-0">
+                          <span className="block leading-snug">Potential Duplicate Check Required — overlaps with:</span>
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {land.overlappingLands.map(ov => (
+                              <span key={ov.id} className="bg-red-500/20 px-2 py-0.5 rounded text-[10.5px] text-white/90">
+                                {ov.title} (ID: {ov.id}, {ov.status})
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Description */}
                     {land.description && (
                       <p className="text-[12.5px] text-white/30 leading-relaxed line-clamp-2 font-['Outfit',sans-serif] font-light">

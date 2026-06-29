@@ -103,4 +103,101 @@ public class SpatialGridService {
         }
         return inside;
     }
+
+    /**
+     * Checks if two JSON polygons overlap spatially.
+     */
+    public boolean checkOverlap(String polyCoordsJsonA, String polyCoordsJsonB) {
+        if (polyCoordsJsonA == null || polyCoordsJsonB == null || polyCoordsJsonA.trim().isEmpty() || polyCoordsJsonB.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            List<Map<String, Double>> coordsA = objectMapper.readValue(
+                    polyCoordsJsonA, new TypeReference<List<Map<String, Double>>>() {});
+            List<Map<String, Double>> coordsB = objectMapper.readValue(
+                    polyCoordsJsonB, new TypeReference<List<Map<String, Double>>>() {});
+
+            if (coordsA.size() < 3 || coordsB.size() < 3) return false;
+
+            // 1. Check Bounding Box overlap
+            double minLatA = Double.MAX_VALUE, maxLatA = -Double.MAX_VALUE;
+            double minLngA = Double.MAX_VALUE, maxLngA = -Double.MAX_VALUE;
+            for (Map<String, Double> c : coordsA) {
+                if (c.get("lat") == null || c.get("lng") == null) continue;
+                minLatA = Math.min(minLatA, c.get("lat"));
+                maxLatA = Math.max(maxLatA, c.get("lat"));
+                minLngA = Math.min(minLngA, c.get("lng"));
+                maxLngA = Math.max(maxLngA, c.get("lng"));
+            }
+
+            double minLatB = Double.MAX_VALUE, maxLatB = -Double.MAX_VALUE;
+            double minLngB = Double.MAX_VALUE, maxLngB = -Double.MAX_VALUE;
+            for (Map<String, Double> c : coordsB) {
+                if (c.get("lat") == null || c.get("lng") == null) continue;
+                minLatB = Math.min(minLatB, c.get("lat"));
+                maxLatB = Math.max(maxLatB, c.get("lat"));
+                minLngB = Math.min(minLngB, c.get("lng"));
+                maxLngB = Math.max(maxLngB, c.get("lng"));
+            }
+
+            // Bbox check
+            if (minLatA > maxLatB || maxLatA < minLatB || minLngA > maxLngB || maxLngA < minLngB) {
+                return false;
+            }
+
+            // Convert to Local Points for accurate containment & edge checks
+            List<Point> polyA = new ArrayList<>();
+            double originLat = coordsA.get(0).get("lat");
+            double originLng = coordsA.get(0).get("lng");
+            double metersPerLat = 111320.0;
+            double metersPerLng = 111320.0 * Math.cos(Math.toRadians(originLat));
+
+            for (Map<String, Double> c : coordsA) {
+                if (c.get("lat") == null || c.get("lng") == null) continue;
+                polyA.add(new Point((c.get("lng") - originLng) * metersPerLng, (c.get("lat") - originLat) * metersPerLat));
+            }
+
+            List<Point> polyB = new ArrayList<>();
+            for (Map<String, Double> c : coordsB) {
+                if (c.get("lat") == null || c.get("lng") == null) continue;
+                polyB.add(new Point((c.get("lng") - originLng) * metersPerLng, (c.get("lat") - originLat) * metersPerLat));
+            }
+
+            if (polyA.size() < 3 || polyB.size() < 3) return false;
+
+            // 2. Check if any point of A is in B
+            for (Point p : polyA) {
+                if (isPointInPolygon(p, polyB)) return true;
+            }
+
+            // 3. Check if any point of B is in A
+            for (Point p : polyB) {
+                if (isPointInPolygon(p, polyA)) return true;
+            }
+
+            // 4. Check if any edge of A intersects any edge of B
+            for (int i = 0; i < polyA.size(); i++) {
+                Point a1 = polyA.get(i);
+                Point a2 = polyA.get((i + 1) % polyA.size());
+                for (int j = 0; j < polyB.size(); j++) {
+                    Point b1 = polyB.get(j);
+                    Point b2 = polyB.get((j + 1) % polyB.size());
+                    if (linesIntersect(a1, a2, b1, b2)) return true;
+                }
+            }
+
+            return false;
+        } catch (Exception e) {
+            logger.warning("Failed to check overlap: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean linesIntersect(Point a1, Point a2, Point b1, Point b2) {
+        return ccw(a1, b1, b2) != ccw(a2, b1, b2) && ccw(a1, a2, b1) != ccw(a1, a2, b2);
+    }
+
+    private boolean ccw(Point A, Point B, Point C) {
+        return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
+    }
 }

@@ -68,7 +68,13 @@ public class LandService {
 
     // LAND CRUD
 
-    public List<Land> getAllLands() { return landRepository.findAll(); }
+    public List<Land> getAllLands() {
+        List<Land> lands = landRepository.findAll();
+        for (Land l : lands) {
+            l.setOverlappingLands(findOverlappingLands(l, lands));
+        }
+        return lands;
+    }
 
     public List<Land> getLandsByUser(Long userId) {
         return landRepository.findByCreatedBy(userId);
@@ -111,6 +117,32 @@ public class LandService {
                 .sum();
         land.setTotalTreesPlanted(totalTrees);
         land.setTotalRounds(allCompletions.size());
+
+        // resolve and attach ML parameters for UI comparison
+        try {
+            MlInputParams resolved = resolveMlParamsFromApis(land);
+            Land.MlParams ml = new Land.MlParams();
+            ml.setTemp(resolved.temp);
+            ml.setRainfall(resolved.rainfall);
+            ml.setSoil(resolved.soil);
+            ml.setClimate(resolved.climate);
+            land.setMlParams(ml);
+        } catch (Exception e) {
+            Land.MlParams ml = new Land.MlParams();
+            ml.setTemp(28.0);
+            ml.setRainfall(1000.0);
+            ml.setSoil(land.getSoilType() != null ? land.getSoilType() : "loamy");
+            ml.setClimate("tropical");
+            land.setMlParams(ml);
+        }
+
+        // Find and attach overlapping lands for duplication check
+        try {
+            List<Land> allLands = landRepository.findAll();
+            land.setOverlappingLands(findOverlappingLands(land, allLands));
+        } catch (Exception e) {
+            land.setOverlappingLands(new java.util.ArrayList<>());
+        }
 
         return land;
     }
@@ -594,5 +626,19 @@ public class LandService {
             return String.format("temp=%.1f°C  rainfall=%.0fmm  soil=%s  climate=%s",
                     temp, rainfall, soil, climate);
         }
+    }
+
+    private List<com.example.terraspoter.dto.LandOverlapDTO> findOverlappingLands(Land target, List<Land> allLands) {
+        List<com.example.terraspoter.dto.LandOverlapDTO> overlaps = new java.util.ArrayList<>();
+        if (target == null || target.getPolygonCoords() == null) return overlaps;
+        for (Land other : allLands) {
+            if (other == null || other.getId() == null || other.getId().equals(target.getId()) || other.getPolygonCoords() == null) {
+                continue;
+            }
+            if (spatialGridService.checkOverlap(target.getPolygonCoords(), other.getPolygonCoords())) {
+                overlaps.add(new com.example.terraspoter.dto.LandOverlapDTO(other.getId(), other.getTitle(), other.getStatus()));
+            }
+        }
+        return overlaps;
     }
 }

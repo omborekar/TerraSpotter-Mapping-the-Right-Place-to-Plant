@@ -15,6 +15,8 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import com.example.terraspoter.dto.LandOverlapDTO;
 
 @Getter
 @Setter
@@ -55,6 +57,7 @@ public class Land {
     @Transient private Integer remainingCapacity;   // from latest completion.more_capacity
     @Transient private Integer totalTreesPlanted;   // sum of all completions.trees_planted
     @Transient private Integer totalRounds;         // count of all completions for this land
+    @Transient private List<LandOverlapDTO> overlappingLands;
     @Column(length = 1000)
     private String notes;
 
@@ -90,5 +93,16 @@ public class Land {
         private Integer treesPlanted;
         private Integer moreCapacity;
         private String  notes;
+    }
+
+    @Transient
+    private MlParams mlParams;
+
+    @Data
+    public static class MlParams {
+        private Double temp;
+        private Double rainfall;
+        private String soil;
+        private String climate;
     }
 }

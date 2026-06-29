@@ -476,25 +476,115 @@ export default function SiteDetail() {
                           <p className="text-[13px] text-[#b5ac9e]">{t("auto.auto_371", "No recommendations yet.")}<br />{t("auto.auto_372", "Click Refresh to fetch from ML model.")}</p>
                         </div>
                       ) : (
-                        <div className="flex flex-col gap-2">
-                          {recs.map((r, idx) => (
-                            <div key={r.id ?? idx} className="flex items-center gap-3 px-4 py-3 bg-[#f7f3ec] border border-[#ede8de] rounded-xl">
-                              <div className="flex-1 min-w-0">
-                                <div className="text-[13.5px] font-semibold text-[#0c1e11]">{r.plantName}</div>
-                                {r.reason && <div className="text-[11.5px] text-[#b5ac9e] font-light mt-0.5 truncate">{r.reason}</div>}
-                              </div>
-                              {r.suitabilityScore != null && (
-                                <div className="flex flex-col items-end gap-1 shrink-0">
-                                  <span className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#2d8a55]">
-                                    {Math.round(r.suitabilityScore * 100)}%
-                                  </span>
-                                  <div className="w-14 h-1 bg-[#e0d8cf] rounded-full overflow-hidden">
-                                    <div className="h-full bg-[#4db87a] rounded-full" style={{ width: `${r.suitabilityScore * 100}%` }} />
+                        <div className="flex flex-col gap-3">
+                          {recs.map((r, idx) => {
+                            const pref = getTreePref(r.plantName);
+                            const soilVal = (land.mlParams?.soil || land.soilType || 'loamy').toLowerCase();
+                            const isSoilMatch = pref.soil.some(s => soilVal.includes(s) || s.includes(soilVal));
+                            
+                            const tempVal = land.mlParams?.temp || 28.0;
+                            const isTempMatch = tempVal >= pref.minTemp && tempVal <= pref.maxTemp;
+                            
+                            const rainVal = land.mlParams?.rainfall || 1000.0;
+                            const isRainMatch = rainVal >= pref.minRain && rainVal <= pref.maxRain;
+                            
+                            const climateVal = (land.mlParams?.climate || 'tropical').toLowerCase();
+                            const isClimateMatch = pref.climate.some(c => climateVal.includes(c) || c.includes(climateVal));
+
+                            const isExpanded = expandedRecIdx === idx;
+
+                            return (
+                              <div
+                                key={r.id ?? idx}
+                                onClick={() => setExpandedRecIdx(isExpanded ? null : idx)}
+                                className={`flex flex-col px-5 py-4 bg-[#f7f3ec] border border-[#ede8de] rounded-xl cursor-pointer hover:shadow-md hover:border-[#4db87a]/60 transition-all duration-200 select-none ${isExpanded ? 'border-[#4db87a] shadow-sm' : ''}`}
+                              >
+                                <div className="flex items-center justify-between gap-3 w-full">
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[14.5px] font-semibold text-[#0c1e11]">{r.plantName}</span>
+                                      <span className="text-[9.5px] font-semibold tracking-wider text-[#b5ac9e] uppercase bg-[#ede8de]/60 px-1.5 py-0.5 rounded">
+                                        {isExpanded ? '▲ Hide Details' : '▼ View Comparison'}
+                                      </span>
+                                    </div>
+                                    {r.reason && <div className="text-[11.5px] text-[#b5ac9e] font-light mt-0.5 truncate">{r.reason}</div>}
                                   </div>
+                                  {r.suitabilityScore != null && (
+                                    <div className="flex flex-col items-end gap-1 shrink-0">
+                                      <span className="font-['Cormorant_Garant',serif] text-[18px] font-semibold text-[#2d8a55]">
+                                        {Math.round(r.suitabilityScore * 100)}%
+                                      </span>
+                                      <div className="w-14 h-1 bg-[#e0d8cf] rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#4db87a] rounded-full" style={{ width: `${r.suitabilityScore * 100}%` }} />
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          ))}
+
+                                {isExpanded && (
+                                  <div
+                                    className="mt-4 pt-3.5 border-t border-[#ede8de] text-xs text-[#5c5044] flex flex-col gap-3 font-['Outfit',sans-serif]"
+                                    onClick={e => e.stopPropagation()}
+                                  >
+                                    <div className="font-semibold text-[#0c1e11] flex items-center gap-1.5">
+                                      📊 Parameters Comparison
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                      
+                                      {/* Soil Type */}
+                                      <div className="bg-[#ede8de]/40 border border-[#ede8de] rounded-xl p-3 flex flex-col gap-1">
+                                        <span className="text-[9px] uppercase font-bold tracking-wider text-[#b5ac9e]">Soil Type</span>
+                                        <div className="flex justify-between items-center text-[#0c1e11] font-medium text-[12px] mt-0.5">
+                                          <span>Your Land: <strong className="capitalize">{soilVal}</strong></span>
+                                          <span>Ideal: <strong className="capitalize">{pref.soil.join(', ')}</strong></span>
+                                        </div>
+                                        <div className="mt-1 flex items-center gap-1 text-[10.5px]">
+                                          {isSoilMatch ? <span className="text-emerald-700 font-semibold">✓ Compatible Soil</span> : <span className="text-amber-700">⚠ Less Optimal Soil</span>}
+                                        </div>
+                                      </div>
+
+                                      {/* Temp */}
+                                      <div className="bg-[#ede8de]/40 border border-[#ede8de] rounded-xl p-3 flex flex-col gap-1">
+                                        <span className="text-[9px] uppercase font-bold tracking-wider text-[#b5ac9e]">Mean Temperature</span>
+                                        <div className="flex justify-between items-center text-[#0c1e11] font-medium text-[12px] mt-0.5">
+                                          <span>Your Land: <strong>{tempVal.toFixed(1)}°C</strong></span>
+                                          <span>Ideal: <strong>{pref.temp}</strong></span>
+                                        </div>
+                                        <div className="mt-1 flex items-center gap-1 text-[10.5px]">
+                                          {isTempMatch ? <span className="text-emerald-700 font-semibold">✓ Optimal Temp</span> : <span className="text-amber-700">⚠ Outside Ideal Temp Range</span>}
+                                        </div>
+                                      </div>
+
+                                      {/* Rainfall */}
+                                      <div className="bg-[#ede8de]/40 border border-[#ede8de] rounded-xl p-3 flex flex-col gap-1">
+                                        <span className="text-[9px] uppercase font-bold tracking-wider text-[#b5ac9e]">Annual Rainfall</span>
+                                        <div className="flex justify-between items-center text-[#0c1e11] font-medium text-[12px] mt-0.5">
+                                          <span>Your Land: <strong>{Math.round(rainVal)} mm</strong></span>
+                                          <span>Ideal: <strong>{pref.rainfall}</strong></span>
+                                        </div>
+                                        <div className="mt-1 flex items-center gap-1 text-[10.5px]">
+                                          {isRainMatch ? <span className="text-emerald-700 font-semibold">✓ Optimal Rainfall</span> : <span className="text-amber-700">⚠ Needs water management</span>}
+                                        </div>
+                                      </div>
+
+                                      {/* Climate */}
+                                      <div className="bg-[#ede8de]/40 border border-[#ede8de] rounded-xl p-3 flex flex-col gap-1">
+                                        <span className="text-[9px] uppercase font-bold tracking-wider text-[#b5ac9e]">Climate Zone</span>
+                                        <div className="flex justify-between items-center text-[#0c1e11] font-medium text-[12px] mt-0.5">
+                                          <span>Your Land: <strong className="capitalize">{climateVal}</strong></span>
+                                          <span>Ideal: <strong className="capitalize">{pref.climate.join(', ')}</strong></span>
+                                        </div>
+                                        <div className="mt-1 flex items-center gap-1 text-[10.5px]">
+                                          {isClimateMatch ? <span className="text-emerald-700 font-semibold">✓ Ideal Climate Zone</span> : <span className="text-amber-700">⚠ Less Optimal Climate</span>}
+                                        </div>
+                                      </div>
+
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>

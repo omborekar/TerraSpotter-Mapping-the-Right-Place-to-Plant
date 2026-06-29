@@ -14,10 +14,11 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const team = [
-  { initials: "OB", name: "Om Borekar",        role: "Full Stack Developer",   color: "#1a4731" },
-  { initials: "VK", name: "Vishwaja Kakulate", role: "Backend Developer",      color: "#1e5c3a" },
-  { initials: "PD", name: "Prasad Dhotre",     role: "Database Engineer",      color: "#22694a" },
-  { initials: "PG", name: "Pradnya Gajre",     role: "Frontend Developer",     color: "#276b4c" },
+  { initials: "OB", name: "OmSunil Borekar", role: "Backend Development, API Development, Database Integration, Integration", color: "#1a4731" },
+  { initials: "VK", name: "Vishwaja Vinayak Kakulate", role: "MLModule, Recommendation System, API Development", color: "#1e5c3a" },
+  { initials: "PD", name: "Prasad Dattatraya Dhotre", role: "Frontend Development, Testing, Quality Assurance", color: "#22694a" },
+  { initials: "PG", name: "Pradnya Harishchandra Gajre", role: "Frontend Development, Testing, Documentation, Quality Assurance", color: "#276b4c" },
+  { initials: "SS", name: "Prof. S. M. Shelke (Guide)", role: "Project Guidance, Review and Technical Guidance", color: "#112e1f" }
 ];
 
 const values = [
@@ -189,7 +190,7 @@ export default function About() {
             <motion.h2 variants={itemVariants} className="text-[clamp(34px,4vw,52px)] font-bold text-foreground mb-12 leading-tight tracking-tight">
               {t("auto.auto_13", "Meet the Team")}
             </motion.h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {team.map((m, i) => (
                 <motion.div key={i} variants={itemVariants}
                   className="bg-card border border-border rounded-2xl p-8 text-center hover:-translate-y-1.5 hover:border-primary/18 transition-all duration-300 relative overflow-hidden group">

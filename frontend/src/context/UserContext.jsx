@@ -47,6 +47,8 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    // Warm up backend and ML API on application load
+    axios.get(`${BASE_URL}/api/auth/`, { withCredentials: true }).catch(() => {});
     fetchSession();
   }, []);
 
