@@ -247,7 +247,7 @@ public class ChatService {
     }
 
     // ── Build first Gemini request ────────────────────────────────────────────
-    private ObjectNode buildInitialRequest(
+    ObjectNode buildInitialRequest(
             String userMessage,
             List<com.example.terraspoter.dto.ChatRequest.Message> history) {
 
