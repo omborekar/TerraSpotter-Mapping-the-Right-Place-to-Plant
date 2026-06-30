@@ -332,9 +332,9 @@ public class ChatService {
         tool.put("description", description);
         if (param != null) {
             ObjectNode params = tool.putObject("parameters");
-            params.put("type", "OBJECT");
+            params.put("type", "object");
             params.putObject("properties").putObject(param[0])
-                    .put("type", param[1])
+                    .put("type", param[1].toLowerCase())
                     .put("description", param[2]);
             if ("true".equals(param[3])) params.putArray("required").add(param[0]);
         }
@@ -359,7 +359,7 @@ public class ChatService {
 
         // Append tool response turn
         ObjectNode toolTurn = contents.addObject();
-        toolTurn.put("role", "function");
+        toolTurn.put("role", "user");
         ObjectNode funcResp = toolTurn.putArray("parts").addObject()
                 .putObject("functionResponse");
         funcResp.put("name", toolName);
